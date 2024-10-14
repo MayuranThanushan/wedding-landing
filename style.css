@@ -48,6 +48,7 @@
         padding: 16px 68px;
         color: var(--Accent);
         font-weight: 600;
+        cursor: pointer;
     }
 
     .main-title {

@@ -21,24 +21,24 @@
     <main class="main-content">
         <div class="content-grid">
             <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/e18ca59385179a97180452c45de112f89ec44f41dcc4d56f64c7e550907698d3?placeholderIfAbsent=true&apiKey=0a18f12c55274af68e0a3ae651c1ff6d"
-                alt="Decorative floral arrangement" class="side-image" />
+                alt="Decorative floral arrangement" class="left-side-image" />
             <div class="invitation-text">
                 <p>Together with their families,</p>
-                <h2>Rohit Sreenivas Reddy<br />Gayathiri Mayuran</h2>
+                <h2>Rohit Sreenivas Reddy<br />&<br />Gayathiri Mayuran</h2>
                 <p>Joyfully invite you to celebrate our engagement.</p>
-                <p><strong>16th March 2025<br />06:00 PM Onwards<br />The Renoir, Conca D'oro,<br />269 Belmore Rd,
+                <p style="color: #c90;"><strong>16th March 2025<br />06:00 PM Onwards<br />The Renoir, Conca D'oro, 269 Belmore Rd,
                         Riverwood NSW 2210</strong></p>
                 <p>Join us for an evening of love, laughter, and joy.<br />We look forward to sharing this special
                     moment with you!</p>
             </div>
             <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/98e2227c5d44c66c7337b493d2e009e4a03114e7f93ac7ffaba79eca06e20449?placeholderIfAbsent=true&apiKey=0a18f12c55274af68e0a3ae651c1ff6d"
-                alt="Decorative floral arrangement" class="side-image" />
+                alt="Decorative floral arrangement" class="right-side-image" />
         </div>
     </main>
 
     <div class="rsvp-buttons">
-        <button class="btn">Joyfully Accept</button>
-        <button class="btn">Regretfully Decline</button>
+        <button id="accept" class="btn">Joyfully Accept</button>
+        <button id="decline" class="btn">Regretfully Decline</button>
     </div>
 
             <section class="block">
@@ -116,5 +116,27 @@
     </footer>
 
     <p class="copyright">Copyright 2024</p>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+                console.log("Script is loaded and running");
+
+                const buttons = document.querySelectorAll('.btn');
+
+                buttons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        console.log('Button clicked:', this.textContent);
+
+                        // Remove 'select' class from all buttons
+                        buttons.forEach(btn => btn.classList.remove('select'));
+
+                        // Add 'select' class to the clicked button
+                        this.classList.add('select');
+                    });
+                });
+            });
+
+    </script>
 </body>
+
 </html>

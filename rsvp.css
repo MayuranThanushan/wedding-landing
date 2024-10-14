@@ -3,12 +3,22 @@
     display: flex;
 }
 
-.side-image {
+.left-side-image {
     aspect-ratio: 2.13;
     object-fit: contain;
-    object-position: center;
+    object-position: bottom;
     width: 7px;
-    margin-top: 401px;
+    margin-bottom: 40px;
+    max-width: 100%;
+    flex-grow: 1;
+}
+
+.right-side-image {
+    aspect-ratio: 2.13;
+    object-fit: contain;
+    object-position: top;
+    width: 7px;
+    margin-top: 40px;
     max-width: 100%;
     flex-grow: 1;
 }
@@ -16,7 +26,13 @@
 .invitation-text {
     color: var(--BG, #32345f);
     text-align: center;
-    font: 500 24px 'Chronica Pro', sans-serif;
+    margin-top: 20px;
+    font: 500 22px 'Chronica Pro', sans-serif;
+}
+
+.invitation-text h2 {
+    font: 500 66px Vladimir script;
+    line-height: 70%;
 }
 
 .rsvp-buttons {
@@ -29,6 +45,11 @@
     flex-wrap: wrap;
     padding: 0 160px;
     font: 800 22px 'Chronica Pro', sans-serif;
+}
+
+.btn.select {
+    background-color: var(--Accent, #c90 );
+    color: var(--BG, #f2e5d9);
 }
 
 .block p {

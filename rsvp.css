@@ -183,64 +183,49 @@
 
 .submit-container {
     display: flex;
-    margin-top: 40px;
-    min-height: 155px;
     flex-direction: column;
     align-items: center;
     font-size: 22px;
     justify-content: center;
+    color: var(--Accent, #c90);
 }
 
 .submit-note {
-    gap: 10px;
-    font-family: 'Road Rage', sans-serif;
+    font-family: roboto;
     color: #32345f;
     font-weight: 400;
-    padding: 28px 8px 28px 0;
+    padding-top: 28px;
 }
 
-.submit-btn {
-    justify-content: center;
-    align-items: center;
-    border-radius: 40px;
-    border: 1px solid #c90;
-    background: #f2e5d9;
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    overflow: hidden;
-    padding: 17px 35px;
-}
 
 .location-container {
     border-radius: 30px;
     background-color: #eedccb;
     display: flex;
-    margin-top: 117px;
+    margin-top: 88px;
     flex-direction: column;
     align-items: center;
     color: #32345f;
     text-align: center;
     justify-content: center;
-    padding: 45px 80px;
 }
 
 .location-title {
     align-self: center;
     font: 800 64px/1.1 'Chronica Pro', -apple-system, Roboto, Helvetica, sans-serif;
+    margin: 26px 0 0 0;
 }
 
 .location-description {
-    margin: 18px 18px 0;
-    font: 700 18px/32px Roboto, sans-serif;
+    margin: 50px;
+    font: 500 18px/32px Roboto, sans-serif;
 }
 
 .location-map {
     border-radius: 30px;
-    background-color: rgba(128, 128, 128, 0.55);
     display: flex;
-    margin-top: 50px;
-    height: 553px;
+    height: 400px;
+    width: 95%;
 }
 
 

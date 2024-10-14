@@ -142,16 +142,14 @@
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
     align-self: center;
     display: flex;
-    margin-top: 40px;
-    min-height: 532px;
-    width: 976px;
-    max-width: 100%;
+    margin-top: 88px;
+    width: 50%;
     flex-direction: column;
     align-items: center;
-    color: #32345f;
+    color: var(--primary, #32345f);
     font-weight: 500;
     justify-content: start;
-    padding: 28px 0 46px;
+    padding: 28px 0;
 }
 
 .gift-icon {
@@ -162,27 +160,25 @@
 }
 
 .gift-title {
-    margin-top: 28px;
-    font: 400 92px 'Vladimir Script', sans-serif;
+    font: 400 72px 'Vladimir Script', sans-serif;
+    margin: 0 0 20px 0;
 }
 
 .gift-subtitle {
     text-align: center;
     text-transform: uppercase;
-    margin-top: 28px;
-    font: 36px 'Chronica Pro', sans-serif;
+    font: 22px 'Chronica Pro', sans-serif;
+    margin: 0;
 }
 
 .gift-divider {
-    margin-top: 28px;
     border: 4px solid #32345f;
     width: 80%;
 }
 
 .gift-description {
     text-align: center;
-    margin-top: 28px;
-    font: 22px Roboto, sans-serif;
+    font: 18px Roboto, sans-serif;
 }
 
 .submit-container {

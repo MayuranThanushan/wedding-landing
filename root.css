@@ -1,0 +1,56 @@
+:root {
+    /* Colors */
+    --Background: #f2e5d9;
+    /* Background color */
+    --Primary: #32345f;
+    /* Primary text color */
+    --Accent: #cc9900;
+    /* Accent color */
+    --Placeholder: #eedccb;
+    /* Placeholder color for images */
+
+    /* Fonts */
+    --font-family-primary: 'Poppins', sans-serif;
+    --font-family-secondary: 'Roboto', sans-serif;
+    --font-family-script: 'Vladimir Script', sans-serif;
+    --font-size-small: 16px;
+    --font-size-base: 18px;
+    --font-size-large: 22px;
+    --font-size-xl: 44px;
+    --font-size-xxl: 88px;
+    --font-size-xxxl: 136px;
+
+    /* Font Weights */
+    --font-weight-light: 100;
+    --font-weight-regular: 400;
+    --font-weight-bold: 600;
+    --font-weight-bolder: 800;
+
+    /* Margins */
+    --margin-small: 8px;
+    --margin-medium: 16px;
+    --margin-large: 44px;
+    --margin-xl: 88px;
+    --margin-xxl: 102px;
+
+    /* Padding */
+    --padding-small: 8px;
+    --padding-medium: 16px;
+    --padding-large: 44px;
+    --padding-xl: 88px;
+
+    /* Line Heights */
+    --line-height-normal: 1;
+    --line-height-tight: 0.8;
+    --line-height-loose: 1.4;
+
+    /* Spacing */
+    --gap-small: 8px;
+    --gap-medium: 24px;
+    --gap-large: 32px;
+    --gap-xl: 48px;
+    --gap-xxl: 96px;
+
+    /*Border Radius*/
+    --border-radius: 30px;
+}

@@ -55,7 +55,7 @@
 
     .btn:hover {
         background: var(--Accent);
-        color: var(--BG);
+        color: var(--Background);
     }
 
     .main-title {

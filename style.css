@@ -1,33 +1,35 @@
+    @import url('root.css');
+    
     body {
-        background: var(--BG, #f2e5d9);
+        background: var(--Background);
         display: flex;
         flex-direction: column;
-        padding: 0px 40px;
+        padding: 0px var(--padding-large);
         margin: 0;
-        color: var(--Primary, #32345f);
+        color: var(--Primary);
     }
 
     .header {
         display: flex;
         width: 100%;
         align-items: baseline;
-        font-family: Chronica Pro, sans-serif;
-        color: var(--Accent, #c90);
-        font-weight: 600;
+        font-family: var(--font-family-primary);
+        color: var(--Accent);
+        font-weight: var(--font-weight-bold);
         justify-content: space-between;
     }
 
     .logo {
         text-transform: capitalize;
-        font: 200 50px/1 Vladimir Script;
+        font: var(--font-weight-light) var(--font-size-xl) var(--font-family-script);
     }
 
     .nav-links {
         display: flex;
-        gap: 32px;
-        font-size: 22px;
+        gap: var(--gap-large);
+        font-size: var(--font-size-large);
         text-transform: capitalize;
-        line-height: 60px;
+        align-items: center;
     }
 
     a {
@@ -37,36 +39,36 @@
 
     .btn {
         justify-content: center;
-        border-radius: 40px;
-        border: 1px solid var(--Accent, #c90);
-        background: var(--BG, #f2e5d9);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--Accent);
+        background: var(--BG);
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        font-size: 22px;
+        font-size: var(--font-size-large);
         white-space: nowrap;
-        padding: 16px 68px;
+        padding: var(--padding-medium) var(--padding-large);
         color: var(--Accent);
-        font-weight: 600;
+        font-weight: var(--font-weight-bold);
         cursor: pointer;
     }
 
     .btn:hover {
-        background: var(--Accent, #c90);
-        color: var(--BG, #f2e5d9);
+        background: var(--Accent);
+        color: var(--BG);
     }
 
     .main-title {
         margin: 0;
         padding-top: 40px;
         text-transform: capitalize;
-        font: 400 150px/135px Vladimir Script, -apple-system, Roboto, Helvetica, sans-serif;
-        line-height: 80%;
+        font: var(--font-weight-regular) 150px/135px Vladimir Script, -apple-system, Roboto, Helvetica, sans-serif;
+        line-height: var(--line-height-tight);
     }
 
     .event-details {
         display: flex;
-        margin-top: 108px;
+        margin-top: var(--margin-xxl);
         font: 100 24px Chronica Pro, sans-serif;
         justify-content: space-between;
         text-align: center;
@@ -82,8 +84,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 0px 10px;
-        padding-top: 88px;
+        gap: 0px var(--gap-small);
+        padding-top: var(--padding-xl);
     }
 
     .countdown-timer {
@@ -93,21 +95,21 @@
     }
 
     .label {
-        font-size: 44px;
-        color: #bf9c22;
+        font-size: var(--font-size-xl);
+        color: var(--Accent);
         align-items: center;
     }
 
     .value {
-        font: 100 140px Roboto, sans-serif;
-        font-weight: bold;
-        color: #2d2c56;
+        font: 100 var(--font-size-xxxl) Roboto, sans-serif;
+        font-weight: var(--font-weight-bold);
+        color: var(--Primary);
     }
 
     .colon {
-        font-size: 120px;
-        color: #bf9c22;
-        padding-top: 20px;
+        font-size: var(--font-size-xxl);
+        color: var(--Accent);
+        padding-top: var(--padding-medium);
     }
 
 
@@ -115,85 +117,86 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin: 0 80px;
-        padding: 88px 0;
+        margin: 0 var(--margin-xxl);
+        padding: var(--padding-xl) 0;
     }
 
     .story-content {
         display: flex;
-        gap: 140px;
+        gap: var(--gap-xxl);
     }
 
     .story-text {
         display: flex;
         width: 50%;
         flex-direction: column;
-        font-family: Roboto, sans-serif;
+        font: var(--font-size-base) var(--font-family-secondary);
     }
 
     .tagline {
         display: flex;
-        gap: 24px;
-        font-size: 18px;
-        color: var(--Accent, #c90);
+        gap: var(--gap-medium);
+        font-size: var(--font-size-base);
+        color: var(--Accent);
         text-transform: uppercase;
         letter-spacing: 4px;
     }
 
     .tagline-line {
-        background: var(--Accent, #c90);
+        background: var(--Accent);
         width: 72px;
         height: 2px;
         margin: auto 0;
     }
 
     .story-title {
-        margin: 24px 0;
-        font: 64px/64px Chronica Pro, sans-serif;
+        margin: var(--margin-small) 0;
+        font: var(--font-weight-bold) var(--font-size-xl)/var(--line-height-loose) var(--font-family-primary);
     }
 
     .story-paragraph {
-        font-size: 18px;
-        line-height: 28px;
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-loose);
     }
 
     .story-image {
-        background-color: rgba(196, 196, 196, 1);
-        width: 566px;
-        max-width: 100%;
+        background-color: var(--Placeholder);
+        width: 512px;
+        height: auto;
     }
 
-    .schedule-section {
+    .title {
         text-align: center;
-        font: 400 128px/1 Vladimir Script, -apple-system, Roboto, Helvetica, sans-serif;
+        font: var(--font-weight-regular) var(--font-size-xxl) var(--font-family-script);
+        padding: var(--padding-small);
     }
 
     .schedule-item {
         display: flex;
-        width: 532px;
-        max-width: 100%;
+        width: 384px;
         flex-direction: column;
-        font: 800 18px Roboto, sans-serif;
-        margin: 88px;
+        font: var(--font-weight-light) var(--font-size-small) var(--font-family-secondary);
+        margin: var(--margin-xxl);
+        margin: 0;
     }
 
     .schedule-time {
         display: flex;
-        gap: 8px;
-        color: var(--Accent, #c90);
+        gap: var(--gap-small);
+        color: var(--Accent);
         text-transform: uppercase;
+        font-size: var(--font-size-base);
         letter-spacing: 4px;
     }
 
     .schedule-title {
         margin: 0;
-        padding-bottom: 24px;
-        font: 64px/64px Chronica Pro, sans-serif;
+        padding-bottom: var(--padding-small);
+        font: var(--font-weight-bold) var(--font-size-xl) var(--font-family-primary);
     }
 
     .schedule-description {
-        font: 14px/14px roboto, monospace;
-        line-height: 24px;
+        line-height: var(--line-height-loose);
         margin-top: 0;
     }
 
@@ -203,31 +206,32 @@
 
     .cta-section {
         display: flex;
-        margin-top: 88px;
+        margin-top: var(--margin-xl);
         flex-direction: column;
         align-items: center;
-        font: 100 22px Chronica Pro, sans-serif;
+        font: var(--font-weight-regular) var(--font-size-base) var(--font-family-secondary);
+        margin: var(--margin-xl);
     }
 
     .cta-section a {
-        color: var(--Accent, #c90);
+        color: var(--Accent);
     }
 
     .cta-title {
         text-align: center;
-        font: 64px/64px Chronica Pro, sans-serif;
+        font: var(--font-weight-bold) var(--font-size-xl) var(--font-family-primary);
         margin: 0;
     }
 
     .cta-description {
         text-align: center;
-        font: 18px Chronica Pro, sans-serif;
-        line-height: 32px;
+        font: var(--font-weight-regular) var(--font-size-base) var(--font-family-secondary);
+        line-height: var(--line-height-loose);
     }
 
     .footer {
         display: flex;
-        margin-top: 166px;
+        margin-top: var(--margin-xxl);
         justify-content: space-between;
     }
 
@@ -237,17 +241,17 @@
         flex-direction: column;
     }
 
-    .footer-couple-names {
-        color: var(--Accent, #c90);
+    .footer-logo {
+        color: var(--Accent);
         text-transform: capitalize;
         align-self: start;
-        font: 400 58px/1 Vladimir Script, -apple-system, Roboto, Helvetica, sans-serif;
+        font: var(--font-weight-regular) var(--font-size-xl) var(--font-family-script);
         margin: 0;
     }
 
     .footer-tagline {
         margin-top: 10px;
-        font: 700 16px/32px Roboto, sans-serif;
+        font: var(--font-weight-regular) var(--font-size-base) var(--font-family-secondary);
     }
 
     .footer-right {
@@ -256,7 +260,7 @@
 
     .contact-info {
         display: flex;
-        gap: 60px;
+        gap: var(--gap-xl);
     }
 
     .contact-person {
@@ -264,155 +268,26 @@
         flex-grow: 1;
         flex-direction: column;
         align-items: start;
-        font: 100 16px/1 Roboto, sans-serif;
+        font: var(--font-weight-regular) var(--font-size-small) var(--font-family-secondary);
     }
 
     .contact-name {
         align-self: stretch;
-        font: 800 24px/1 Chronica Pro, sans-serif;
-        margin: 0 0 10px 0;
+        font: var(--font-weight-bold) var(--font-size-large) var(--font-family-primary);
+        margin: 0;
+        padding-bottom: var(--padding-small);
     }
 
     .contact-phone {
-        margin: 10px 0 0 0;
+        line-height: var(--line-height-loose);
     }
 
     .copyright {
         opacity: 0.5;
-        margin: 44px 0 22px 0;
-        font: 500 14px/32px Roboto, sans-serif;
+        margin: var(--margin-large) 0 var(--margin-medium) 0;
+        font: var(--font-weight-light) var(--font-size-small) var(--font-family-secondary);
         text-align: center;
     }
-
-    /**@media (max-width: 991px) {
-        .landing {
-            padding: 0 20px;
-        }
-
-        .header {
-            max-width: 100%;
-        }
-
-        .couple-names {
-            font-size: 40px;
-        }
-
-        .register-btn {
-            white-space: initial;
-            padding: 0 20px;
-        }
-
-        .main-title {
-            max-width: 100%;
-            margin-top: 40px;
-            font-size: 40px;
-            line-height: 30px;
-        }
-
-        .event-details {
-            max-width: 100%;
-            margin-top: 40px;
-        }
-
-        .countdown-labels {
-            margin-top: 40px;
-            font-size: 40px;
-            white-space: initial;
-        }
-
-        .countdown-timer {
-            max-width: 100%;
-            font-size: 40px;
-        }
-
-        .story-section {
-            max-width: 100%;
-            margin-top: 40px;
-        }
-
-        .story-content {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 0;
-        }
-
-        .story-text,
-        .story-image {
-            width: 100%;
-        }
-
-        .story-title {
-            max-width: 100%;
-            font-size: 40px;
-            line-height: 48px;
-        }
-
-        .story-paragraph {
-            max-width: 100%;
-        }
-
-        .story-image {
-            margin-top: 40px;
-        }
-
-        .schedule-section {
-            margin-top: 40px;
-            font-size: 40px;
-        }
-
-        .schedule-item {
-            margin: 40px 10px 0 0;
-        }
-
-        .schedule-title {
-            max-width: 100%;
-            font-size: 40px;
-        }
-
-        .cta-section {
-            max-width: 100%;
-            margin-top: 40px;
-        }
-
-        .cta-title {
-            max-width: 100%;
-            font-size: 40px;
-        }
-
-        .cta-description {
-            max-width: 100%;
-        }
-
-        .cta-button {
-            white-space: initial;
-        }
-
-        .footer {
-            max-width: 100%;
-            margin-top: 40px;
-        }
-
-        .footer-left,
-        .footer-right {
-            max-width: 100%;
-        }
-
-        .footer-couple-names {
-            font-size: 40px;
-        }
-
-        .contact-info {
-            flex-direction: column;
-        }
-
-        .contact-person {
-            margin-top: 40px;
-        }
-
-        .copyright {
-            margin-top: 40px;
-        }
-    }**/
 
     .container {
         display: flex;

@@ -188,12 +188,12 @@
     .schedule-title {
         margin: 0;
         padding-bottom: 24px;
-        font: 64px/1.1 Chronica Pro, sans-serif;
+        font: 64px/64px Chronica Pro, sans-serif;
     }
 
     .schedule-description {
-        font-weight: 700;
-        line-height: 32px;
+        font: 14px/14px roboto, monospace;
+        line-height: 24px;
         margin-top: 0;
     }
 
@@ -221,7 +221,7 @@
 
     .cta-description {
         text-align: center;
-        font: 22px Chronica Pro, sans-serif;
+        font: 18px Chronica Pro, sans-serif;
         line-height: 32px;
     }
 

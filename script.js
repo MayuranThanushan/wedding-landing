@@ -26,20 +26,3 @@
 
     updateTimer();
     setInterval(updateTimer, 1000);
-console.log('Script is running');
-
-    // Button Selection Logic
-    document.addEventListener('DOMContentLoaded', () => {
-      const buttons = document.querySelectorAll('.btn');
-    
-      buttons.forEach(button => {
-        button.addEventListener('click', function() {
-          // Remove 'select' class from all buttons
-          buttons.forEach(btn => btn.classList.remove('select'));
-          
-          // Add 'select' class to the clicked button
-          this.classList.add('select');
-          console.log('Button clicked:', this.textContent); // Debugging log
-        });
-      });
-    });

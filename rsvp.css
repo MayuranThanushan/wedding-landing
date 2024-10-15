@@ -1,5 +1,4 @@
 .content-grid {
-    gap: 20px;
     display: flex;
 }
 
@@ -7,9 +6,8 @@
     aspect-ratio: 2.13;
     object-fit: contain;
     object-position: bottom;
-    width: 7px;
-    margin-bottom: 40px;
-    max-width: 100%;
+    width: 1%;
+    margin-bottom: 24px;
     flex-grow: 1;
 }
 
@@ -17,29 +15,29 @@
     aspect-ratio: 2.13;
     object-fit: contain;
     object-position: top;
-    width: 7px;
-    margin-top: 40px;
-    max-width: 100%;
+    width: 1%;
+    margin-top: 24px;
     flex-grow: 1;
 }
 
 .invitation-text {
     color: var(--BG, #32345f);
     text-align: center;
-    margin-top: 20px;
-    font: 500 22px 'Chronica Pro', sans-serif;
+    margin: 18px;
+    font: 500 18px 'Chronica Pro', sans-serif;
 }
 
 .invitation-text h2 {
-    font: 500 66px Vladimir script;
+    font: 500 86px Vladimir script;
     line-height: 70%;
+    margin: 32px;
 }
 
 .rsvp-buttons {
     display: flex;
-    margin-top: 52px;
+    margin: 18px;
     align-items: center;
-    gap: 40px 150px;
+    gap: 150px;
     color: #c90;
     justify-content: center;
     flex-wrap: wrap;
@@ -72,8 +70,8 @@
     white-space: normal;
 }
 
-.form-group label span {
-    color: red;
+.asterisk {
+    color: #ff3333;
 }
 
 .form-group input[type=text],
@@ -185,7 +183,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 22px;
+    font-size: 18px;
     justify-content: center;
     color: var(--Accent, #c90);
 }
@@ -193,16 +191,14 @@
 .submit-note {
     font-family: roboto;
     color: #32345f;
-    font-weight: 400;
     padding-top: 28px;
 }
-
 
 .location-container {
     border-radius: 30px;
     background-color: #eedccb;
     display: flex;
-    margin-top: 88px;
+    margin: 88px 44px;
     flex-direction: column;
     align-items: center;
     color: #32345f;
@@ -212,17 +208,16 @@
 
 .location-title {
     align-self: center;
-    font: 800 64px/1.1 'Chronica Pro', -apple-system, Roboto, Helvetica, sans-serif;
+    font: 800 64px 'Chronica Pro', -apple-system, Roboto, Helvetica, sans-serif;
     margin: 26px 0 0 0;
 }
 
 .location-description {
-    margin: 50px;
-    font: 500 18px/32px Roboto, sans-serif;
+    margin: 44px;
+    font: 500 18px/24px Roboto, sans-serif;
 }
 
 .location-map {
-    border-radius: 30px;
     display: flex;
     height: 400px;
     width: 95%;

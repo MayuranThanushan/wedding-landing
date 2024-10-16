@@ -508,6 +508,9 @@ a {
     .schedule-title {
         line-height: var(--line-height-normal);
     }
+    .schedule-description {
+        font-weight: var(--font-weight-bold);
+    }
     .cta-section {
         margin: var(--margin-large) var(--margin-medium);
     }

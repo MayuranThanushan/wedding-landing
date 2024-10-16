@@ -60,7 +60,7 @@ a {
 
 .main-title {
     margin: 0;
-    padding-top: 2.5em;
+    padding-top: var(--padding-small);
     text-transform: capitalize;
     font: var(--font-weight-regular) 9.375em/8.4375em Vladimir Script, -apple-system, Roboto, Helvetica, sans-serif;
     line-height: var(--line-height-tight);
@@ -68,7 +68,8 @@ a {
 
 .event-details {
     display: flex;
-    margin-top: var(--margin-xxl);
+    margin-top: var(--margin-large
+    );
     font: 100 1.5em Chronica Pro, sans-serif;
     justify-content: space-between;
     text-align: center;
@@ -450,6 +451,7 @@ a {
     .event-details {
         margin: var(--margin-large);
         gap: var(--margin-small);
+        font-size: var(--font-size-base);
     }
     .event-date, .event-time, .event-venue {
         margin: 0;

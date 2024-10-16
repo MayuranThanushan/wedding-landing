@@ -106,12 +106,6 @@ a {
     color: var(--Primary);
 }
 
-.colon {
-    font-size: var(--font-size-xxl);
-    color: var(--Accent);
-    padding-top: var(--padding-medium);
-}
-
 .story-section {
     display: flex;
     flex-direction: column;
@@ -347,7 +341,7 @@ a {
 
     .event-details {
         flex-direction: column;
-        gap: var(--gap-large);
+        gap: var(--gap-medium);
     }
 
     .story-content {
@@ -429,24 +423,109 @@ a {
 @media (max-width: 576px) {
 
     /* Adjustments for mobile devices */
-    .main-title {
-        font-size: 2.5em;
+    .header {
+        font: var(--font-weight-bold) var(--font-size-xs) var(--font-family-primary);
     }
-
+    .logo {
+        display: none;
+    }
+    .nav-links {
+        flex-direction: row;
+        gap: var(--gap-small);
+        margin-top: var(--margin-small);
+        
+    }
     .btn {
         font-size: var(--font-size-base);
         padding: var(--padding-small) var(--padding-medium);
     }
-
+    .main-title {
+        font-size: var(--font-size-xxl);
+        padding-top: 0.5em;
+        text-align: center;
+    }
     .story-title {
         font-size: var(--font-size-large);
     }
-
+    .event-details {
+        margin: var(--margin-large);
+        gap: var(--margin-small);
+    }
+    .event-date, .event-time, .event-venue {
+        margin: 0;
+    }
+    .countdown {
+        padding: 0;
+    }
+    .label {
+        font: var(--font-weight-regular) var(--font-size-small) var(--font-family-secondary);
+    }
+    .value {
+        font: var(--font-weight-bold) var(--font-size-xl) var(--font-family-secondary);
+    }
+    .story-section {
+        padding: var(--padding-large);
+    }
+    .story-content {
+        gap: 0;
+    }
+    .tagline {
+        justify-content: center;
+        gap: 0;
+    }
+    .tagline-line {
+        width: 0em;
+    }
+    .story-title {
+        margin: 0;
+    }
+    .story-paragraph {
+        font-size: var(--font-size-small);
+    }
+    .story-image {
+        display: none;
+    }
+    .story-text {
+        text-align: center;
+    }
+    .container {
+        height: 6vh;
+    }
+    .title {
+        padding: 0;
+        margin: 0;
+    }
+    .schedule-item {
+        padding: 0 var(--padding-large);
+        max-width: 18em;
+        text-align: center;
+    }
+    .schedule-time {
+        justify-content: center;
+    }
+    .schedule-title {
+        line-height: var(--line-height-normal);
+    }
+    .cta-section {
+        margin: var(--margin-large) var(--margin-medium);
+    }
     .cta-title {
         font-size: var(--font-size-large);
     }
-
+    .cta-description {
+        font-size: var(--font-size-small);
+    }
+    .footer {
+        justify-content: center;
+        margin-top: var(--margin-medium);
+    }
     .footer-logo {
-        font-size: var(--font-size-large);
+        align-self: center;
+    }
+    .contact-name {
+        padding: 0;
+    }
+    .contact-phone {
+        margin: 0;
     }
 }

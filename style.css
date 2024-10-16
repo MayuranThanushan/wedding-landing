@@ -504,13 +504,13 @@ a {
     }
     .schedule-time {
         justify-content: center;
-        font-weight: var(--font-weight-normal);
+        font-weight: var(--font-weight-regular);
     }
     .schedule-title {
         line-height: var(--line-height-normal);
     }
     .schedule-description {
-        font-weight: var(--font-weight-normal);
+        font-weight: var(--font-weight-regular);
     }
     .cta-section {
         margin: var(--margin-large) var(--margin-medium);

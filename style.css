@@ -62,15 +62,14 @@ a {
     margin: 0;
     padding-top: var(--padding-small);
     text-transform: capitalize;
-    font: var(--font-weight-regular) 9.375em/8.4375em Vladimir Script, -apple-system, Roboto, Helvetica, sans-serif;
+    font: var(--font-weight-regular) var(--font-size-xxxl) var(--font-family-script);
     line-height: var(--line-height-tight);
 }
 
 .event-details {
     display: flex;
-    margin-top: var(--margin-large
-    );
-    font: 100 1.5em Chronica Pro, sans-serif;
+    margin-top: var(--margin-xl);
+    font: var(--font-weight-regular) var(--font-size-large) var(--font-family-secondary);
     justify-content: space-between;
     text-align: center;
 }
@@ -85,7 +84,7 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0 var(--gap-small);
+    gap: 0 var(--gap-xxl);
     padding-top: var(--padding-xl);
 }
 
@@ -102,8 +101,7 @@ a {
 }
 
 .value {
-    font: 100 var(--font-size-xxxl) Roboto, sans-serif;
-    font-weight: var(--font-weight-bold);
+    font: var(--font-weight-bold) var(--font-size-xxxl) var(--font-family-primary);
     color: var(--Primary);
 }
 
@@ -244,7 +242,7 @@ a {
 }
 
 .footer-tagline {
-    margin-top: 0.625em;
+    margin-top: var(--margin-small);
     font: var(--font-weight-regular) var(--font-size-base) var(--font-family-secondary);
 }
 
@@ -432,13 +430,13 @@ a {
     }
     .nav-links {
         flex-direction: row;
-        gap: var(--gap-small);
+        gap: var(--gap-medium);
         margin-top: var(--margin-small);
         
     }
     .btn {
         font-size: var(--font-size-base);
-        padding: var(--padding-small) var(--padding-medium);
+        padding: var(--padding-small) var(--padding-large);
     }
     .main-title {
         font-size: var(--font-size-xxl);
@@ -451,7 +449,7 @@ a {
     .event-details {
         margin: var(--margin-large);
         gap: var(--margin-small);
-        font-weight: var(--font-weight-bold);
+        font-weight: var(--font-weight-regular);
     }
     .event-date, .event-time, .event-venue {
         margin: 0;
@@ -466,7 +464,7 @@ a {
         font: var(--font-weight-bold) var(--font-size-xl) var(--font-family-secondary);
     }
     .story-section {
-        padding: var(--padding-large);
+        padding: var(--padding-large) var(--padding-medium);
     }
     .story-content {
         gap: 0;
@@ -474,6 +472,7 @@ a {
     .tagline {
         justify-content: center;
         gap: 0;
+        font-size: var(--font-size-small);
     }
     .tagline-line {
         width: 0em;
@@ -498,16 +497,18 @@ a {
         margin: 0;
     }
     .schedule-item {
-        padding: 0 var(--padding-large);
-        max-width: 18em;
+        padding: 0 var(--padding-medium);
+        max-width: 22em;
         text-align: center;
     }
     .schedule-time {
         justify-content: center;
         font-weight: var(--font-weight-regular);
+        gap: 0;
     }
     .schedule-title {
         line-height: var(--line-height-normal);
+        font-size: var(--font-size-large);
     }
     .schedule-description {
         font-weight: var(--font-weight-regular);
@@ -533,5 +534,6 @@ a {
     }
     .contact-phone {
         margin: 0;
+        align-self: stretch;
     }
 }

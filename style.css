@@ -27,7 +27,7 @@ body {
 .nav-links {
     display: flex;
     gap: var(--gap-large);
-    font-size: var(--font-size-large);
+    font-size: var(--font-size-base);
     text-transform: capitalize;
     align-items: center;
 }
@@ -45,7 +45,7 @@ a {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    font-size: var(--font-size-large);
+    font-size: var(--font-size-base);
     white-space: nowrap;
     padding: var(--padding-medium) var(--padding-large);
     color: var(--Accent);
@@ -275,7 +275,6 @@ a {
 }
 
 .copyright {
-    opacity: 0.5;
     margin: var(--margin-large) 0 var(--margin-medium) 0;
     font: var(--font-weight-light) var(--font-size-small) var(--font-family-secondary);
     text-align: center;
@@ -422,20 +421,26 @@ a {
 @media (max-width: 576px) {
 
     /* Adjustments for mobile devices */
+    body {
+        font-size: var(--font-size-xs);
+    }
     .header {
         font: var(--font-weight-bold) var(--font-size-xs) var(--font-family-primary);
+        align-items: center;
+        flex-direction: row;
+        margin-top: var(--margin-small);
     }
     .logo {
-        display: none;
+        font-size: var(--font-size-large);
+        margin: 0;
     }
     .nav-links {
+        font-size: var(--font-size-small);
         flex-direction: row;
         gap: var(--gap-medium);
         margin-top: var(--margin-small);
-        
     }
     .btn {
-        font-size: var(--font-size-base);
         padding: var(--padding-small) var(--padding-large);
     }
     .main-title {
@@ -456,12 +461,13 @@ a {
     }
     .countdown {
         padding: 0;
+        gap: 0;
     }
     .label {
         font: var(--font-weight-regular) var(--font-size-small) var(--font-family-secondary);
     }
     .value {
-        font: var(--font-weight-bold) var(--font-size-xl) var(--font-family-secondary);
+        font: var(--font-weight-bold) var(--font-size-xxl) var(--font-family-secondary);
     }
     .story-section {
         padding: var(--padding-large) var(--padding-medium);
@@ -496,9 +502,13 @@ a {
         padding: 0;
         margin: 0;
     }
+    .schedule-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
     .schedule-item {
         padding: 0 var(--padding-medium);
-        max-width: 22em;
         text-align: center;
     }
     .schedule-time {
@@ -523,7 +533,8 @@ a {
         font-size: var(--font-size-small);
     }
     .footer {
-        justify-content: center;
+        display: flex;
+        align-self: center;
         margin-top: var(--margin-medium);
     }
     .footer-logo {

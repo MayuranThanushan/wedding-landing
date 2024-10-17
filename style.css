@@ -288,7 +288,7 @@ a {
 }
 
 .ring {
-    max-width: 30%;
+    max-width: 100%;
     height: auto;
 }
 
@@ -460,14 +460,14 @@ a {
         margin: 0;
     }
     .countdown {
-        padding: 0;
+        padding: 0 var(--padding-large);
         gap: 0;
     }
     .label {
         font: var(--font-weight-regular) var(--font-size-small) var(--font-family-secondary);
     }
     .value {
-        font: var(--font-weight-bold) var(--font-size-xxl) var(--font-family-secondary);
+        font: var(--font-weight-bold) var(--font-size-xl) var(--font-family-secondary);
     }
     .story-section {
         padding: var(--padding-large) var(--padding-medium);
@@ -490,16 +490,22 @@ a {
         font-size: var(--font-size-small);
     }
     .story-image {
-        display: none;
+        order: 1;
+        height: 20em;
     }
     .story-text {
         text-align: center;
     }
     .container {
-        height: 6vh;
+        height: 100%;
+        max-width: 100%;
+    }
+    .ring {
+        width: 20em;
+        height: auto;
     }
     .title {
-        padding: 0;
+        padding-bottom: 0;
         margin: 0;
     }
     .schedule-block {
@@ -524,7 +530,7 @@ a {
         font-weight: var(--font-weight-regular);
     }
     .cta-section {
-        margin: var(--margin-large) var(--margin-medium);
+        margin: var(--margin-xl) var(--margin-medium);
     }
     .cta-title {
         font-size: var(--font-size-large);
@@ -535,7 +541,7 @@ a {
     .footer {
         display: flex;
         align-self: center;
-        margin-top: var(--margin-medium);
+        margin: 0;
     }
     .footer-logo {
         align-self: center;

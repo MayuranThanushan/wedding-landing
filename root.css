@@ -10,6 +10,7 @@
     /* Placeholder color for images */
 
     /* Fonts */
+    font-family: 'Poppins', 'Roboto', 'Vladimir Script';
     --font-family-primary: 'Poppins', sans-serif;
     --font-family-secondary: 'Roboto', sans-serif;
     --font-family-script: 'Vladimir Script', sans-serif;
@@ -52,6 +53,7 @@
     --gap-xl: 3em;
     --gap-xxl: 6em;
 
-    /* Border Radius */
+    /* Radius */
     --border-radius: 1.875em;
+    --form-radius: 0.25em;
 }

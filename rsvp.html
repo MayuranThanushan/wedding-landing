@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;700&family=Chronica+Pro:wght@100;400;600&display=swap"    rel="stylesheet">
     <link rel="stylesheet" href="rsvp.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -40,54 +41,59 @@
         <button id="decline" class="btn">Regretfully Decline</button>
     </div>
 
-            <section class="block">
-            
-                <div id="userInput" class="form-group">
-            
-                    <label for="fullname">Name <span class="asterisk">*</span></label>
-                    <input type="text" id="fullname" name="fullname" placeholder="Name" value="" required>
-            
-                    <label for="emailaddress">Email <span class="asterisk">*</span></label>
-                    <input type="email" id="emailaddress" name="emailaddress" placeholder="Email" value="" required>
+    <section class="block">
+        <div id="userInput" class="form-group">
+            <label for="fullname">Name <span class="asterisk">*</span></label>
+            <input type="text" id="fullname" name="fullname" placeholder="Name" value="" required>
 
-                    <label for="contactnumber">Contact Number <span class="asterisk">*</span></label>
-                    <input type="text" id="contactnumber" name="contactnumber" placeholder="Contact number" value="" required>
-            
-                    <label for="ratings">Number of Guests <span class="asterisk">*</span></label>
-                    <select id="guests" required>
-                        <option value selected="selected">-- Please select a value --</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
+            <label for="emailaddress">Email <span class="asterisk">*</span></label>
+            <input type="email" id="emailaddress" name="emailaddress" placeholder="Email" value="" required>
 
-                    <label for="ratings">Food Preference <span class="asterisk">*</span></label>
-                    <select id="guests" required>
-                        <option value selected="selected">-- Vegetarian --</option>
-                        <option>0</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-                    <br />
-                    <select id="guests" required>
-                        <option value selected="selected">-- Non Vegetarian --</option>
-                        <option>0</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-            
-                    <label for="message">Comment <span class="asterisk"></span></label>
-                    <textarea id="message" name="message" rows="5" placeholder="Your comment"></textarea>
-                </div>
-            </section>
+            <label for="contactnumber">Contact Number <span class="asterisk">*</span></label>
+            <input type="text" id="contactnumber" name="contactnumber" placeholder="Contact number" value="" required>
+
+            <label for="guests">Number of Guests <span class="asterisk">*</span></label>
+            <select id="guests" required>
+                <option value="" selected="selected">-- Please select a value --</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+
+            <label for="vegPreference">Vegetarian Preference <span class="asterisk">*</span></label>
+            <select id="vegPreference" required>
+                <option value="" selected="selected">-- Select Preference --</option>
+                <option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+
+            <label for="nonvegPreference">Non Vegetarian Preference <span class="asterisk">*</span></label>
+            <select id="nonvegPreference" required>
+                <option value="" selected="selected">-- Select Preference --</option>
+                <option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+
+            <label for="message">Comment <span class="asterisk"></span></label>
+            <textarea id="message" name="message" rows="5" placeholder="Your comment"></textarea>
+        </div>
+    </section>
+
+    <div class="submit-container">
+        <p class="submit-note"><span class="asterisk">*</span> Please note that only <strong>one person per family</strong>
+            is required to complete this. All others should fill it out individually</p>
+        <button id="submitBtn" type="submit" class="btn">Submit Now</button>
+    </div>
 
     <aside class="gift-note">
         <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/e7c1b727e640738b9399c99a934e2af31162bce580ea8ca4e990189ea8a88e60?placeholderIfAbsent=true&apiKey=0a18f12c55274af68e0a3ae651c1ff6d"
@@ -99,12 +105,6 @@
             appreciate a monetary contribution to our future together;<br />or you can surprise us in your own special
             way.</p>
     </aside>
-
-    <div class="submit-container">
-        <p class="submit-note"><span class="asterisk">*</span> Please note that only <strong>one person per family</strong> is required to complete
-            this. All others should fill it out individually</p>
-        <button type="submit" class="btn">Submit Now</button>
-    </div>
 
     <section class="location-container">
         <h2 class="location-title">Location</h2>
@@ -121,20 +121,18 @@
 
     <footer id="contact" class="footer">
         <div class="footer-left">
-            <h2 class="footer-couple-names">Rohit & Gayathiri</h2>
+            <h2 class="footer-logo">Rohit & Gayathiri</h2>
             <p class="footer-tagline">Join us as we celebrate the beginning of our forever</p>
         </div>
         <div class="footer-right">
             <div class="contact-info">
                 <div class="contact-person">
                     <h3 class="contact-name">Rohit Sreenivas Reddy</h3>
-                    <p class="contact-phone">+61 481 975 047</p>
-                    <p class="contact-phone">rohitgayathiri1803@gmail.com</p>
+                    <p class="contact-phone">+61 481 975 047 <br />rohitgayathiri1803@gmail.com</p>
                 </div>
                 <div class="contact-person">
                     <h3 class="contact-name">Gayathiri Mayuran</h3>
-                    <p class="contact-phone">+61 480 459 225</p>
-                    <p class="contact-phone">example@gmail.com</p>
+                    <p class="contact-phone">+61 480 459 225 <br />rohitgayathiri1803@gmail.com</p>
                 </div>
             </div>
         </div>
@@ -142,47 +140,6 @@
 
     <p class="copyright">Copyright 2024</p>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-                console.log("Script is loaded and running");
-
-                const buttons = document.querySelectorAll('.btn');
-
-                buttons.forEach(button => {
-                    button.addEventListener('click', function () {
-                        console.log('Button clicked:', this.textContent);
-
-                        // Remove 'select' class from all buttons
-                        buttons.forEach(btn => btn.classList.remove('select'));
-
-                        // Add 'select' class to the clicked button
-                        this.classList.add('select');
-                    });
-                });
-            });
-
-            function initMap() {
-                    // Specify the location
-                    const location = { lat: -34.397, lng: 150.644 }; // Change to your desired latitude and longitude
-
-                    // Create a map centered at the specified location
-                    const map = new google.maps.Map(document.getElementById("map"), {
-                        zoom: 8,
-                        center: location,
-                    });
-
-                    // Add a marker at the specified location
-                    const marker = new google.maps.Marker({
-                        position: location,
-                        map: map,
-                    });
-                }
-
-                // Initialize the map when the window loads
-                window.onload = initMap;
-
-
-    </script>
 </body>
 
 </html>

@@ -1,6 +1,7 @@
 @import url('root.css');
 
 body {
+    font-family: 'Poppins', 'Roboto', 'Vladimir Script', sans-serif;
     background: var(--Background);
     display: flex;
     flex-direction: column;

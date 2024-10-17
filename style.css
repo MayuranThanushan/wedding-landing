@@ -1,13 +1,16 @@
 @import url('root.css');
 
 body {
-    font-family: 'Poppins', 'Roboto', 'Vladimir Script', sans-serif;
+    font-family: 'Roboto', sans-serif;
     background: var(--Background);
     display: flex;
     flex-direction: column;
     padding: 0 var(--padding-large);
     margin: 0;
     color: var(--Primary);
+}
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
 }
 
 .header {
@@ -22,7 +25,7 @@ body {
 
 .logo {
     text-transform: capitalize;
-    font: var(--font-weight-light) var(--font-size-xl) var(--font-family-script);
+    font: var(--font-weight-light) var(--font-size-xl) 'Vladimir Script';
 }
 
 .nav-links {
@@ -63,7 +66,7 @@ a {
     margin: 0;
     padding-top: var(--padding-small);
     text-transform: capitalize;
-    font: var(--font-weight-regular) var(--font-size-xxxl) var(--font-family-script);
+    font: var(--font-weight-regular) var(--font-size-xxxl) 'Vladimir Script';
     line-height: var(--line-height-tight);
 }
 
@@ -160,7 +163,7 @@ a {
 
 .title {
     text-align: center;
-    font: var(--font-weight-regular) var(--font-size-xxl) var(--font-family-script);
+    font: var(--font-weight-regular) var(--font-size-xxl) 'Vladimir Script';
     padding: var(--padding-small);
 }
 
@@ -238,7 +241,7 @@ a {
     color: var(--Accent);
     text-transform: capitalize;
     align-self: start;
-    font: var(--font-weight-regular) var(--font-size-xl) var(--font-family-script);
+    font: var(--font-weight-regular) var(--font-size-xl) 'Vladimir Script';
     margin: 0;
 }
 

@@ -179,7 +179,7 @@
     align-self: center;
     font: var(--font-weight-bolder) 4em 'Chronica Pro', sans-serif;
     /* 64px */
-    margin: var(--margin-small) 0 0 0;
+    margin: var(--margin-xs) 0 0 0;
 }
 
 .location-description {

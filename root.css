@@ -28,6 +28,7 @@
     --font-weight-bolder: 800;
 
     /* Margins */
+    --margin-xs: 0.2em;
     --margin-small: 0.5em;
     --margin-medium: 1em;
     --margin-large: 2.75em;

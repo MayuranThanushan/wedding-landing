@@ -476,7 +476,7 @@ a {
         flex-direction: row;
     }
     .contact-person {
-        padding: 0 var(--padding-medium);
+        padding: 0 var(--padding-small);
     }
     .contact-phone {
         align-self: center;

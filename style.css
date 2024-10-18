@@ -48,7 +48,6 @@ a {
     background: var(--BG);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     font-size: var(--font-size-base);
     white-space: nowrap;
     padding: var(--padding-medium) var(--padding-large);
@@ -441,11 +440,11 @@ a {
     .nav-links {
         font-size: var(--font-size-small);
         flex-direction: row;
-        gap: var(--gap-medium);
+        gap: var(--gap-small);
         margin-top: var(--margin-small);
     }
     .btn {
-        padding: var(--padding-small) var(--padding-large);
+        padding: var(--padding-small) var(--padding-medium);
     }
     .main-title {
         font-size: var(--font-size-xxl);

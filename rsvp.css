@@ -231,6 +231,7 @@
 
     .gift-note {
         width: 90%;
+        padding: var(--padding-medium);
     }
     .gift-icon {
         width: 2em;
@@ -264,6 +265,7 @@
     }
     .location-map iframe {
         height: 200px;
+        border-radius: var(--form-radius);
     }
     .form-group {
         margin-top: var(--margin-medium);

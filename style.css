@@ -749,5 +749,10 @@ a {
 }
 
 @media (min-width: 1025px) and (max-width: 1400px) {
-
+    .countdown {
+        gap: var(--gap-xl); 
+    }
+    .schedule-block {
+        padding: 0 var(--padding-xl);
+    }
 }

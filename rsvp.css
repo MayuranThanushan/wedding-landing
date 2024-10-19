@@ -447,17 +447,25 @@
 }
 
 @media (min-width: 1025px) and (max-width: 1400px) {
-
-    .left-side-image,
-    .right-side-image {
-        width: 35%;
+    .invitation-text {
+        font-size: var(--font-size-large);
     }
-
+    .invitation-text h2 {
+        font-size: var(--font-size-xl);
+    }
+    .rsvp-buttons {
+        padding: 0 ;
+    }
+    .submit-note {
+        text-align: center;
+    }
     .gift-note {
-        width: 40%;
+        padding: var(--padding-medium);
     }
-
-    .location-map {
-        height: 30em;
+    .gift-title {
+        margin: 0 var(--margin-xs);
+    }
+    .location-title {
+        margin-top: var(--margin-small);
     }
 }

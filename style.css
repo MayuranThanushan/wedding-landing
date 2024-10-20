@@ -2,7 +2,7 @@
 
 body {
     font-family: 'Roboto', sans-serif;
-    background: var(--Background);
+    background: url(images/Bg.png);
     display: flex;
     flex-direction: column;
     padding: 0 var(--padding-large);

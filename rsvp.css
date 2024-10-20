@@ -446,7 +446,7 @@
     }
 }
 
-@media (min-width: 1025px) and (max-width: 1400px) {
+@media (min-width: 1025px) and (max-width: 1440px) {
     .invitation-text {
         font-size: var(--font-size-large);
     }
@@ -467,5 +467,20 @@
     }
     .location-title {
         margin-top: var(--margin-small);
+    }
+}
+
+@media (min-width: 1441px) and (max-width: 2560px) {
+    .invitation-text {
+        padding: 0 var(--padding-xl);
+    }
+    .gift-note {
+        width: 30%;
+    }
+    .location-map {
+        height: 40em;
+    }
+    .location-map iframe {
+        height: 40em;
     }
 }

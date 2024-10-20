@@ -62,10 +62,20 @@ a {
 }
 
 .main-title {
+    align-self: center;
+    text-align: center;
+    padding: var(--padding-xl) 0;
+    margin-top: var(--margin-large);
+}
+.main-title p {
+    font: var(--font-weight-regular) var(--font-size-xl) var(--font-family-primary);
     margin: 0;
-    padding-top: var(--padding-small);
-    text-transform: capitalize;
+    padding-bottom: var(--padding-small);
+}
+.main-title h1 {
     font: var(--font-weight-regular) var(--font-size-xxxl) 'Vladimir Script';
+    margin: 0;
+    text-transform: capitalize;
     line-height: var(--line-height-tight);
 }
 
@@ -131,7 +141,6 @@ a {
 }
 .story-image {
     aspect-ratio: 0.75;
-    order: 1;
     width: 100%;
 }
 .tagline {
@@ -332,9 +341,15 @@ a {
         padding: var(--padding-small) var(--padding-medium);
     }
     .main-title {
-        font-size: var(--font-size-xxl);
-        padding-top: 0.5em;
-        text-align: center;
+        padding: var(--padding-medium) 0;
+        margin-top: var(--margin-large);
+    }
+    .main-title p {
+        font: var(--font-weight-regular) var(--font-size-base) var(--font-family-primary);
+        padding-bottom: var(--padding-small);
+    }
+    .main-title h1 {
+        font: var(--font-weight-regular) var(--font-size-xxl) 'Vladimir Script';
     }
     .story-title {
         font-size: var(--font-size-large);
@@ -454,6 +469,7 @@ a {
     }
     .contact-person {
         align-self: center;
+        align-items: center;
     }
     .contact-name {
         padding: 0;
@@ -483,8 +499,15 @@ a {
     }
 
     .main-title {
-        font-size: var(--font-size-xxl);
-        padding-top: var(--padding-small);
+        padding: var(--padding-large) 0;
+        margin-top: var(--margin-large);
+    }
+    .main-title p {
+        font: var(--font-weight-regular) var(--font-size-large) var(--font-family-primary);
+        padding-bottom: var(--padding-small);
+    }
+    .main-title h1 {
+        font: var(--font-weight-regular) var(--font-size-xxl) 'Vladimir Script';
     }
 
     .event-details {
@@ -642,12 +665,19 @@ a {
     .logo {
         font-size: var(--font-size-xl);
     }
-
-    .main-title {
-        font-size: var(--font-size-xxxl);
-        padding-top: var(--padding-small);
+   .main-title {
+        padding: var(--padding-xl) 0;
+        margin-top: var(--margin-large);
     }
 
+    .main-title p {
+        font: var(--font-weight-regular) var(--font-size-xl) var(--font-family-primary);
+        padding-bottom: var(--padding-small);
+    }
+
+    .main-title h1 {
+        font: var(--font-weight-regular) var(--font-size-xxxl) 'Vladimir Script';
+    }
     .event-details {
         flex-direction: row;
         font-size: var(--font-size-large);
@@ -748,11 +778,24 @@ a {
     }*/
 }
 
-@media (min-width: 1025px) and (max-width: 1400px) {
+@media (min-width: 1025px) and (max-width: 1440px) {
     .countdown {
         gap: var(--gap-xl); 
     }
     .schedule-block {
         padding: 0 var(--padding-xl);
+    }
+    .main-title {
+        padding: var(--padding-large) 0;
+        margin-top: var(--margin-large);
+    }
+}
+
+@media (min-width: 1441px) and (max-width: 2560px) {
+    .story-content {
+        justify-content: center;
+    }
+    .schedule-block {
+        padding: 0 20em;
     }
 }

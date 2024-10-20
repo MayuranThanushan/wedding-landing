@@ -37,10 +37,10 @@
         </div>
     </main>
 
-    <form class="block">
+    <form class="block" method="GET">
         <div class="rsvp-buttons">
-            <button id="accept" class="btn">Joyfully Accept</button>
-            <button id="decline" class="btn">Regretfully Decline</button>
+            <radio name="response" id="accept" class="btn">Joyfully Accept</radio>
+            <radio name="response" id="decline" class="btn">Regretfully Decline</radio>
         </div>
 
         <div id="userInput" class="form-group">
@@ -136,8 +136,9 @@
         </div>
     </footer>
 
-    <p class="copyright">Copyright 2024</p>
+    <p class="copyright">&copy;2024</p>
 
+    <script src="rsvp.js"></script>
 </body>
 
 </html>

@@ -25,7 +25,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .logo {
     text-transform: capitalize;
-    font: var(--font-weight-light) var(--font-size-xl) 'Vladimir Script';
+    font: var(--font-weight-light) var(--font-size-xl) var(--font-family-script);
 }
 
 .nav-links {
@@ -73,7 +73,7 @@ a {
     padding-bottom: var(--padding-small);
 }
 .main-title h1 {
-    font: var(--font-weight-regular) var(--font-size-xxxl) 'Vladimir Script';
+    font: var(--font-weight-regular) var(--font-size-xxxl) var(--font-family-script);
     margin: 0;
     text-transform: capitalize;
     line-height: var(--line-height-tight);
@@ -177,7 +177,7 @@ a {
 
 .title {
     text-align: center;
-    font: var(--font-weight-regular) var(--font-size-xxl) 'Vladimir Script';
+    font: var(--font-weight-regular) var(--font-size-xxl) var(--font-family-script);
     margin-bottom: var(--margin-small);
 }
 .schedule-block {
@@ -257,7 +257,7 @@ a {
     color: var(--Accent);
     text-transform: capitalize;
     align-self: start;
-    font: var(--font-weight-regular) var(--font-size-xl) 'Vladimir Script';
+    font: var(--font-weight-regular) var(--font-size-xl) var(--font-family-script);
     margin: 0;
 }
 
@@ -349,7 +349,7 @@ a {
         padding-bottom: var(--padding-small);
     }
     .main-title h1 {
-        font: var(--font-weight-regular) var(--font-size-xxl) 'Vladimir Script';
+        font: var(--font-weight-regular) var(--font-size-xxl) var(--font-family-script);
     }
     .story-title {
         font-size: var(--font-size-large);
@@ -436,7 +436,6 @@ a {
         gap: 0;
     }
     .schedule-title {
-        line-height: var(--line-height-normal);
         font-size: var(--font-size-large);
     }
     .schedule-description {
@@ -507,7 +506,7 @@ a {
         padding-bottom: var(--padding-small);
     }
     .main-title h1 {
-        font: var(--font-weight-regular) var(--font-size-xxl) 'Vladimir Script';
+        font: var(--font-weight-regular) var(--font-size-xxl) var(--font-family-script);
     }
 
     .event-details {
@@ -583,7 +582,6 @@ a {
     }
 
     .schedule-title {
-        line-height: var(--line-height-normal);
         font-size: var(--font-size-large);
     }
 
@@ -676,7 +674,7 @@ a {
     }
 
     .main-title h1 {
-        font: var(--font-weight-regular) var(--font-size-xxxl) 'Vladimir Script';
+        font: var(--font-weight-regular) var(--font-size-xxxl) var(--font-family-script);
     }
     .event-details {
         flex-direction: row;

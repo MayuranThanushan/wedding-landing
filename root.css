@@ -1,6 +1,6 @@
 :root {
     /* Colors */
-    --Background: #f2e5d9;
+    --Background: url(./images/Bg);
     /* Background color */
     --Primary: #32345f;
     /* Primary text color */

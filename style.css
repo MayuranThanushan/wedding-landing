@@ -58,7 +58,7 @@ a {
 
 .btn:hover {
     background: var(--Accent);
-    color: var(--Background);
+    color: #fff;
 }
 
 .main-title {
@@ -139,9 +139,11 @@ a {
     flex-direction: column;
     font: var(--font-size-base) var(--font-family-secondary);
 }
-.story-image {
+.story-image img {
     aspect-ratio: 0.75;
     width: 100%;
+    object-fit: cover;
+    height: auto;
 }
 .tagline {
     display: flex;
@@ -173,6 +175,9 @@ a {
     background-color: var(--Placeholder);
     width: 32em;
     height: auto;
+}
+.order {
+    order: 0;
 }
 
 .title {
@@ -403,10 +408,12 @@ a {
     .story-paragraph {
         font-size: var(--font-size-small);
     }
-    .story-image {
+    .story-image img {
         aspect-ratio: 1.33;
-        order: 1;
         width: 100%;
+    }
+    .order {
+        order: 1;
     }
     .story-text {
         text-align: center;
@@ -551,7 +558,6 @@ a {
         width: 100%;
     }
     .story-image {
-        aspect-ratio: 0.5625;
         width: 100%;
     }
     .right {
@@ -710,7 +716,6 @@ a {
 
     .story-image {
         width: 100%;
-        height: 50em;
     }
     .story-text {
         width: 100%;
@@ -745,38 +750,6 @@ a {
     .cta-section a {
         font-size: var(--font-size-xs);
     }
-
-    /*.footer {
-        flex-direction: column;
-        align-self: center;
-        align-items: center;
-        text-align: center;
-        margin: 0;
-    }
-
-    .footer-left,
-    .footer-right {
-        align-items: center;
-        align-self: center;
-        font-size: var(--font-size-small);
-        margin: var(--margin-small) 0;
-    }
-    .contact-info {
-        flex-direction: column;
-        gap: var(--gap-large);
-    }
-    .contact-person {
-        padding: 0 var(--padding-small);
-    }
-
-    .contact-phone {
-        align-self: center;
-        margin: 0;
-    }
-
-    .footer-logo {
-        align-self: center;
-    }*/
 }
 
 @media (min-width: 1025px) and (max-width: 1440px) {

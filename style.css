@@ -293,6 +293,9 @@ a {
 .contact-phone {
     line-height: var(--line-height-loose);
 }
+.contact-person a {
+    color: var(--Primary);
+}
 
 .copyright {
     margin: var(--margin-large) 0 var(--margin-medium) 0;

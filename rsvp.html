@@ -43,10 +43,14 @@
         </div>
     </main>
 
-    <form class="block" method="GET">
+    <form class="block" id="rsvpForm">
         <div class="rsvp-buttons">
-            <radio name="response" id="accept" class="btn">Joyfully Accept</radio>
-            <radio name="response" id="decline" class="btn">Regretfully Decline</radio>
+            <label class="btn">
+                <input type="radio" name="response" id="accept" value="accept"> Joyfully Accept
+            </label>
+            <label class="btn">
+                <input type="radio" name="response" id="decline" value="decline"> Regretfully Decline
+            </label>
         </div>
 
         <div id="userInput" class="form-group">
@@ -101,6 +105,12 @@
         </div>
     </form>
 
+    <div id="messageOverlay"></div>
+    <div id="messageDiv" style="display:none;">
+        <span id="closeBtn">&times;</span>
+        <p id="messageContent"></p>
+    </div>
+
     <aside class="gift-note">
         <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/e7c1b727e640738b9399c99a934e2af31162bce580ea8ca4e990189ea8a88e60?placeholderIfAbsent=true&apiKey=0a18f12c55274af68e0a3ae651c1ff6d"
             alt="Gift icon" class="gift-icon" />
@@ -132,19 +142,140 @@
             <div class="contact-info">
                 <div class="contact-person">
                     <h3 class="contact-name">Rohit Sreenivas Reddy</h3>
-                    <p class="contact-phone">+61 481 975 047 <br />rohitgayathiri1803@gmail.com</p>
+                    <p class="contact-phone"><a href="tel:+61481975047">+61 481 975 047</a><br /><a
+                    href="mailto:rohitgayathiri1803@gmail.com">rohitgayathiri1803@gmail.com</a></p>
                 </div>
                 <div class="contact-person">
                     <h3 class="contact-name">Gayathiri Mayuran</h3>
-                    <p class="contact-phone">+61 480 459 225 <br />rohitgayathiri1803@gmail.com</p>
+                    <p class="contact-phone"><a href="tel:+61480459225 ">+61 480 459 225</a><br /><a
+                    href="mailto:rohitgayathiri1803@gmail.com">rohitgayathiri1803@gmail.com</a></p>
                 </div>
             </div>
         </div>
     </footer>
 
     <p class="copyright">&copy;2024</p>
+    `
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <script src="/env-config.js"></script>
+    <script src="config.js"></script>
 
-    <script src="rsvp.js"></script>
+    <script>
+        const userId = window.env.EMAILJS_USER_ID;
+        const serviceId = window.env.EMAILJS_SERVICE_ID;
+        const templateId = window.env.EMAILJS_TEMPLATE_ID;
+        // Initialize EmailJS
+            (function () {
+                emailjs.init(userId);
+            })();
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('rsvpForm');
+                const radioButtons = document.querySelectorAll('.rsvp-buttons input[type="radio"]');
+                const messageOverlay = document.getElementById('messageOverlay');
+                const messageDiv = document.getElementById('messageDiv');
+                const closeBtn = document.getElementById('closeBtn');
+                const messageContent = document.getElementById('messageContent');
+
+                // Function to show message
+                function showMessage(message, isSuccess) {
+                    messageContent.textContent = message;
+                    messageContent.style.color = isSuccess ? 'green' : 'red';
+                    messageOverlay.style.display = 'block';
+                    messageDiv.style.display = 'block';
+                }
+
+                // Function to hide message
+                function hideMessage() {
+                    messageOverlay.style.display = 'none';
+                    messageDiv.style.display = 'none';
+                }
+
+                // Close button event
+                closeBtn.addEventListener('click', hideMessage);
+
+                // Close on outside click
+                messageOverlay.addEventListener('click', hideMessage);
+
+                // Prevent closing when clicking inside the message div
+                messageDiv.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                });
+
+                // Add click event listeners to radio buttons
+                radioButtons.forEach(radio => {
+                    radio.addEventListener('click', function () {
+                        radioButtons.forEach(rb => rb.parentElement.classList.remove('selected'));
+                        this.parentElement.classList.add('selected');
+                    });
+                });
+
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    // Collect form data
+                    const selectedRadio = document.querySelector('.rsvp-buttons input[type="radio"]:checked');
+                    const response = selectedRadio ? selectedRadio.id : 'Not specified';
+                    const fullname = document.getElementById('fullname').value;
+                    const emailaddress = document.getElementById('emailaddress').value;
+                    const contactnumber = document.getElementById('contactnumber').value;
+                    const guests = document.getElementById('guests').value;
+                    const vegPreference = document.getElementById('vegPreference').value;
+                    const nonvegPreference = document.getElementById('nonvegPreference').value;
+                    const message = document.getElementById('message').value;
+
+                    // Validate required fields
+                    if (response === 'Not specified' || !fullname || !emailaddress || !contactnumber || !guests || !vegPreference || !nonvegPreference) {
+                        showMessage('Please fill in all required fields, including your RSVP response.', false);
+                        return;
+                    }
+
+                    // Prepare the email parameters
+                    const templateParams = {
+                        response: response,
+                        fullname: fullname,
+                        emailaddress: emailaddress,
+                        contactnumber: contactnumber,
+                        guests: guests,
+                        vegPreference: vegPreference,
+                        nonvegPreference: nonvegPreference,
+                        message: message
+                    };
+
+                    // Send the email using EmailJS
+                    emailjs.send(serviceId, templateId, templateParams)
+                        .then(function (response) {
+                            console.log('SUCCESS!', response.status, response.text);
+                            showMessage('Your RSVP has been sent successfully!', true);
+                            form.reset(); // Reset the form after successful submission
+                        }, function (error) {
+                            console.log('FAILED...', error);
+                            showMessage('Failed to send RSVP. Please try again.', false);
+                        });
+                });
+            });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+                const radioButtons = document.querySelectorAll('.rsvp-buttons input[type="radio"]');
+                const labels = document.querySelectorAll('.rsvp-buttons label');
+
+                labels.forEach(label => {
+                    label.addEventListener('click', function () {
+                        // Remove 'selected' class from all labels
+                        labels.forEach(l => l.classList.remove('selected'));
+
+                        // Add 'selected' class to clicked label
+                        this.classList.add('selected');
+
+                        // Check the corresponding radio button
+                        document.getElementById(this.getAttribute('for')).checked = true;
+                    });
+                });
+            });
+    </script>
 </body>
 
 </html>

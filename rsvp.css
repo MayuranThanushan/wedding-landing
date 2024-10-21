@@ -230,6 +230,8 @@
 }
 #messageContent {
     font-size: var(--font-size-large);
+    justify-content: center;
+    text-align: center;
 }
 
 @media (max-width: 576px) {

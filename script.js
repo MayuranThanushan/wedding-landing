@@ -1,9 +1,16 @@
 // Countdown Timer Logic
-const targetDate = new Date(Date.UTC(2025, 2, 16, 1, 0, 0));
+const targetDate = new Date(Date.UTC(2025, 2, 16, 6, 30, 0));
 
 function updateTimer() {
   const currentDate = new Date();
-  const currentUTCDate = new Date(currentDate.getTime() + currentDate.getTimezoneOffset() * 60000); // Convert to UTC
+  const currentUTCDate = new Date(Date.UTC(
+    currentDate.getUTCFullYear(),
+    currentDate.getUTCMonth(),
+    currentDate.getUTCDate(),
+    currentDate.getUTCHours(),
+    currentDate.getUTCMinutes(),
+    currentDate.getUTCSeconds()
+  ));
 
   const totalMilliseconds = targetDate - currentUTCDate;
 

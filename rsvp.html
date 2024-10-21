@@ -24,6 +24,10 @@
         </nav>
     </header>
 
+    <!-- Scroll Up Button-->
+    <div id="scrollUpBtn" class="scroll-up-btn">
+        <img src="images/arrow-up.svg" alt="Scroll Up">
+    </div>
 
     <main class="main-content">
         <div class="content-grid">
@@ -100,7 +104,7 @@
         </div>
 
         <div class="submit-container">
-            <p class="submit-note"><span class="asterisk">*</span> Only <strong>one family member</strong> needs to fill this form for the whole family, but <strong>individuals</strong> must complete it on their own.</p>
+            <p class="submit-note"><span class="asterisk">*</span> Only <strong>one family member</strong> needs to fill this form for the whole family, but <strong>individuals</strong> please complete on your own.</p>
             <button id="submitBtn" type="submit" class="btn">Submit Now</button>
         </div>
     </form>
@@ -162,99 +166,155 @@
     <script src="config.js"></script>
 
     <script>
-        const userId = window.env.EMAILJS_USER_ID;
-        const serviceId = window.env.EMAILJS_SERVICE_ID;
-        const templateId = window.env.EMAILJS_TEMPLATE_ID;
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('rsvpForm');
+        const radioButtons = document.querySelectorAll('.rsvp-buttons input[type="radio"]');
+        const messageOverlay = document.getElementById('messageOverlay');
+        const messageDiv = document.getElementById('messageDiv');
+        const closeBtn = document.getElementById('closeBtn');
+        const messageContent = document.getElementById('messageContent');
+        const guestsSelect = document.getElementById('guests');
+        const vegPreferenceSelect = document.getElementById('vegPreference');
+        const nonvegPreferenceSelect = document.getElementById('nonvegPreference');
+        const contactNumberInput = document.getElementById('contactnumber');
+
+        const userId = "S2QnoBZoNUxOzshr5";
+        const serviceId = "service_1iqva6j";
+        const templateId = "template_gsj3ht4";
+
         // Initialize EmailJS
-            (function () {
-                emailjs.init(userId);
-            })();
+        (function () {
+            emailjs.init(userId);
+        })();
 
-            document.addEventListener('DOMContentLoaded', function () {
-                const form = document.getElementById('rsvpForm');
-                const radioButtons = document.querySelectorAll('.rsvp-buttons input[type="radio"]');
-                const messageOverlay = document.getElementById('messageOverlay');
-                const messageDiv = document.getElementById('messageDiv');
-                const closeBtn = document.getElementById('closeBtn');
-                const messageContent = document.getElementById('messageContent');
+        // Function to show message
+        function showMessage(message, isSuccess) {
+            messageContent.textContent = message;
+            messageContent.style.color = isSuccess ? 'green' : 'red';
+            messageOverlay.style.display = 'block';
+            messageDiv.style.display = 'block';
+        }
 
-                // Function to show message
-                function showMessage(message, isSuccess) {
-                    messageContent.textContent = message;
-                    messageContent.style.color = isSuccess ? 'green' : 'red';
-                    messageOverlay.style.display = 'block';
-                    messageDiv.style.display = 'block';
-                }
+        // Function to hide message
+        function hideMessage() {
+            messageOverlay.style.display = 'none';
+            messageDiv.style.display = 'none';
+        }
 
-                // Function to hide message
-                function hideMessage() {
-                    messageOverlay.style.display = 'none';
-                    messageDiv.style.display = 'none';
-                }
+        // Close button event
+        closeBtn.addEventListener('click', hideMessage);
 
-                // Close button event
-                closeBtn.addEventListener('click', hideMessage);
+        // Close on outside click
+        messageOverlay.addEventListener('click', hideMessage);
 
-                // Close on outside click
-                messageOverlay.addEventListener('click', hideMessage);
+        // Prevent closing when clicking inside the message div
+        messageDiv.addEventListener('click', function (event) {
+            event.stopPropagation();
+        });
 
-                // Prevent closing when clicking inside the message div
-                messageDiv.addEventListener('click', function (event) {
-                    event.stopPropagation();
-                });
+        // Add click event listeners to radio buttons
+        radioButtons.forEach(radio => {
+            radio.addEventListener('click', function () {
+                radioButtons.forEach(rb => rb.parentElement.classList.remove('selected'));
+                this.parentElement.classList.add('selected');
+            });
+        });
 
-                // Add click event listeners to radio buttons
-                radioButtons.forEach(radio => {
-                    radio.addEventListener('click', function () {
-                        radioButtons.forEach(rb => rb.parentElement.classList.remove('selected'));
-                        this.parentElement.classList.add('selected');
-                    });
-                });
+        // Function to update preference options
+        function updatePreferenceOptions() {
+            const guestCount = parseInt(guestsSelect.value) || 0;
+            const vegCount = parseInt(vegPreferenceSelect.value) || 0;
+            const nonvegCount = parseInt(nonvegPreferenceSelect.value) || 0;
 
-                form.addEventListener('submit', function (event) {
-                    event.preventDefault();
-
-                    // Collect form data
-                    const selectedRadio = document.querySelector('.rsvp-buttons input[type="radio"]:checked');
-                    const response = selectedRadio ? selectedRadio.id : 'Not specified';
-                    const fullname = document.getElementById('fullname').value;
-                    const emailaddress = document.getElementById('emailaddress').value;
-                    const contactnumber = document.getElementById('contactnumber').value;
-                    const guests = document.getElementById('guests').value;
-                    const vegPreference = document.getElementById('vegPreference').value;
-                    const nonvegPreference = document.getElementById('nonvegPreference').value;
-                    const message = document.getElementById('message').value;
-
-                    // Validate required fields
-                    if (response === 'Not specified' || !fullname || !emailaddress || !contactnumber || !guests || !vegPreference || !nonvegPreference) {
-                        showMessage('Please fill in all required fields, including your RSVP response.', false);
-                        return;
-                    }
-
-                    // Prepare the email parameters
-                    const templateParams = {
-                        response: response,
-                        fullname: fullname,
-                        emailaddress: emailaddress,
-                        contactnumber: contactnumber,
-                        guests: guests,
-                        vegPreference: vegPreference,
-                        nonvegPreference: nonvegPreference,
-                        message: message
-                    };
-
-                    // Send the email using EmailJS
-                    emailjs.send(serviceId, templateId, templateParams)
-                        .then(function (response) {
-                            console.log('SUCCESS!', response.status, response.text);
-                            showMessage('Your RSVP has been sent successfully!', true);
-                            form.reset(); // Reset the form after successful submission
-                        }, function (error) {
-                            console.log('FAILED...', error);
-                            showMessage('Failed to send RSVP. Please try again.', false);
-                        });
+            [vegPreferenceSelect, nonvegPreferenceSelect].forEach(select => {
+                const options = select.querySelectorAll('option');
+                options.forEach(option => {
+                    if (option.value === "") return; // Skip the placeholder option
+                    const optionValue = parseInt(option.value);
+                    option.disabled = optionValue > guestCount;
+                    option.style.color = option.disabled ? 'grey' : '';
                 });
             });
+
+            // Adjust the other preference based on the current selection
+            if (vegPreferenceSelect === document.activeElement) {
+                nonvegPreferenceSelect.value = Math.max(0, guestCount - vegCount);
+            } else if (nonvegPreferenceSelect === document.activeElement) {
+                vegPreferenceSelect.value = Math.max(0, guestCount - nonvegCount);
+            }
+        }
+
+        // Add event listeners to guests and preference selects
+        guestsSelect.addEventListener('change', updatePreferenceOptions);
+        vegPreferenceSelect.addEventListener('change', updatePreferenceOptions);
+        nonvegPreferenceSelect.addEventListener('change', updatePreferenceOptions);
+
+        // Contact number validation
+        contactNumberInput.addEventListener('input', function () {
+            this.value = this.value.replace(/[^0-9+\-\s]/g, '');
+        });
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Collect form data
+            const selectedRadio = document.querySelector('.rsvp-buttons input[type="radio"]:checked');
+            const response = selectedRadio ? selectedRadio.id : 'Not specified';
+            const fullname = document.getElementById('fullname').value;
+            const emailaddress = document.getElementById('emailaddress').value;
+            const contactnumber = contactNumberInput.value;
+            const guests = guestsSelect.value;
+            const vegPreference = vegPreferenceSelect.value;
+            const nonvegPreference = nonvegPreferenceSelect.value;
+            const message = document.getElementById('message').value;
+
+            // Validate required fields
+            if (response === 'Not specified' || !fullname || !emailaddress || !contactnumber || !guests || !vegPreference || !nonvegPreference) {
+                showMessage('Please fill in all required fields, including your RSVP response.', false);
+                return;
+            }
+
+            // Validate contact number
+            if (!/^[0-9+\-\s]+$/.test(contactnumber)) {
+                showMessage('Please enter a valid contact number.', false);
+                return;
+            }
+
+            // Validate preferences
+            const totalPreference = parseInt(vegPreference) + parseInt(nonvegPreference);
+            if (totalPreference !== parseInt(guests)) {
+                showMessage('The sum of vegetarian and non-vegetarian preferences must equal the number of guests.', false);
+                return;
+            }
+
+            // Prepare the email parameters
+            const templateParams = {
+                response: response,
+                fullname: fullname,
+                emailaddress: emailaddress,
+                contactnumber: contactnumber,
+                guests: guests,
+                vegPreference: vegPreference,
+                nonvegPreference: nonvegPreference,
+                message: message
+            };
+
+            // Send the email using EmailJS
+            emailjs.send(serviceId, templateId, templateParams)
+                .then(function (response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    showMessage('Your RSVP has been sent successfully!', true);
+                    form.reset(); // Reset the form after successful submission
+                    updatePreferenceOptions(); // Reset preference options
+                }, function (error) {
+                    console.log('FAILED...', error);
+                    showMessage('Failed to send RSVP. Please try again.', false);
+                });
+        });
+
+        // Initial call to set up preference options
+        updatePreferenceOptions();
+    });
     </script>
 
     <script>

@@ -2,7 +2,7 @@
 
 body {
     font-family: 'Roboto', sans-serif;
-    background: url(images/Bg.png);
+    background: url(images/Bg.jpg);
     display: flex;
     flex-direction: column;
     padding: 0 var(--padding-large);
@@ -319,6 +319,28 @@ a {
     max-width: 100%;
     height: auto;
     width: 36em;
+}
+
+/* Scroll Up Button */
+.scroll-up-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    background-color: var(--Accent);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}
+
+.scroll-up-btn.show {
+    opacity: 1;
 }
 
 @media (max-width: 576px) {

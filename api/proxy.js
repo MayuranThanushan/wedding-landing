@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   console.log("Received request:", req.body);
 
   if (req.method === "POST") {
-    const googleAppsScriptUrl = "https://script.google.com/macros/s/AKfycbw02fjt3B5cQskC8L7gGRWmNdwTtgVPL8DtO6NXbcM_cQME3BFPimdKx8ZbtBnAvTTy/exec";
+    const googleAppsScriptUrl = "https://script.google.com/macros/s/AKfycbzjhtdNNlME1aBmUQpGwkH0_rQcc5L4IfhAiPx4iTrIf4uP3X-Z2bBE19Zvzlnw0Wt1/exec";
 
     try {
       const response = await fetch(googleAppsScriptUrl, {

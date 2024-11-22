@@ -1,9 +1,8 @@
-const webhookUrl = "/api/proxy"; // Vercel API route to proxy the request
+const webhookUrl = "/api/proxy";
 
   document.getElementById("rsvpForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Collect form data
     const formData = {
       response: document.querySelector('input[name="response"]:checked')?.value,
       fullname: document.getElementById("fullname").value,
@@ -25,9 +24,7 @@ const webhookUrl = "/api/proxy"; // Vercel API route to proxy the request
       });
 
       const result = await response.json();
-      alert(result.status === "success" ? "Form submitted!" : "Submission failed.");
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred.");
     }
   });

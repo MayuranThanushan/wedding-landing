@@ -1,5 +1,27 @@
 @import url(root.css);
 
+.ad-header {
+    background-color: var(--Primary);
+    color: var(--Accent);
+    padding: var(--padding-small) var(--padding-large);
+    margin: 0 -2.75em;
+    text-align: center;
+    font-size: var(--font-size-base);
+    font-weight: bold;
+    position: relative;
+}
+
+.ad-header .close-btn {
+    position: absolute;
+    top: var(--margin-xs);
+    right: var(--margin-medium);
+    color: var(--Accent);
+    background: none;
+    border: none;
+    font-size: var(--font-size-base);
+    cursor: pointer;
+}
+
 .content-grid {
     display: flex;
     padding-top: var(--padding-medium);

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="images/favicon.png">
     <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;400;600;800&family=Roboto:wght@100;400;600;800&display=swap"
     rel="stylesheet">
@@ -15,6 +16,12 @@
     <link rel="stylesheet" href="root.css">
 </head>
 <body>
+    <!-- Advertisement Header -->
+    <div class="ad-header" id="adHeader">
+        KINDLY SUBMIT YOUR RSVP ON OR BEFORE FEBRUARY 03, 2025.</b>
+        <button class="close-btn" onclick="closeAd()">✖</button>
+    </div>
+
     <header class="header">
         <a href="index.html"><h1 class="logo">Rohit & Gayathiri</h1></a>
         <nav class="nav-links">
@@ -37,10 +44,9 @@
                 <p>Together with our families,</p>
                 <h2>Rohit Sreenivas Reddy<br />&<br />Gayathiri Mayuran</h2>
                 <p>Joyfully invite you to celebrate our engagement.</p>
-                <p style="color: #c90;"><strong>March 16, 2025<br />05:30 PM Onwards<br />The Renoir, Conca D'oro, 269 Belmore Rd,
-                        Riverwood NSW 2210</strong></p>
-                <p>Join us for an evening of love, laughter, and joy.<br />We look forward to sharing this special
-                    moment with you!</p>
+                <p style="color: #c90;"><strong>March 16, 2025<br />05:30 PM Onwards<br />The Renoir, Conca D'oro, 269 Belmore Rd, Riverwood NSW 2210</strong></p>
+                <p>Join us for an evening of love, laughter, and joy.<br />We look forward to sharing this special moment with you!</p>
+                <p>Kindy submit your RSVP on or before February 03, 2025.</p>
             </div>
             <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/98e2227c5d44c66c7337b493d2e009e4a03114e7f93ac7ffaba79eca06e20449?placeholderIfAbsent=true&apiKey=0a18f12c55274af68e0a3ae651c1ff6d"
                 alt="Decorative floral arrangement" class="right-side-image" />
@@ -104,7 +110,7 @@
         </div>
 
         <div class="submit-container">
-            <p class="submit-note"><span class="asterisk">*</span> Only <strong>one family member</strong> needs to fill this form for the whole family, but <strong>individuals</strong> please complete on your own.</p>
+            <p class="submit-note"><span class="asterisk">*</span>Only <strong>one member per family</strong> is required to complete this RSVP registration. Others kindly fill it out <strong>individually</strong>.</p>
             <button id="submitBtn" type="submit" class="btn">Submit Now</button>
         </div>
     </form>
@@ -165,6 +171,14 @@
     <script src="/env-config.js"></script>
     <script src="config.js"></script>
     <script src="webapp.js"></script>
+
+    <script>
+        // Function to close the advertisement
+        function closeAd() {
+            const adHeader = document.getElementById('adHeader');
+            adHeader.style.display = 'none';
+        }
+    </script>
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {

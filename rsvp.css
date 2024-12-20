@@ -202,8 +202,7 @@
 
 .location-title {
     align-self: center;
-    font: var(--font-weight-bolder) 4em 'Chronica Pro', sans-serif;
-    /* 64px */
+    font: var(--font-weight-regular) var(--font-size-xxl) var(--font-family-script);
     margin: var(--margin-xs) 0 0 0;
 }
 
@@ -316,6 +315,7 @@
     }
     .location-description {
         margin: var(--margin-medium);
+        font-size: var(--font-size-small);
     }
     .location-map {
         width: 90%;
@@ -480,7 +480,7 @@
     }
 
     .location-title {
-        font-size: var(--font-size-xl);
+        font-size: var(--font-size-xxl);
         margin: 0;
     }
 

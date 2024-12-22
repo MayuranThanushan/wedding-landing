@@ -4,17 +4,17 @@
     background-color: var(--Primary);
     color: var(--Accent);
     padding: var(--padding-small) var(--padding-large);
-    margin: 0 -2.75em;
+    margin: 0 -2.45em;
     text-align: center;
     font-size: var(--font-size-base);
     font-weight: bold;
     position: relative;
 }
 
-.ad-header .close-btn {
+.close-btn {
     position: absolute;
     top: var(--margin-xs);
-    right: var(--margin-medium);
+    right: var(--margin-xs);
     color: var(--Accent);
     background: none;
     border: none;
@@ -259,6 +259,9 @@
     body {
         font-size: var(--font-size-xs);
     }
+    .ad-header {
+        margin: 0 -0.9em;
+    }
     .content-grid {
         padding-top: var(--padding-large);
         justify-content: center;
@@ -337,6 +340,9 @@
 @media (min-width: 577px) and (max-width: 768px) {
     body {
         font-size: var(--font-size-xs);
+    }
+    .ad-header {
+        margin: 0 -0.9em;
     }
     .content-grid {
         padding-top: var(--padding-medium);

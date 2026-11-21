@@ -41,6 +41,8 @@ create table if not exists public.invites (
   created_at    timestamptz not null default now()
 );
 
+alter table public.invites add column if not exists table_label text;   -- seating, e.g. "Table 4"
+
 -- ---------------------------------------------------------------------
 -- RSVPs: at most one per invite (guests can edit until you lock it)
 -- ---------------------------------------------------------------------
@@ -111,7 +113,7 @@ begin
   return json_build_object(
     'code', v_inv.code, 'family_name', v_inv.family_name, 'max_adults', v_inv.max_adults,
     'max_children', v_inv.max_children, 'events', v_inv.events, 'lang', v_inv.lang,
-    'phone', v_inv.phone, 'email', v_inv.email,
+    'phone', v_inv.phone, 'email', v_inv.email, 'table_label', v_inv.table_label,
     'rsvp', case when v_rsvp.invite_id is null then null else json_build_object(
       'name', v_rsvp.name, 'phone', v_rsvp.phone, 'email', v_rsvp.email, 'attending', v_rsvp.attending,
       'adults', v_rsvp.adults, 'children', v_rsvp.children, 'veg', v_rsvp.veg, 'nonveg', v_rsvp.nonveg,
@@ -159,3 +161,186 @@ revoke all on function public.get_invite(text) from public;
 revoke all on function public.submit_rsvp(text, jsonb) from public;
 grant execute on function public.get_invite(text) to anon, authenticated;
 grant execute on function public.submit_rsvp(text, jsonb) to anon, authenticated;
+
+-- =====================================================================
+-- v2: wishes wall, guest photos, song requests, door check-in,
+--     activity feed, seating. Safe to re-run.
+-- =====================================================================
+alter table public.invites add column if not exists table_label text;   -- seating, e.g. "Table 4"
+
+create table if not exists public.wishes (
+  id          uuid primary key default gen_random_uuid(),
+  invite_id   uuid references public.invites(id) on delete cascade,
+  name        text not null,
+  message     text not null check (char_length(message) <= 600),
+  approved    boolean not null default false,
+  created_at  timestamptz not null default now()
+);
+
+create table if not exists public.photos (
+  id          uuid primary key default gen_random_uuid(),
+  invite_id   uuid references public.invites(id) on delete cascade,
+  name        text,
+  path        text not null,                     -- object path in storage bucket "guest-photos"
+  caption     text check (char_length(caption) <= 200),
+  event_id    text,
+  approved    boolean not null default false,
+  created_at  timestamptz not null default now()
+);
+
+create table if not exists public.songs (
+  id          uuid primary key default gen_random_uuid(),
+  invite_id   uuid references public.invites(id) on delete cascade,
+  name        text,
+  title       text not null check (char_length(title) <= 120),
+  artist      text check (char_length(artist) <= 120),
+  note        text check (char_length(note) <= 200),
+  created_at  timestamptz not null default now()
+);
+
+create table if not exists public.checkins (
+  id          uuid primary key default gen_random_uuid(),
+  invite_id   uuid not null references public.invites(id) on delete cascade,
+  event_id    text not null,
+  adults      int not null default 0,
+  children    int not null default 0,
+  created_at  timestamptz not null default now(),
+  unique (invite_id, event_id)
+);
+
+create table if not exists public.activity (
+  id          bigint generated always as identity primary key,
+  invite_id   uuid references public.invites(id) on delete cascade,
+  kind        text not null,                     -- open | rsvp | wish | photo | song | checkin
+  detail      jsonb not null default '{}',
+  created_at  timestamptz not null default now()
+);
+create index if not exists activity_created_idx on public.activity (created_at desc);
+
+do $$ declare t text; begin
+  foreach t in array array['wishes','photos','songs','checkins','activity'] loop
+    execute format('alter table public.%I enable row level security', t);
+    execute format('drop policy if exists admin_all on public.%I', t);
+    execute format('create policy admin_all on public.%I for all using (public.is_admin()) with check (public.is_admin())', t);
+  end loop;
+end $$;
+
+-- Storage bucket for guest photos: public read, guests may only add files under uploads/,
+-- and a photo only shows on the site after you approve it in the dashboard.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('guest-photos', 'guest-photos', true, 8388608, array['image/jpeg','image/png','image/webp'])
+on conflict (id) do nothing;
+drop policy if exists guest_photo_upload on storage.objects;
+create policy guest_photo_upload on storage.objects for insert to anon, authenticated
+  with check (bucket_id = 'guest-photos' and (storage.foldername(name))[1] = 'uploads');
+drop policy if exists admin_photo_delete on storage.objects;
+create policy admin_photo_delete on storage.objects for delete to authenticated
+  using (bucket_id = 'guest-photos' and public.is_admin());
+
+-- Activity feed: log invite opens and RSVPs automatically
+create or replace function public.log_open() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if new.open_count > old.open_count then
+    insert into activity(invite_id, kind, detail) values (new.id, 'open', jsonb_build_object('count', new.open_count));
+  end if;
+  return new;
+end $$;
+drop trigger if exists invites_log_open on public.invites;
+create trigger invites_log_open after update of open_count on public.invites
+  for each row execute function public.log_open();
+
+create or replace function public.log_rsvp() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  insert into activity(invite_id, kind, detail)
+  values (new.invite_id, 'rsvp', jsonb_build_object('attending', new.attending, 'adults', new.adults,
+          'children', new.children, 'updated', tg_op = 'UPDATE'));
+  return new;
+end $$;
+drop trigger if exists rsvps_log on public.rsvps;
+create trigger rsvps_log after insert or update on public.rsvps
+  for each row execute function public.log_rsvp();
+
+-- Guest RPCs (anon) ------------------------------------------------------
+create or replace function public.invite_id_for(p_code text) returns uuid
+language plpgsql stable security definer set search_path = public as $$
+declare v uuid;
+begin
+  select id into v from invites where code = lower(trim(p_code));
+  if v is null then raise exception 'INVALID_CODE'; end if;
+  return v;
+end $$;
+
+create or replace function public.post_wish(p_code text, p_name text, p_message text) returns json
+language plpgsql security definer set search_path = public as $$
+declare v uuid := invite_id_for(p_code);
+begin
+  if coalesce(trim(p_name), '') = '' or coalesce(trim(p_message), '') = '' then raise exception 'NAME_REQUIRED'; end if;
+  if (select count(*) from wishes where invite_id = v) >= 10 then raise exception 'LIMIT_REACHED'; end if;
+  insert into wishes(invite_id, name, message) values (v, left(trim(p_name), 80), left(trim(p_message), 600));
+  insert into activity(invite_id, kind, detail) values (v, 'wish', jsonb_build_object('name', left(trim(p_name), 80)));
+  return json_build_object('ok', true);
+end $$;
+
+create or replace function public.list_wishes() returns json
+language sql stable security definer set search_path = public as $$
+  select coalesce(json_agg(json_build_object('id', id, 'name', name, 'message', message, 'created_at', created_at)
+         order by created_at desc), '[]')
+  from wishes where approved;
+$$;
+
+create or replace function public.add_photo(p_code text, p_name text, p_path text, p_caption text, p_event text) returns json
+language plpgsql security definer set search_path = public as $$
+declare v uuid := invite_id_for(p_code);
+begin
+  if p_path !~ '^uploads/[0-9a-f-]{36}\.(jpg|jpeg|png|webp)$' then raise exception 'BAD_PATH'; end if;
+  if (select count(*) from photos where invite_id = v) >= 60 then raise exception 'LIMIT_REACHED'; end if;
+  insert into photos(invite_id, name, path, caption, event_id)
+  values (v, left(trim(p_name), 80), p_path, left(trim(p_caption), 200), nullif(p_event, ''));
+  insert into activity(invite_id, kind, detail) values (v, 'photo', jsonb_build_object('name', left(trim(p_name), 80)));
+  return json_build_object('ok', true);
+end $$;
+
+create or replace function public.list_photos() returns json
+language sql stable security definer set search_path = public as $$
+  select coalesce(json_agg(json_build_object('id', id, 'name', name, 'path', path, 'caption', caption,
+         'event_id', event_id, 'created_at', created_at) order by created_at desc), '[]')
+  from photos where approved;
+$$;
+
+create or replace function public.request_song(p_code text, p_name text, p_title text, p_artist text, p_note text) returns json
+language plpgsql security definer set search_path = public as $$
+declare v uuid := invite_id_for(p_code);
+begin
+  if coalesce(trim(p_title), '') = '' then raise exception 'NAME_REQUIRED'; end if;
+  if (select count(*) from songs where invite_id = v) >= 15 then raise exception 'LIMIT_REACHED'; end if;
+  insert into songs(invite_id, name, title, artist, note)
+  values (v, left(trim(p_name), 80), left(trim(p_title), 120), left(trim(p_artist), 120), left(trim(p_note), 200));
+  insert into activity(invite_id, kind, detail) values (v, 'song', jsonb_build_object('title', left(trim(p_title), 120)));
+  return json_build_object('ok', true);
+end $$;
+
+-- Admin RPC: door check-in by invite code (upsert per event)
+create or replace function public.check_in(p_code text, p_event text, p_adults int, p_children int) returns json
+language plpgsql security definer set search_path = public as $$
+declare v uuid;
+begin
+  if not is_admin() then raise exception 'NOT_ADMIN'; end if;
+  v := invite_id_for(p_code);
+  insert into checkins(invite_id, event_id, adults, children) values (v, p_event, greatest(0, p_adults), greatest(0, p_children))
+  on conflict (invite_id, event_id) do update set adults = excluded.adults, children = excluded.children, created_at = now();
+  insert into activity(invite_id, kind, detail) values (v, 'checkin', jsonb_build_object('event', p_event, 'adults', p_adults, 'children', p_children));
+  return json_build_object('ok', true);
+end $$;
+
+do $$ declare f text; begin
+  foreach f in array array['post_wish(text,text,text)', 'list_wishes()', 'add_photo(text,text,text,text,text)',
+                           'list_photos()', 'request_song(text,text,text,text,text)'] loop
+    execute format('revoke all on function public.%s from public', f);
+    execute format('grant execute on function public.%s to anon, authenticated', f);
+  end loop;
+  revoke all on function public.check_in(text,text,int,int) from public, anon;
+  grant execute on function public.check_in(text,text,int,int) to authenticated;
+  revoke all on function public.invite_id_for(text) from public, anon, authenticated;
+end $$;

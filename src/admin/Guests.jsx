@@ -4,6 +4,7 @@ import { events, SITE_URL } from '../config/wedding.js';
 import { EMPTY_FILTER, EVENT_NAMES, matches, statusFor, headcount, contactPhone, inviteLink, personalize, waLink } from '../lib/audience.js';
 import { saveInvites, deleteInvite, clearRsvp } from '../lib/api.js';
 import FilterBar from './FilterBar.jsx';
+import QrPassModal from './QrPass.jsx';
 import { downloadCsv, parseCsv } from './csv.js';
 
 const ALL = events.map((e) => e.id);
@@ -70,6 +71,9 @@ function InviteModal({ initial, onClose, onSaved }) {
             ))}
           </div>
         </div>
+        <label className="adm-field"><span>Table / seating (optional, e.g. Table 4)</span>
+          <input value={f.table_label || ''} onChange={set('table_label')} placeholder="Table 4" />
+        </label>
         <label className="adm-field"><span>Tags (comma separated, e.g. colombo, work, cousins)</span>
           <input value={(f.tags || []).join(', ')} onChange={(e) => setF({ ...f, tags: e.target.value.split(',').map((x) => x.trim()).filter(Boolean) })} />
         </label>
@@ -152,6 +156,7 @@ export default function Guests({ rows, reload }) {
   const [editing, setEditing] = useState(null);
   const [importing, setImporting] = useState(false);
   const [copied, setCopied] = useState('');
+  const [qr, setQr] = useState(null);
 
   const list = useMemo(() => rows.filter((r) => matches(r, filter)), [rows, filter]);
   const totals = useMemo(() => list.reduce((t, r) => {
@@ -220,6 +225,7 @@ export default function Guests({ rows, reload }) {
                     <div className="adm-muted small">
                       {r.side !== 'both' && `${r.side} · `}{r.lang} · max {r.max_adults}+{r.max_children}
                       {r.open_count > 0 ? ` · 👁 ${r.open_count}` : ' · not opened'}
+                      {r.table_label && ` · 🪑 ${r.table_label}`}
                     </div>
                     {(r.tags || []).map((t) => <span className="adm-tag" key={t}>#{t}</span>)}
                   </td>
@@ -243,6 +249,7 @@ export default function Guests({ rows, reload }) {
                     {contactPhone(r) && (
                       <a className="adm-btn ghost small wa" href={waLink(contactPhone(r), personalize(INVITE_WA, r, site()))} target="_blank" rel="noreferrer">WhatsApp invite</a>
                     )}
+                    <button className="adm-btn ghost small" onClick={() => setQr(r)}>QR pass</button>
                     <button className="adm-btn ghost small" onClick={() => setEditing(r)}>Edit</button>
                     {r.rsvp && <button className="adm-btn ghost small" onClick={() => reset(r)}>Reset RSVP</button>}
                     <button className="adm-btn ghost small danger" onClick={() => remove(r)}>Delete</button>
@@ -257,6 +264,7 @@ export default function Guests({ rows, reload }) {
       <p className="adm-muted small">✓ attending · ✗ declined · … not responded · blank = not invited</p>
 
       {editing && <InviteModal initial={editing} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); reload(); }} />}
+      {qr && <QrPassModal row={qr} onClose={() => setQr(null)} />}
       {importing && <ImportModal onClose={() => setImporting(false)} onSaved={() => { setImporting(false); reload(); }} />}
     </div>
   );

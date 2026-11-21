@@ -9,7 +9,7 @@ export const DEMO = !url || !key;
 export const supabase = DEMO ? null : createClient(url, key);
 
 const ERR = {
-  INVALID_CODE: 'invalid', NAME_REQUIRED: 'name', HEADCOUNT_REQUIRED: 'headcount', FOOD_MISMATCH: 'food',
+  INVALID_CODE: 'invalid', NAME_REQUIRED: 'name', LIMIT_REACHED: 'limit', HEADCOUNT_REQUIRED: 'headcount', FOOD_MISMATCH: 'food',
 };
 function mapError(e) {
   const k = Object.keys(ERR).find((c) => String(e?.message || e).includes(c));
@@ -19,7 +19,7 @@ function mapError(e) {
 }
 
 // ---------------------------------------------------------------- demo store
-const DEMO_KEY = 'rg-demo-db-v1';
+const DEMO_KEY = 'rg-demo-db-v2';
 const ALL = events.map((e) => e.id);
 const INDIA = ALL.filter((id) => id !== 'reception-colombo');
 function seed() {
@@ -42,7 +42,31 @@ function seed() {
     [invites[3].id]: { name: 'Nimal Perera', phone: '+94 71 222 3333', email: '', attending: { 'reception-colombo': false }, adults: 0, children: 0, veg: 0, nonveg: 0, allergies: '', message: 'Sorry we will be abroad — congratulations!', updated_at: now },
     [invites[4].id]: { name: 'Anil Sharma', phone: '+91 99000 11111', email: 'sharma@example.com', attending: { mehendi: false, wedding: true, 'reception-india': true }, adults: 3, children: 1, veg: 4, nonveg: 0, allergies: '', message: '', updated_at: now },
   };
-  return { invites, rsvps, messages: [] };
+  const ago = (n) => new Date(Date.now() - n * 864e5).toISOString();
+  Object.values(rsvps).forEach((r, i) => { r.submitted_at = ago(12 - i * 3); r.updated_at = r.submitted_at; });
+  invites.forEach((v, i) => { if (i < 5) { v.open_count = 1 + (i % 3); v.opened_at = ago(14 - i * 2); } });
+  invites[1].table_label = 'Table 3';
+  invites[2].table_label = 'Table 1';
+  const id = () => crypto.randomUUID();
+  const wishes = [
+    { id: id(), invite_id: invites[1].id, name: 'Kumar Family', message: 'Wishing you a lifetime of love, laughter and adventures together. See you in Colombo!', approved: true, created_at: ago(9) },
+    { id: id(), invite_id: invites[3].id, name: 'Nimal & Anu', message: 'From a Pizza Hut table to the mandap — what a story! Congratulations, you two.', approved: true, created_at: ago(6) },
+    { id: id(), invite_id: invites[4].id, name: 'Sharma Family', message: 'Can’t wait to dance at the Mehendi. Lots of love!', approved: false, created_at: ago(1) },
+  ];
+  const songs = [
+    { id: id(), invite_id: invites[4].id, name: 'Anil', title: 'London Thumakda', artist: 'Labh Janjua, Sonu Kakkar', note: 'For the Mehendi!', created_at: ago(4) },
+    { id: id(), invite_id: invites[1].id, name: 'S. Kumar', title: 'Enjoy Enjaami', artist: 'Dhee ft. Arivu', note: '', created_at: ago(3) },
+  ];
+  const activity = [
+    ...invites.slice(0, 5).map((v) => ({ id: id(), invite_id: v.id, kind: 'open', detail: { count: v.open_count }, created_at: v.opened_at })),
+    ...Object.entries(rsvps).map(([iid, r]) => ({ id: id(), invite_id: iid, kind: 'rsvp', detail: { attending: r.attending, adults: r.adults, children: r.children }, created_at: r.submitted_at })),
+    ...wishes.map((w) => ({ id: id(), invite_id: w.invite_id, kind: 'wish', detail: { name: w.name }, created_at: w.created_at })),
+    ...songs.map((w) => ({ id: id(), invite_id: w.invite_id, kind: 'song', detail: { title: w.title }, created_at: w.created_at })),
+  ];
+  return { invites, rsvps, messages: [], wishes, photos: [], songs, checkins: [], activity };
+}
+function logDemo(d, invite_id, kind, detail = {}) {
+  d.activity.push({ id: crypto.randomUUID(), invite_id, kind, detail, created_at: new Date().toISOString() });
 }
 function db() {
   try { const d = JSON.parse(localStorage.getItem(DEMO_KEY)); if (d) return d; } catch { /* fall through */ }
@@ -69,7 +93,11 @@ function demoSubmit(code, p) {
   };
   if (any && r.adults + r.children === 0) throw new Error('HEADCOUNT_REQUIRED');
   if (any && r.veg + r.nonveg !== r.adults + r.children) throw new Error('FOOD_MISMATCH');
-  d.rsvps[inv.id] = r; save(d);
+  const prev = d.rsvps[inv.id];
+  r.submitted_at = prev?.submitted_at || r.updated_at;
+  d.rsvps[inv.id] = r;
+  logDemo(d, inv.id, 'rsvp', { attending, adults: r.adults, children: r.children, updated: !!prev });
+  save(d);
 }
 
 // ---------------------------------------------------------------- guest
@@ -78,7 +106,8 @@ export async function getInvite(code) {
     const d = db();
     const inv = d.invites.find((i) => i.code === String(code).toLowerCase());
     if (!inv) return delay(null);
-    inv.open_count += 1; inv.opened_at ||= new Date().toISOString(); save(d);
+    inv.open_count += 1; inv.opened_at ||= new Date().toISOString();
+    logDemo(d, inv.id, 'open', { count: inv.open_count }); save(d);
     return delay({ ...inv, rsvp: d.rsvps[inv.id] || null });
   }
   const { data, error } = await supabase.rpc('get_invite', { p_code: code });
@@ -120,7 +149,7 @@ export async function listRows() {
   return data.map((r) => ({ ...r, rsvp: Array.isArray(r.rsvp) ? r.rsvp[0] || null : r.rsvp }));
 }
 
-const INVITE_FIELDS = ['family_name', 'side', 'max_adults', 'max_children', 'events', 'phone', 'email', 'lang', 'tags', 'notes', 'code'];
+const INVITE_FIELDS = ['family_name', 'side', 'max_adults', 'max_children', 'events', 'phone', 'email', 'lang', 'tags', 'notes', 'code', 'table_label'];
 const pick = (o) => Object.fromEntries(INVITE_FIELDS.filter((k) => o[k] !== undefined).map((k) => [k, o[k]]));
 const randomCode = () => Math.random().toString(36).slice(2, 10);
 
@@ -203,4 +232,153 @@ export async function sendEmailNow(messageId) {
   const body = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(body.error || `Send failed (${res.status})`);
   return body;
+}
+
+// ================================================================ v2 features
+const demoInvite = (d, code) => {
+  const inv = d.invites.find((i) => i.code === String(code || '').toLowerCase());
+  if (!inv) throw mapError('INVALID_CODE');
+  return inv;
+};
+async function rpc(name, args) {
+  const { data, error } = await supabase.rpc(name, args);
+  if (error) throw mapError(error);
+  return data;
+}
+const BUCKET = 'guest-photos';
+const byNewest = (a, b) => (b.created_at > a.created_at ? 1 : -1);
+
+/** Public URL for a stored guest photo (demo photos are data: URLs). */
+export function photoUrl(p) {
+  if (!p?.path) return '';
+  if (DEMO || p.path.startsWith('data:')) return p.path;
+  return supabase.storage.from(BUCKET).getPublicUrl(p.path).data.publicUrl;
+}
+
+/** Downscales an image file in the browser to a JPEG Blob (small uploads, strips EXIF/location). */
+export async function shrinkImage(file, max = 1600, quality = 0.82) {
+  let src = await createImageBitmap(file).catch(() => null);
+  let w; let h;
+  if (src) { w = src.width; h = src.height; } else {
+    src = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = URL.createObjectURL(file); });
+    w = src.naturalWidth; h = src.naturalHeight;
+  }
+  const k = Math.min(1, max / Math.max(w, h));
+  const c = document.createElement('canvas');
+  c.width = Math.round(w * k); c.height = Math.round(h * k);
+  c.getContext('2d').drawImage(src, 0, 0, c.width, c.height);
+  return new Promise((res) => c.toBlob(res, 'image/jpeg', quality));
+}
+
+// ---------------------------------------------------------------- guest: wishes, photos, songs
+/** Approved wishes: [{ id, name, message, created_at }] */
+export async function listWishes() {
+  if (DEMO) return delay(db().wishes.filter((w) => w.approved).sort(byNewest));
+  return rpc('list_wishes');
+}
+export async function postWish(code, { name, message }) {
+  if (DEMO) {
+    const d = db(); const inv = demoInvite(d, code);
+    if (!name?.trim() || !message?.trim()) throw mapError('NAME_REQUIRED');
+    d.wishes.push({ id: crypto.randomUUID(), invite_id: inv.id, name: name.trim(), message: message.trim().slice(0, 600), approved: false, created_at: new Date().toISOString() });
+    logDemo(d, inv.id, 'wish', { name }); save(d); return delay({ ok: true });
+  }
+  return rpc('post_wish', { p_code: code, p_name: name, p_message: message });
+}
+
+/** Approved photos: [{ id, name, path, caption, event_id, created_at }] — use photoUrl(p). */
+export async function listPhotos() {
+  if (DEMO) return delay(db().photos.filter((p) => p.approved).sort(byNewest));
+  return rpc('list_photos');
+}
+/** Resizes then uploads one photo; it shows publicly once approved in the dashboard. */
+export async function uploadPhoto(code, file, { name = '', caption = '', event_id = '' } = {}) {
+  const blob = await shrinkImage(file, DEMO ? 900 : 1600, DEMO ? 0.7 : 0.82);
+  if (DEMO) {
+    const d = db(); const inv = demoInvite(d, code);
+    const path = await new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(blob); });
+    d.photos.push({ id: crypto.randomUUID(), invite_id: inv.id, name, path, caption, event_id, approved: false, created_at: new Date().toISOString() });
+    logDemo(d, inv.id, 'photo', { name });
+    save(d); return delay({ ok: true });
+  }
+  const path = `uploads/${crypto.randomUUID()}.jpg`;
+  const { error } = await supabase.storage.from(BUCKET).upload(path, blob, { contentType: 'image/jpeg', upsert: false });
+  if (error) throw mapError(error);
+  return rpc('add_photo', { p_code: code, p_name: name, p_path: path, p_caption: caption, p_event: event_id });
+}
+
+export async function requestSong(code, { name = '', title, artist = '', note = '' }) {
+  if (DEMO) {
+    const d = db(); const inv = demoInvite(d, code);
+    if (!title?.trim()) throw mapError('NAME_REQUIRED');
+    d.songs.push({ id: crypto.randomUUID(), invite_id: inv.id, name, title: title.trim(), artist, note, created_at: new Date().toISOString() });
+    logDemo(d, inv.id, 'song', { title }); save(d); return delay({ ok: true });
+  }
+  return rpc('request_song', { p_code: code, p_name: name, p_title: title, p_artist: artist, p_note: note });
+}
+
+// ---------------------------------------------------------------- admin: moderation, activity, check-in
+async function adminList(table, limit) {
+  if (DEMO) return delay([...db()[table]].sort(byNewest).slice(0, limit || 100000));
+  let q = supabase.from(table).select('*').order('created_at', { ascending: false });
+  if (limit) q = q.limit(limit);
+  const { data, error } = await q;
+  if (error) throw error;
+  return data;
+}
+async function adminUpdate(table, id, patch) {
+  if (DEMO) { const d = db(); const row = d[table].find((x) => x.id === id); if (row) Object.assign(row, patch); save(d); return delay(true); }
+  const { error } = await supabase.from(table).update(patch).eq('id', id);
+  if (error) throw error;
+  return true;
+}
+async function adminDelete(table, id) {
+  if (DEMO) { const d = db(); d[table] = d[table].filter((x) => x.id !== id); save(d); return delay(true); }
+  const { error } = await supabase.from(table).delete().eq('id', id);
+  if (error) throw error;
+  return true;
+}
+
+/** All wishes incl. pending: [{ id, invite_id, name, message, approved, created_at }] */
+export const adminListWishes = () => adminList('wishes');
+export const setWishApproved = (id, approved) => adminUpdate('wishes', id, { approved });
+export const deleteWish = (id) => adminDelete('wishes', id);
+
+/** All photos incl. pending: [{ id, invite_id, name, path, caption, event_id, approved, created_at }] */
+export const adminListPhotos = () => adminList('photos');
+export const setPhotoApproved = (id, approved) => adminUpdate('photos', id, { approved });
+export async function deletePhoto(photo) {
+  if (!DEMO && photo.path) await supabase.storage.from(BUCKET).remove([photo.path]);
+  return adminDelete('photos', photo.id);
+}
+
+/** [{ id, invite_id, name, title, artist, note, created_at }] */
+export const adminListSongs = () => adminList('songs');
+export const deleteSong = (id) => adminDelete('songs', id);
+
+/** Newest first: [{ id, invite_id, kind: open|rsvp|wish|photo|song|checkin, detail, created_at }] */
+export const listActivity = (limit = 300) => adminList('activity', limit);
+
+/** [{ id, invite_id, event_id, adults, children, created_at }] */
+export const listCheckins = () => adminList('checkins');
+
+/** Marks a family as arrived at an event (scanning again updates the head count). */
+export async function checkIn(code, eventId, { adults = 0, children = 0 } = {}) {
+  if (DEMO) {
+    const d = db(); const inv = demoInvite(d, code);
+    const ex = d.checkins.find((c) => c.invite_id === inv.id && c.event_id === eventId);
+    const now = new Date().toISOString();
+    if (ex) Object.assign(ex, { adults, children, created_at: now });
+    else d.checkins.push({ id: crypto.randomUUID(), invite_id: inv.id, event_id: eventId, adults, children, created_at: now });
+    logDemo(d, inv.id, 'checkin', { event: eventId, adults, children }); save(d); return delay({ ok: true });
+  }
+  return rpc('check_in', { p_code: code, p_event: eventId, p_adults: adults, p_children: children });
+}
+export const undoCheckin = (id) => adminDelete('checkins', id);
+
+/** Pulls the invite code out of a scanned QR (full /i/<code> link or a bare code). */
+export function codeFromScan(text) {
+  const s = String(text || '').trim();
+  const m = s.match(/\/i\/([a-z0-9-]{3,40})/i);
+  return (m ? m[1] : s).toLowerCase();
 }

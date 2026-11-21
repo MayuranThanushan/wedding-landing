@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { NavLink, Route, Routes } from 'react-router-dom';
-import { DEMO, getSession, onAuthChange, signIn, signOut, listRows, listMessages, resetDemo } from '../lib/api.js';
+import { DEMO, getSession, onAuthChange, signIn, signOut, listRows, listMessages, resetDemo, adminListWishes, adminListPhotos } from '../lib/api.js';
 import Overview from './Overview.jsx';
 import Guests from './Guests.jsx';
 import Messages from './Messages.jsx';
+import CheckIn from './CheckIn.jsx';
+import Moderation from './Moderation.jsx';
+import Reports from './Reports.jsx';
 import '../styles/admin.css';
 
 function Login() {
@@ -37,6 +40,7 @@ export default function Admin() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [pending, setPending] = useState(0);
 
   useEffect(() => {
     document.title = 'Dashboard · Rohit & Gayathiri';
@@ -49,6 +53,9 @@ export default function Admin() {
     try {
       const [r, m] = await Promise.all([listRows(), listMessages()]);
       setRows(r); setMessages(m);
+      Promise.all([adminListWishes(), adminListPhotos()])
+        .then(([w, p]) => setPending(w.filter((x) => !x.approved).length + p.filter((x) => !x.approved).length))
+        .catch(() => {});
     } catch (e) {
       setError(e.message || String(e));
     } finally {
@@ -67,13 +74,16 @@ export default function Admin() {
       <header className="adm-head">
         <div className="adm-brand">
           <img src="/assets/art/ganesha-gold.webp" alt="" />
-          <span>R &amp; G · Dashboard</span>
+          <span>R <i>&amp;</i> G · Dashboard</span>
           {DEMO && <span className="adm-badge">Demo data</span>}
         </div>
         <nav className="adm-tabs">
           <NavLink end to="/admin">Overview</NavLink>
           <NavLink to="/admin/guests">Guests</NavLink>
           <NavLink to="/admin/messages">Messages</NavLink>
+          <NavLink to="/admin/checkin">Check-in</NavLink>
+          <NavLink to="/admin/moderation">Moderation{pending > 0 && <span className="adm-count">{pending}</span>}</NavLink>
+          <NavLink to="/admin/reports">Reports</NavLink>
         </nav>
         <div className="adm-head-actions">
           <button className="adm-btn ghost small" onClick={reload} disabled={loading}>{loading ? '…' : '↻ Refresh'}</button>
@@ -93,6 +103,9 @@ export default function Admin() {
           <Route index element={<Overview {...ctx} />} />
           <Route path="guests" element={<Guests {...ctx} />} />
           <Route path="messages" element={<Messages {...ctx} />} />
+          <Route path="checkin" element={<CheckIn {...ctx} />} />
+          <Route path="moderation" element={<Moderation {...ctx} onPending={setPending} />} />
+          <Route path="reports" element={<Reports {...ctx} />} />
         </Routes>
       </main>
     </div>

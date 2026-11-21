@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LangProvider } from './i18n/index.jsx';
 import Invitation from './pages/Invitation.jsx';
 import './styles/global.css';
+import './styles/theme.css';
 
 const Admin = lazy(() => import('./admin/Admin.jsx'));
 

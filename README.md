@@ -4,15 +4,16 @@ React + Vite site hosted on Vercel at https://rohit-gayathiri.vercel.app
 
 | URL | What it is |
 | --- | --- |
-| `/i/<code>` | A guest's personal invitation: envelope → invitation → events → maps → RSVP |
+| `/i/<code>` | A guest's personal invitation: envelope → story → invitation → events → rituals → venues → travel → RSVP + QR pass → wishes → photo album → song requests → FAQ |
 | `/` | The same invitation without RSVP, for sharing publicly |
-| `/admin` | The couple's dashboard: counts, guest list, filters, CSV, messages and reminders |
-| `/engagement/` | The old engagement site, unchanged (`/rsvp.html` redirects there) |
+| `/admin` | The couple's dashboard: charts, guest list, messages, door check-in scanner, moderation + activity feed, catering & seating reports |
+| `/engagement/` | The engagement site, kept as a keepsake (no form; `/rsvp.html` redirects there) |
 
 ## Editing content
 
 - **Dates, times, venues, dress codes, contacts:** [src/config/wedding.js](src/config/wedding.js). Set `timeTbc: false` once a time is confirmed. Don't rename an event `id` after invites have gone out.
-- **Text in English, Tamil and Telugu:** [src/i18n/strings.js](src/i18n/strings.js). The Tamil and Telugu text needs a native speaker to proof-read it.
+- **Story, rituals guide, travel & hotels, FAQ:** [src/config/content.js](src/config/content.js). Add story photos by setting `photo` on a milestone.
+- **Text in English, Tamil and Telugu:** [src/i18n/strings.js](src/i18n/strings.js), [shell.js](src/i18n/shell.js), [community.js](src/i18n/community.js). The Tamil and Telugu text needs a native speaker to proof-read it.
 - **Photos:** add them to `public/assets/gallery/` and list them in `gallery` in the config. The gallery section stays hidden while that list is empty.
 - **Music:** add a licensed track to `public/assets/music/` and set `music` in the config. It starts playing when the envelope is opened.
 - **Artwork:** the motifs in `public/assets/art/` were cropped from the PDF card. To use the designer's original files, replace them using the same file names.
@@ -24,6 +25,8 @@ npm install
 npm run dev        # http://localhost:5173/i/demo   and   http://localhost:5173/admin
 ```
 
+Preview the day-of "Happening now" card with `?now=2027-02-12T10:00:00+05:30`.
+
 Without Supabase keys, the site runs in **demo mode**: sample guests are stored in your browser and emails are only simulated.
 
 > On the office network, Node needs to use the Windows certificate store:
@@ -32,7 +35,7 @@ Without Supabase keys, the site runs in **demo mode**: sample guests are stored 
 ## Set up Supabase (free tier)
 
 1. Create a project at https://supabase.com.
-2. Go to **SQL Editor**, paste [supabase/schema.sql](supabase/schema.sql) and click **Run**.
+2. Go to **SQL Editor**, paste [supabase/schema.sql](supabase/schema.sql) and click **Run**. It's safe to re-run, so run it again after updates; it also creates the `guest-photos` storage bucket.
 3. Go to **Authentication → Users → Add user**. Create a login for each person who should see the dashboard. Then go to **Authentication → Providers → Email** and turn off **Allow new users to sign up**.
 4. Give those emails dashboard access:
    ```sql
@@ -66,4 +69,12 @@ Vercel detects Vite automatically (build command `npm run build`, output folder 
    - **+ Auto reminders for every event** creates reminders 1 week and 1 day before each event, sent to guests who are attending it.
 5. **Calendar:** after RSVPing "yes", guests can add their events to Google, Apple or Outlook calendars, with alerts set 1 week and 1 day before each event.
 
+6. **Wishes & photos** appear on the site only after you approve them in **Moderation**. Song requests are listed there too (CSV for the DJ).
+7. **At the door:** open **Check-in** on a phone, pick the event and scan each family's QR pass (or search by name). Arrived vs expected counts update live.
+8. **Caterer & seating:** **Reports** prints a per-event catering sheet and lets you assign tables; guests then see their table on their pass.
+
 Gmail sends up to about 500 emails a day. Message placeholders: `{name}`, `{family}`, `{link}` (personal link), `{events}` (their events with date and venue), `{event}`.
+
+## Secrets
+
+No secrets are stored in git. Real values live only in `.env.local` (gitignored) and Vercel environment variables; see [.env.example](.env.example). The old EmailJS keys were purged from the git history; regenerate them in EmailJS if you still use that account.

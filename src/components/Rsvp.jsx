@@ -5,6 +5,10 @@ import { submitRsvp } from '../lib/api.js';
 import { fmtDate } from '../lib/format.js';
 import { downloadIcs, googleCalUrl } from '../lib/calendar.js';
 import Reveal from './Reveal.jsx';
+import Section from './ui/Section.jsx';
+import EntryPass from './shell/EntryPass.jsx';
+import { dict } from '../i18n/pick.js';
+import { SHELL } from '../i18n/shell.js';
 
 function Stepper({ label, value, min = 0, max, onChange }) {
   return (
@@ -36,8 +40,9 @@ function initialForm(invite) {
 }
 
 export default function Rsvp({ code, invite, status, onSaved }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const r = t.rsvp;
+  const s = dict(SHELL, lang);
   const [form, setForm] = useState(() => initialForm(invite));
   const [mode, setMode] = useState('form'); // form | thanks
   const [error, setError] = useState('');
@@ -97,11 +102,7 @@ export default function Rsvp({ code, invite, status, onSaved }) {
         <p className="rsvp-thanks-text">{going.length ? r.thanksYes : r.thanksNo}</p>
         {going.length > 0 && (
           <>
-            <p className="rsvp-summary">
-              {going.map((e) => t.events[e.id]).join(' · ')}
-              <br />
-              {r.guestsTotal((invite.rsvp.adults || 0) + (invite.rsvp.children || 0))}
-            </p>
+            <EntryPass code={code} invite={invite} going={going} />
             <button className="btn btn-gold" onClick={() => downloadIcs(going, t)}>📅 {r.addAll}</button>
             <div className="rsvp-gcal">
               {going.map((e) => (
@@ -189,12 +190,10 @@ export default function Rsvp({ code, invite, status, onSaved }) {
   }
 
   return (
-    <section className="rsvp" id="rsvp">
-      <h2 className="section-title light">{r.title}</h2>
-      {rsvpBy && status === 'ok' && (
-        <p className="section-sub light">{r.by} {fmtDate(`${rsvpBy}T12:00:00+05:30`, t.locale, 'Asia/Colombo')}</p>
-      )}
-      <Reveal className="rsvp-card">{body}</Reveal>
-    </section>
+    <Section id="rsvp" tone="cream" num="07" kicker={r.title} center className="rsvp"
+      title={<>{s.rsvpTitle[0]} <em>{s.rsvpTitle[1]}</em></>}
+      lead={rsvpBy && status === 'ok' ? `${r.by} ${fmtDate(`${rsvpBy}T12:00:00+05:30`, t.locale, 'Asia/Colombo')}` : null}>
+      <Reveal className="rsvp-card" variant="scale">{body}</Reveal>
+    </Section>
   );
 }

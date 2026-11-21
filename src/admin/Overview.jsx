@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { events } from '../config/wedding.js';
 import { EVENT_NAMES, statusFor, headcount } from '../lib/audience.js';
+import { CumulativeLine, Funnel, PartBar, StackedBars, SERIES, NEUTRAL } from './charts.jsx';
 
 function eventStats(rows, id) {
   const s = { invited: 0, attending: 0, declined: 0, pending: 0, adults: 0, children: 0, veg: 0, nonveg: 0, maxSeats: 0 };
@@ -16,6 +17,79 @@ function eventStats(rows, id) {
     }
   }
   return s;
+}
+
+function Insights({ rows }) {
+  const byDay = {};
+  for (const r of rows) {
+    const at = r.rsvp?.submitted_at || r.rsvp?.updated_at;
+    if (at) { const k = at.slice(0, 10); byDay[k] = (byDay[k] || 0) + 1; }
+  }
+  let run = 0;
+  const points = Object.keys(byDay).sort().map((date) => ({ date, value: (run += byDay[date]) }));
+
+  const eventRows = events.map((e) => {
+    const s = eventStats(rows, e.id);
+    return { label: EVENT_NAMES[e.id], values: { attending: s.attending, declined: s.declined, pending: s.pending } };
+  });
+
+  const att = rows.filter((r) => statusFor(r) === 'attending');
+  const sum = (k) => att.reduce((n, r) => n + (r.rsvp[k] || 0), 0);
+  const side = (v) => rows.filter((r) => r.side === v).length;
+  const sideHeads = (v) => att.filter((r) => r.side === v).reduce((n, r) => n + headcount(r), 0);
+
+  return (
+    <>
+      <div className="adm-two">
+        <section className="adm-card">
+          <div className="adm-card-head"><h2>Responses over time</h2><span className="adm-muted small">cumulative families</span></div>
+          <CumulativeLine points={points} total={rows.length} />
+        </section>
+        <section className="adm-card">
+          <div className="adm-card-head"><h2>Invite funnel</h2><span className="adm-muted small">families</span></div>
+          <Funnel steps={[
+            { label: 'Invited', value: rows.length },
+            { label: 'Opened link', value: rows.filter((r) => r.open_count > 0).length },
+            { label: 'Responded', value: rows.filter((r) => r.rsvp).length },
+            { label: 'Attending', value: att.length },
+          ]} />
+        </section>
+      </div>
+      <section className="adm-card">
+        <div className="adm-card-head"><h2>Replies per celebration</h2><span className="adm-muted small">families · hover for detail</span></div>
+        <StackedBars rows={eventRows} series={[
+          { key: 'attending', label: 'Attending', color: SERIES[0] },
+          { key: 'declined', label: 'Declined', color: SERIES[1] },
+          { key: 'pending', label: 'No reply yet', color: NEUTRAL, hatch: true },
+        ]} />
+      </section>
+      <div className="adm-three">
+        <section className="adm-card">
+          <h2>Meals</h2>
+          <PartBar unit="Meals" parts={[
+            { label: 'Vegetarian', value: sum('veg'), color: SERIES[0] },
+            { label: 'Non-veg', value: sum('nonveg'), color: SERIES[1] },
+          ]} />
+        </section>
+        <section className="adm-card">
+          <h2>Adults &amp; kids</h2>
+          <PartBar unit="Guests" parts={[
+            { label: 'Adults', value: sum('adults'), color: SERIES[0] },
+            { label: 'Children', value: sum('children'), color: SERIES[1] },
+          ]} />
+        </section>
+        <section className="adm-card">
+          <h2>Bride &amp; groom side</h2>
+          <PartBar unit="Families invited" parts={[
+            { label: 'Bride', value: side('bride'), color: SERIES[0] },
+            { label: 'Groom', value: side('groom'), color: SERIES[1] },
+            { label: 'Both', value: side('both'), color: SERIES[2] },
+          ]} />
+          <p className="adm-muted small">Attending guests: bride {sideHeads('bride')} · groom {sideHeads('groom')} · both {sideHeads('both')}</p>
+        </section>
+      </div>
+    </>
+  );
 }
 
 const Stat = ({ label, value, sub }) => (
@@ -51,6 +125,8 @@ export default function Overview({ rows, messages }) {
         <Stat label="Not responded" value={rows.length - responded} />
         <Stat label="Families attending" value={attending.length} sub={`${heads} guests`} />
       </div>
+
+      <Insights rows={rows} />
 
       <section className="adm-card">
         <h2>By celebration</h2>
@@ -88,7 +164,7 @@ export default function Overview({ rows, messages }) {
 
       <div className="adm-two">
         <section className="adm-card">
-          <h2>Wishes from guests</h2>
+          <h2>Notes in RSVPs</h2>
           {notes.length === 0 && <p className="adm-muted">No messages yet.</p>}
           <ul className="adm-notes">
             {notes.slice(0, 12).map((r) => (

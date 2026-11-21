@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLang } from '../i18n/index.jsx';
+import { dict } from '../i18n/pick.js';
+import { SHELL } from '../i18n/shell.js';
 import { venues } from '../config/wedding.js';
 import { eventWhen, fmtDate, mapsLink } from '../lib/format.js';
 import { googleCalUrl, downloadIcs } from '../lib/calendar.js';
 import Reveal from './Reveal.jsx';
+import Section from './ui/Section.jsx';
+import { useLiveState } from './shell/LiveNow.jsx';
 
 function CalendarMenu({ ev }) {
   const { t } = useLang();
@@ -17,7 +21,7 @@ function CalendarMenu({ ev }) {
   }, [open]);
   return (
     <div className="cal-menu" ref={ref}>
-      <button className="chip" onClick={() => setOpen((o) => !o)} aria-expanded={open}>📅 {t.addToCalendar}</button>
+      <button className="ev-link" onClick={() => setOpen((o) => !o)} aria-expanded={open}>＋ {t.addToCalendar}</button>
       {open && (
         <div className="cal-pop">
           <a href={googleCalUrl(ev, t)} target="_blank" rel="noreferrer">{t.googleCalendar}</a>
@@ -28,22 +32,26 @@ function CalendarMenu({ ev }) {
   );
 }
 
-export function EventCard({ ev }) {
+export function EventCard({ ev, i = 0, live }) {
   const { t, lang } = useLang();
   const v = venues[ev.venue];
   const { time } = eventWhen(ev, t);
   return (
-    <Reveal as="article" className={`event-card ${ev.featured ? 'featured' : ''}`}>
-      <div className="event-icon" aria-hidden="true">{ev.icon}</div>
-      <h3 className="event-name">{t.events[ev.id]}</h3>
-      <p className="event-blurb">{t.eventBlurbs[ev.id]}</p>
-      <dl className="event-meta">
-        <div><dt>🕰</dt><dd>{time}</dd></div>
-        <div><dt>📍</dt><dd><strong>{v.name}</strong><br />{v.address}</dd></div>
-        {ev.dressCode && <div><dt>👗</dt><dd>{t.dressCode}: {ev.dressCode[lang] || ev.dressCode.en}</dd></div>}
+    <Reveal as="article" delay={i * 0.08} className={`ev ${ev.featured ? 'is-featured' : ''} ${live ? 'is-live' : ''}`}>
+      <div className="ev-top">
+        <span className="ev-icon" aria-hidden="true">{ev.icon}</span>
+        <span className="ev-part">{t.parts[ev.part]}</span>
+        {live && <span className="ev-live">● LIVE</span>}
+      </div>
+      <h3 className="ev-name">{t.events[ev.id]}</h3>
+      <p className="ev-blurb">{t.eventBlurbs[ev.id]}</p>
+      <dl className="ev-meta">
+        <div><dt>{t.parts[ev.part] ? '◷' : ''}</dt><dd>{time}</dd></div>
+        <div><dt>⌖</dt><dd><strong>{v.name}</strong><span>{v.address}</span></dd></div>
+        {ev.dressCode && <div><dt>✦</dt><dd>{t.dressCode}: {ev.dressCode[lang] || ev.dressCode.en}</dd></div>}
       </dl>
-      <div className="event-actions">
-        <a className="chip" href={mapsLink(v)} target="_blank" rel="noreferrer">🧭 {t.directions}</a>
+      <div className="ev-actions">
+        <a className="ev-link" href={mapsLink(v)} target="_blank" rel="noreferrer">↗ {t.directions}</a>
         <CalendarMenu ev={ev} />
       </div>
     </Reveal>
@@ -51,36 +59,50 @@ export function EventCard({ ev }) {
 }
 
 export default function Events({ events }) {
-  const { t } = useLang();
-  // group by local calendar day
+  const { t, lang } = useLang();
+  const s = dict(SHELL, lang);
+  const live = useLiveState(events);
   const days = [];
   for (const ev of events) {
     const v = venues[ev.venue];
     const key = fmtDate(ev.start, 'en-CA', v.timeZone, { weekday: undefined, year: 'numeric', month: '2-digit', day: '2-digit' });
     let day = days.find((d) => d.key === key);
-    if (!day) days.push((day = { key, ev0: ev, items: [] }));
+    if (!day) days.push((day = { key, ev0: ev, tz: v.timeZone, items: [] }));
     day.items.push(ev);
   }
+  const part = (d, opts) => fmtDate(d.ev0.start, t.locale, d.tz, { weekday: undefined, year: undefined, month: undefined, day: undefined, ...opts });
+
   return (
-    <section className="paper events" id="events">
-      <h2 className="section-title">{t.eventsTitle}</h2>
-      <p className="section-sub">{t.eventsSubtitle}</p>
+    <Section id="events" tone="pink" num="03" kicker={t.eventsTitle} motif
+      title={<>{s.eventsTitle[0]} <em>{s.eventsTitle[1]}</em></>} lead={s.eventsLead}>
+      <nav className="rail" aria-label={t.eventsTitle}>
+        {days.map((d, i) => (
+          <a key={d.key} href={`#day-${d.key}`} className="rail-stop">
+            <span className="rail-dot" />
+            <span className="rail-day">{s.dayLabel} {i + 1}</span>
+            <span className="rail-date">{part(d, { day: 'numeric', month: 'short' })}</span>
+          </a>
+        ))}
+      </nav>
+
       <div className="days">
-        {days.map((d) => {
+        {days.map((d, i) => {
           const v = venues[d.ev0.venue];
           return (
-            <div className="day" key={d.key}>
-              <div className="day-head">
-                <span className="day-date">{fmtDate(d.ev0.start, t.locale, v.timeZone)}</span>
+            <div className="day" id={`day-${d.key}`} key={d.key}>
+              <Reveal variant="left" className="day-side">
+                <span className="day-n">{s.dayLabel} {String(i + 1).padStart(2, '0')}</span>
+                <span className="day-num">{part(d, { day: 'numeric' })}</span>
+                <span className="day-month">{part(d, { weekday: 'long' })} · {part(d, { month: 'long' })}</span>
                 <span className="day-place">{v.address.split(',').slice(-2).join(',').trim()}</span>
-              </div>
+              </Reveal>
               <div className="day-cards">
-                {d.items.map((ev) => <EventCard key={ev.id} ev={ev} />)}
+                {d.items.map((ev, j) => <EventCard key={ev.id} ev={ev} i={j} live={live?.current?.id === ev.id} />)}
               </div>
             </div>
           );
         })}
       </div>
-    </section>
+    </Section>
   );
 }

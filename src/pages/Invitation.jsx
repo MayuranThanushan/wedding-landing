@@ -4,17 +4,28 @@ import { useLang } from '../i18n/index.jsx';
 import { events as ALL_EVENTS } from '../config/wedding.js';
 import { getInvite } from '../lib/api.js';
 import Envelope from '../components/Envelope.jsx';
-import Cover from '../components/Cover.jsx';
+import NavBar from '../components/shell/NavBar.jsx';
+import Hero from '../components/shell/Hero.jsx';
+import Marquee from '../components/shell/Marquee.jsx';
+import LiveNow from '../components/shell/LiveNow.jsx';
+import Story from '../components/sections/Story.jsx';
 import InviteText from '../components/InviteText.jsx';
-import Countdown from '../components/Countdown.jsx';
 import Events from '../components/Events.jsx';
+import Ceremonies from '../components/sections/Ceremonies.jsx';
 import Venues from '../components/Venues.jsx';
+import Travel from '../components/sections/Travel.jsx';
 import Rsvp from '../components/Rsvp.jsx';
+import Wishes from '../components/community/Wishes.jsx';
+import Photos from '../components/community/Photos.jsx';
+import Songs from '../components/community/Songs.jsx';
+import Faq from '../components/sections/Faq.jsx';
 import Gallery from '../components/Gallery.jsx';
 import Contact from '../components/Contact.jsx';
-import LangSwitch from '../components/LangSwitch.jsx';
 import MusicButton from '../components/MusicButton.jsx';
 import '../styles/invitation.css';
+import '../styles/shell.css';
+
+const SECTIONS = ['story', 'invitation', 'events', 'ceremonies', 'venues', 'travel', 'rsvp', 'wishes', 'photos', 'songs', 'faq'];
 
 export default function Invitation() {
   const params = useParams();
@@ -60,23 +71,32 @@ export default function Invitation() {
     return () => { document.body.style.overflow = ''; };
   }, [opened]);
 
+  const guestCode = status === 'ok' ? code : '';
   return (
-    <div className="inv">
+    <div className={`inv ${opened ? 'is-opened' : ''}`}>
       {!opened && (
         <Envelope familyName={invite?.family_name} onOpenStart={handleOpen} onDone={() => setOpened(true)} />
       )}
-      <LangSwitch />
+      <NavBar sections={SECTIONS} />
       <MusicButton autoplay={playing} />
+      <LiveNow events={visibleEvents} />
       <main>
-        <Cover />
+        <Hero familyName={invite?.family_name} showRsvp />
+        <Marquee />
+        <Story />
         <InviteText />
-        <Countdown />
         <Events events={visibleEvents} />
+        <Ceremonies events={visibleEvents} />
         <Venues events={visibleEvents} />
+        <Travel events={visibleEvents} />
         <Rsvp code={code} invite={invite} status={status} onSaved={(rsvp) => setInvite((i) => ({ ...i, rsvp }))} />
+        <Wishes code={guestCode} invite={invite} />
+        <Photos code={guestCode} invite={invite} />
+        <Songs code={guestCode} invite={invite} />
+        <Faq />
         <Gallery />
-        <Contact />
       </main>
+      <Contact sections={SECTIONS} />
     </div>
   );
 }

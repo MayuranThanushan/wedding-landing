@@ -1,0 +1,64 @@
+:root {
+  --pink: #cc007d;
+  --pink-deep: #a3005f;
+  --pink-dark: #6e0041;
+  --pink-soft: #f5c6e0;
+  --gold: #ffde59;
+  --gold-2: #ebbf38;
+  --gold-deep: #b8862b;
+  --cream: #fcedc7;
+  --cream-2: #f2e3bf;
+  --paper: #fff8e6;
+  --green: #125945;
+  --ink: #5b0034;
+  --muted: #8a5a72;
+  --foil: linear-gradient(160deg, #fff3b0 0%, #f2cf5b 22%, #c99a2e 45%, #f7e08a 62%, #b07a22 85%, #e8c25a 100%);
+  --serif: 'Forum', 'Noto Serif Tamil', 'Noto Serif Telugu', Georgia, serif;
+  --caps: 'Cinzel', 'Forum', 'Noto Serif Tamil', 'Noto Serif Telugu', serif;
+  --sans: 'Jost', 'Noto Serif Tamil', 'Noto Serif Telugu', system-ui, sans-serif;
+  --script: 'Great Vibes', cursive;
+  --radius: 18px;
+  --shadow: 0 10px 30px rgba(110, 0, 65, 0.18);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--pink);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5em;
+  border: 0; border-radius: 999px; padding: .8em 1.6em;
+  font-family: var(--caps); font-size: .9rem; letter-spacing: .08em; text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:disabled { opacity: .6; cursor: progress; transform: none; }
+.btn-gold { background: var(--foil); color: var(--pink-dark); box-shadow: 0 6px 18px rgba(184, 134, 43, .35); }
+.btn-pink { background: var(--pink); color: var(--gold); box-shadow: 0 6px 18px rgba(204, 0, 125, .3); }
+.btn-ghost { background: transparent; color: var(--pink); border: 1px solid currentColor; }
+.btn-block { width: 100%; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: .35em;
+  border: 1px solid rgba(204, 0, 125, .35); background: #fff; color: var(--pink);
+  border-radius: 999px; padding: .4em .9em; font-size: .85rem; text-decoration: none; white-space: nowrap;
+}
+.chip:hover { background: var(--pink); color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

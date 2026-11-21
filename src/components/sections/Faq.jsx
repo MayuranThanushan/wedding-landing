@@ -15,10 +15,10 @@ export default function Faq() {
   const [t1, t2] = pick(faq.title, lang);
 
   return (
-    <Section id="faq" tone="blush" num="11" className="faq">
+    <Section id="faq" tone="blush" num="08" className="faq">
       <div className="faq-layout">
         <Reveal className="sec-head faq-head">
-          <p className="sec-kicker"><span className="num">11</span>{pick(faq.kicker, lang)}</p>
+          <p className="sec-kicker"><span className="num">08</span>{pick(faq.kicker, lang)}</p>
           <h2 className="sec-title">{t1} <em>{t2}</em></h2>
           <p className="sec-lead">{pick(faq.lead, lang)}</p>
           <a className="btn btn-pink faq-cta" href="#contact">{pick(faq.contactCta, lang)}</a>

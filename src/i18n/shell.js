@@ -3,7 +3,7 @@
 export const SHELL = {
   en: {
     nav: {
-      story: 'Our Story', invitation: 'Invitation', events: 'Celebrations', ceremonies: 'Rituals', venues: 'Venues',
+      story: 'The Couple', invitation: 'Invitation', events: 'Celebrations', ceremonies: 'Rituals', venues: 'Venues',
       travel: 'Travel & Stay', rsvp: 'RSVP', wishes: 'Wishes', photos: 'Album', songs: 'Songs', faq: 'FAQ',
     },
     menu: 'Menu', close: 'Close',
@@ -25,6 +25,8 @@ export const SHELL = {
     venuesTitle: ['Where we', 'gather'],
     venuesLead: 'Tap a venue for directions. Exact timings will be shared closer to the date.',
     rsvpTitle: ['Will you', 'join us?'],
+    rsvpOnly: 'RSVP is for the Colombo reception',
+    rsvpNone: { title: 'No RSVP needed', text: 'Your invitation is for our close-family celebrations. We will be in touch personally and can’t wait to see you there.' },
     pass: {
       title: 'Your entry pass', hint: 'Show this QR at the entrance — it helps us welcome you quickly.',
       seats: (n) => `${n} guest${n === 1 ? '' : 's'}`, save: 'Save pass', table: 'Table',
@@ -37,7 +39,7 @@ export const SHELL = {
   },
   ta: {
     nav: {
-      story: 'எங்கள் கதை', invitation: 'அழைப்பு', events: 'கொண்டாட்டங்கள்', ceremonies: 'சடங்குகள்', venues: 'இடங்கள்',
+      story: 'மணமக்கள்', invitation: 'அழைப்பு', events: 'கொண்டாட்டங்கள்', ceremonies: 'சடங்குகள்', venues: 'இடங்கள்',
       travel: 'பயணம் & தங்குமிடம்', rsvp: 'பதில்', wishes: 'வாழ்த்துகள்', photos: 'ஆல்பம்', songs: 'பாடல்கள்', faq: 'கேள்விகள்',
     },
     menu: 'மெனு', close: 'மூடு',
@@ -59,6 +61,8 @@ export const SHELL = {
     venuesTitle: ['நாம் கூடும்', 'இடங்கள்'],
     venuesLead: 'வழிகாட்டலுக்கு இடத்தைத் தொடவும். சரியான நேரங்கள் விரைவில் பகிரப்படும்.',
     rsvpTitle: ['எங்களுடன்', 'இணைவீர்களா?'],
+    rsvpOnly: 'கொழும்பு வரவேற்புக்கான பதில்',
+    rsvpNone: { title: 'பதில் தேவையில்லை', text: 'உங்கள் அழைப்பு எங்கள் நெருங்கிய குடும்பக் கொண்டாட்டங்களுக்கானது. நாங்கள் நேரில் தொடர்பு கொள்வோம்; உங்களைக் காண ஆவலுடன் காத்திருக்கிறோம்.' },
     pass: {
       title: 'உங்கள் நுழைவுச் சீட்டு', hint: 'நுழைவாயிலில் இந்த QR-ஐக் காட்டுங்கள்.',
       seats: (n) => `${n} விருந்தினர்`, save: 'சேமிக்கவும்', table: 'மேசை',
@@ -71,7 +75,7 @@ export const SHELL = {
   },
   te: {
     nav: {
-      story: 'మా కథ', invitation: 'ఆహ్వానం', events: 'వేడుకలు', ceremonies: 'సంప్రదాయాలు', venues: 'వేదికలు',
+      story: 'వధూవరులు', invitation: 'ఆహ్వానం', events: 'వేడుకలు', ceremonies: 'సంప్రదాయాలు', venues: 'వేదికలు',
       travel: 'ప్రయాణం & బస', rsvp: 'స్పందన', wishes: 'శుభాకాంక్షలు', photos: 'ఆల్బమ్', songs: 'పాటలు', faq: 'ప్రశ్నలు',
     },
     menu: 'మెనూ', close: 'మూసివేయి',
@@ -93,6 +97,8 @@ export const SHELL = {
     venuesTitle: ['మనం కలిసే', 'వేదికలు'],
     venuesLead: 'దారి కోసం వేదికను నొక్కండి. ఖచ్చితమైన సమయాలు త్వరలో తెలియజేస్తాము.',
     rsvpTitle: ['మాతో', 'చేరతారా?'],
+    rsvpOnly: 'కొలంబో రిసెప్షన్ కోసం RSVP',
+    rsvpNone: { title: 'RSVP అవసరం లేదు', text: 'మీ ఆహ్వానం మా దగ్గరి కుటుంబ వేడుకల కోసం. మేము వ్యక్తిగతంగా సంప్రదిస్తాము; మిమ్మల్ని చూడాలని ఎదురుచూస్తున్నాము.' },
     pass: {
       title: 'మీ ప్రవేశ పాస్', hint: 'ప్రవేశ ద్వారం వద్ద ఈ QR చూపించండి.',
       seats: (n) => `${n} అతిథులు`, save: 'పాస్ సేవ్ చేయండి', table: 'టేబుల్',

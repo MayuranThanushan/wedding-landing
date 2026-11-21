@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { events, eventById } from '../config/wedding.js';
-import { EVENT_NAMES, statusFor } from '../lib/audience.js';
+import { EVENT_NAMES } from '../lib/audience.js';
+import { FAMILY_LABEL, eventStatus, expectedFor, isRsvpEvent } from './scope.js';
 import { checkIn, codeFromScan, listCheckins, undoCheckin } from '../lib/api.js';
 
 /** The event happening now, else the next one, else the last one. */
@@ -119,10 +120,11 @@ function Stepper({ label, value, onChange }) {
 }
 
 function Arrival({ row, eventId, existing, onDone, onCancel }) {
-  const st = statusFor(row, eventId);
+  const st = eventStatus(row, eventId);
   const r = row.rsvp;
-  const expA = st === 'attending' ? r.adults || 0 : 0;
-  const expC = st === 'attending' ? r.children || 0 : 0;
+  // Close-family events: no RSVP, so expect the seats reserved on the invite.
+  const expA = st === 'attending' ? r.adults || 0 : st === 'family' ? row.max_adults || 0 : 0;
+  const expC = st === 'attending' ? r.children || 0 : st === 'family' ? row.max_children || 0 : 0;
   const [adults, setAdults] = useState(existing ? existing.adults : (expA || 1));
   const [children, setChildren] = useState(existing ? existing.children : expC);
   const [busy, setBusy] = useState(false);
@@ -147,6 +149,9 @@ function Arrival({ row, eventId, existing, onDone, onCancel }) {
       </div>
       {warn && <p className="ci-warn">⚠ {warn}</p>}
       {existing && <p className="ci-warn info">✓ Already checked in at {fmtTime(existing.created_at)} with {existing.adults + existing.children}. Confirming again updates the count.</p>}
+      {st === 'family' && (
+        <p className="ci-expected">{FAMILY_LABEL} · reserved <strong>{expA}</strong> adult{expA === 1 ? '' : 's'}{expC ? <> · <strong>{expC}</strong> child{expC === 1 ? '' : 'ren'}</> : ''}</p>
+      )}
       {st === 'attending' && (
         <p className="ci-expected">RSVP: <strong>{expA}</strong> adult{expA === 1 ? '' : 's'}{expC ? <> · <strong>{expC}</strong> child{expC === 1 ? '' : 'ren'}</> : ''}
           {r.allergies && <span className="ci-allergy"> · ⚠ {r.allergies}</span>}</p>
@@ -180,8 +185,9 @@ export default function CheckIn({ rows }) {
   const byId = useMemo(() => Object.fromEntries(rows.map((r) => [r.id, r])), [rows]);
   const here = checkins.filter((c) => c.event_id === eventId);
   const hereByInvite = Object.fromEntries(here.map((c) => [c.invite_id, c]));
-  const expected = rows.filter((r) => statusFor(r, eventId) === 'attending');
-  const expHeads = expected.reduce((n, r) => n + (r.rsvp.adults || 0) + (r.rsvp.children || 0), 0);
+  const familyEvent = !isRsvpEvent(eventId);
+  const expected = rows.filter((r) => ['attending', 'family'].includes(eventStatus(r, eventId)));
+  const expHeads = expected.reduce((n, r) => n + expectedFor(r, eventId), 0);
   const arrHeads = here.reduce((n, c) => n + c.adults + c.children, 0);
 
   const onScan = (text) => {
@@ -209,8 +215,9 @@ export default function CheckIn({ rows }) {
       <div className="ci-top">
         <label className="adm-field ci-event"><span>Checking in for</span>
           <select value={eventId} onChange={(e) => { setEventId(e.target.value); setSelected(null); }}>
-            {events.map((e) => <option key={e.id} value={e.id}>{EVENT_NAMES[e.id]} — {new Date(e.start).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</option>)}
+            {events.map((e) => <option key={e.id} value={e.id}>{EVENT_NAMES[e.id]} — {new Date(e.start).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}{isRsvpEvent(e.id) ? '' : ' · close family'}</option>)}
           </select>
+          {familyEvent && <small className="adm-muted">{FAMILY_LABEL}: expected = seats reserved on invites</small>}
         </label>
         <div className="ci-counter" aria-live="polite">
           <div><b>{here.length}</b><span>/ {expected.length} families</span></div>
@@ -238,12 +245,12 @@ export default function CheckIn({ rows }) {
           <input className="adm-input ci-search" type="search" placeholder="Family name, phone, code or table…" value={q} onChange={(e) => setQ(e.target.value)} />
           <ul className="ci-results">
             {matchesQ.map((r) => {
-              const st = statusFor(r, eventId);
+              const st = eventStatus(r, eventId);
               return (
                 <li key={r.id}>
                   <button onClick={() => setSelected(r)}>
                     <strong>{r.family_name}</strong>
-                    <span className={`adm-pill st-${st}`}>{hereByInvite[r.id] ? 'checked in' : st.replace('-', ' ')}</span>
+                    <span className={`adm-pill st-${st}`}>{hereByInvite[r.id] ? 'checked in' : st === 'family' ? 'invited' : st.replace('-', ' ')}</span>
                   </button>
                 </li>
               );
@@ -273,7 +280,7 @@ export default function CheckIn({ rows }) {
               {expected.filter((r) => !hereByInvite[r.id]).map((r) => (
                 <li key={r.id}>
                   <span className="ci-name">{r.family_name}{r.table_label ? <small> · {r.table_label}</small> : null}</span>
-                  <span>{r.rsvp.adults}+{r.rsvp.children}</span>
+                  <span>{familyEvent ? `${r.max_adults}+${r.max_children} seats` : `${r.rsvp.adults}+${r.rsvp.children}`}</span>
                   <button className="adm-btn ghost small" onClick={() => setSelected(r)}>Check in</button>
                 </li>
               ))}

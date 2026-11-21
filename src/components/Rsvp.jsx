@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLang } from '../i18n/index.jsx';
-import { events as ALL_EVENTS, rsvpBy, venues } from '../config/wedding.js';
+import { events as ALL_EVENTS, rsvpBy, rsvpEvents, venues } from '../config/wedding.js';
 import { submitRsvp } from '../lib/api.js';
 import { fmtDate } from '../lib/format.js';
 import { downloadIcs, googleCalUrl } from '../lib/calendar.js';
@@ -54,7 +54,7 @@ export default function Rsvp({ code, invite, status, onSaved }) {
     setMode(invite.rsvp ? 'thanks' : 'form');
   }, [invite?.code]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const invitedEvents = useMemo(() => ALL_EVENTS.filter((e) => invite?.events?.includes(e.id)), [invite]);
+  const invitedEvents = useMemo(() => ALL_EVENTS.filter((e) => rsvpEvents.includes(e.id) && invite?.events?.includes(e.id)), [invite]);
   const anyYes = invitedEvents.some((e) => form.attending[e.id] === true);
   const total = form.adults + form.children;
   const set = (patch) => setForm((f) => ({ ...f, ...patch }));
@@ -94,6 +94,15 @@ export default function Rsvp({ code, invite, status, onSaved }) {
   if (!code || status === 'none') body = <p className="rsvp-note">{r.noCode}</p>;
   else if (status === 'loading') body = <p className="rsvp-note">{r.loading}</p>;
   else if (status !== 'ok') body = <p className="rsvp-note">{r.invalid}</p>;
+  else if (!invitedEvents.length) {
+    body = (
+      <div className="rsvp-thanks">
+        <div className="rsvp-thanks-icon" aria-hidden="true">🪔</div>
+        <p className="rsvp-thanks-text">{s.rsvpNone.title}</p>
+        <p className="rsvp-summary">{s.rsvpNone.text}</p>
+      </div>
+    );
+  }
   else if (mode === 'thanks') {
     const going = invitedEvents.filter((e) => invite.rsvp?.attending?.[e.id]);
     body = (
@@ -190,9 +199,9 @@ export default function Rsvp({ code, invite, status, onSaved }) {
   }
 
   return (
-    <Section id="rsvp" tone="cream" num="07" kicker={r.title} center className="rsvp"
+    <Section id="rsvp" tone="cream" num="06" kicker={r.title} center className="rsvp"
       title={<>{s.rsvpTitle[0]} <em>{s.rsvpTitle[1]}</em></>}
-      lead={rsvpBy && status === 'ok' ? `${r.by} ${fmtDate(`${rsvpBy}T12:00:00+05:30`, t.locale, 'Asia/Colombo')}` : null}>
+      lead={`${s.rsvpOnly}.${rsvpBy && status === 'ok' && invitedEvents.length ? ` ${r.by} ${fmtDate(`${rsvpBy}T12:00:00+05:30`, t.locale, 'Asia/Colombo')}.` : ''}`}>
       <Reveal className="rsvp-card" variant="scale">{body}</Reveal>
     </Section>
   );

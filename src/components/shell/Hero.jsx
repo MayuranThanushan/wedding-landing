@@ -3,6 +3,7 @@ import { useLang } from '../../i18n/index.jsx';
 import { dict } from '../../i18n/pick.js';
 import { SHELL } from '../../i18n/shell.js';
 import { eventById, mainEventId } from '../../config/wedding.js';
+import { Thoranam } from '../ui/Ornaments.jsx';
 
 const ART = '/assets/art';
 
@@ -44,6 +45,7 @@ export default function Hero({ familyName, showRsvp }) {
     <section className="hero" id="top" ref={ref}>
       <div className="hero-grain" aria-hidden="true" />
       <div className="hero-glow" aria-hidden="true" />
+      <Thoranam className="hero-thoranam" count={23} />
 
       <div className="hero-inner">
         <div className="hero-copy">

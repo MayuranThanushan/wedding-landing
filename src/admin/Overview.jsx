@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom';
 import { events } from '../config/wedding.js';
-import { EVENT_NAMES, statusFor, headcount } from '../lib/audience.js';
+import { EVENT_NAMES, headcount } from '../lib/audience.js';
 import { CumulativeLine, Funnel, PartBar, StackedBars, SERIES, NEUTRAL } from './charts.jsx';
+import { FAMILY_LABEL, eventStatus, isRsvpEvent, needsRsvp, rsvpAttending, rsvpEventList, familyEventList, seats } from './scope.js';
 
 function eventStats(rows, id) {
-  const s = { invited: 0, attending: 0, declined: 0, pending: 0, adults: 0, children: 0, veg: 0, nonveg: 0, maxSeats: 0 };
+  const s = { invited: 0, attending: 0, declined: 0, pending: 0, family: 0, adults: 0, children: 0, veg: 0, nonveg: 0, maxSeats: 0 };
   for (const r of rows) {
-    const st = statusFor(r, id);
+    const st = eventStatus(r, id);
     if (st === 'not-invited') continue;
     s.invited += 1;
-    s.maxSeats += (r.max_adults || 0) + (r.max_children || 0);
+    s.maxSeats += seats(r);
     s[st] += 1;
     if (st === 'attending') {
       s.adults += r.rsvp.adults || 0; s.children += r.rsvp.children || 0;
@@ -21,19 +22,24 @@ function eventStats(rows, id) {
 
 function Insights({ rows }) {
   const byDay = {};
-  for (const r of rows) {
+  const rsvpRows = rows.filter(needsRsvp);
+  for (const r of rsvpRows) {
     const at = r.rsvp?.submitted_at || r.rsvp?.updated_at;
     if (at) { const k = at.slice(0, 10); byDay[k] = (byDay[k] || 0) + 1; }
   }
   let run = 0;
   const points = Object.keys(byDay).sort().map((date) => ({ date, value: (run += byDay[date]) }));
 
-  const eventRows = events.map((e) => {
+  const eventRows = rsvpEventList.map((e) => {
     const s = eventStats(rows, e.id);
     return { label: EVENT_NAMES[e.id], values: { attending: s.attending, declined: s.declined, pending: s.pending } };
   });
+  const familyRows = familyEventList.map((e) => {
+    const s = eventStats(rows, e.id);
+    return { label: EVENT_NAMES[e.id], values: { seats: s.maxSeats } };
+  });
 
-  const att = rows.filter((r) => statusFor(r) === 'attending');
+  const att = rows.filter(rsvpAttending);
   const sum = (k) => att.reduce((n, r) => n + (r.rsvp[k] || 0), 0);
   const side = (v) => rows.filter((r) => r.side === v).length;
   const sideHeads = (v) => att.filter((r) => r.side === v).reduce((n, r) => n + headcount(r), 0);
@@ -43,36 +49,42 @@ function Insights({ rows }) {
       <div className="adm-two">
         <section className="adm-card">
           <div className="adm-card-head"><h2>Responses over time</h2><span className="adm-muted small">cumulative families</span></div>
-          <CumulativeLine points={points} total={rows.length} />
+          <CumulativeLine points={points} total={rsvpRows.length} />
         </section>
         <section className="adm-card">
-          <div className="adm-card-head"><h2>Invite funnel</h2><span className="adm-muted small">families</span></div>
+          <div className="adm-card-head"><h2>RSVP funnel</h2><span className="adm-muted small">families invited to RSVP events</span></div>
           <Funnel steps={[
-            { label: 'Invited', value: rows.length },
-            { label: 'Opened link', value: rows.filter((r) => r.open_count > 0).length },
-            { label: 'Responded', value: rows.filter((r) => r.rsvp).length },
+            { label: 'Invited', value: rsvpRows.length },
+            { label: 'Opened link', value: rsvpRows.filter((r) => r.open_count > 0).length },
+            { label: 'Responded', value: rsvpRows.filter((r) => r.rsvp).length },
             { label: 'Attending', value: att.length },
           ]} />
         </section>
       </div>
       <section className="adm-card">
-        <div className="adm-card-head"><h2>Replies per celebration</h2><span className="adm-muted small">families · hover for detail</span></div>
+        <div className="adm-card-head"><h2>RSVP replies</h2><span className="adm-muted small">families · hover for detail</span></div>
         <StackedBars rows={eventRows} series={[
           { key: 'attending', label: 'Attending', color: SERIES[0] },
           { key: 'declined', label: 'Declined', color: SERIES[1] },
           { key: 'pending', label: 'No reply yet', color: NEUTRAL, hatch: true },
         ]} />
       </section>
+      {familyRows.length > 0 && (
+        <section className="adm-card">
+          <div className="adm-card-head"><h2>Close-family celebrations</h2><span className="adm-muted small">{FAMILY_LABEL} · seats reserved on invites</span></div>
+          <StackedBars unit="seats" rows={familyRows} series={[{ key: 'seats', label: 'Seats reserved', color: SERIES[2] }]} />
+        </section>
+      )}
       <div className="adm-three">
         <section className="adm-card">
-          <h2>Meals</h2>
+          <h2>Meals <span className="adm-muted small">(RSVP)</span></h2>
           <PartBar unit="Meals" parts={[
             { label: 'Vegetarian', value: sum('veg'), color: SERIES[0] },
             { label: 'Non-veg', value: sum('nonveg'), color: SERIES[1] },
           ]} />
         </section>
         <section className="adm-card">
-          <h2>Adults &amp; kids</h2>
+          <h2>Adults &amp; kids <span className="adm-muted small">(RSVP)</span></h2>
           <PartBar unit="Guests" parts={[
             { label: 'Adults', value: sum('adults'), color: SERIES[0] },
             { label: 'Children', value: sum('children'), color: SERIES[1] },
@@ -101,12 +113,13 @@ const Stat = ({ label, value, sub }) => (
 );
 
 export default function Overview({ rows, messages }) {
-  const responded = rows.filter((r) => r.rsvp).length;
-  const attending = rows.filter((r) => statusFor(r) === 'attending');
+  const rsvpRows = rows.filter(needsRsvp);
+  const responded = rsvpRows.filter((r) => r.rsvp).length;
+  const attending = rows.filter(rsvpAttending);
   const heads = attending.reduce((n, r) => n + headcount(r), 0);
   const opened = rows.filter((r) => r.open_count > 0).length;
   const notes = rows.filter((r) => r.rsvp?.message).sort((a, b) => (b.rsvp.updated_at > a.rsvp.updated_at ? 1 : -1));
-  const allergies = rows.filter((r) => r.rsvp?.allergies && statusFor(r) === 'attending');
+  const allergies = rows.filter((r) => r.rsvp?.allergies && rsvpAttending(r));
   const now = new Date();
   const waDue = messages.filter((m) => m.send_whatsapp && !m.wa_done && (m.status === 'sent' || (m.send_at && new Date(m.send_at) <= now)));
 
@@ -121,9 +134,10 @@ export default function Overview({ rows, messages }) {
 
       <div className="adm-stats">
         <Stat label="Invitations" value={rows.length} sub={`${opened} opened`} />
-        <Stat label="Responded" value={responded} sub={`${rows.length ? Math.round((responded / rows.length) * 100) : 0}%`} />
-        <Stat label="Not responded" value={rows.length - responded} />
-        <Stat label="Families attending" value={attending.length} sub={`${heads} guests`} />
+        <Stat label="RSVP responded" value={responded} sub={`of ${rsvpRows.length} · ${rsvpRows.length ? Math.round((responded / rsvpRows.length) * 100) : 0}%`} />
+        <Stat label="RSVP not responded" value={rsvpRows.length - responded} />
+        <Stat label="Attending (Colombo)" value={attending.length} sub={`${heads} guests`} />
+        <Stat label="Close family only" value={rows.length - rsvpRows.length} sub="no RSVP needed" />
       </div>
 
       <Insights rows={rows} />
@@ -141,6 +155,17 @@ export default function Overview({ rows, messages }) {
             <tbody>
               {events.map((e) => {
                 const s = eventStats(rows, e.id);
+                if (!isRsvpEvent(e.id)) {
+                  return (
+                    <tr key={e.id} className="adm-family-row">
+                      <td><Link to={`/admin/guests?event=${e.id}`}>{EVENT_NAMES[e.id]}</Link><div className="adm-muted small">{FAMILY_LABEL}</div></td>
+                      <td>{s.invited}</td>
+                      <td colSpan={5} className="adm-muted">Invited · no RSVP collected</td>
+                      <td><strong>{s.maxSeats}</strong> <span className="adm-muted">expected</span></td>
+                      <td colSpan={2} className="adm-muted">—</td>
+                    </tr>
+                  );
+                }
                 return (
                   <tr key={e.id}>
                     <td><Link to={`/admin/guests?event=${e.id}&status=attending`}>{EVENT_NAMES[e.id]}</Link></td>
@@ -159,7 +184,7 @@ export default function Overview({ rows, messages }) {
             </tbody>
           </table>
         </div>
-        <p className="adm-muted small">“Pending” guests count toward the max only. Tap an event to see its guest list.</p>
+        <p className="adm-muted small">Only the Colombo reception collects RSVPs. Close-family celebrations show the seats reserved on each invite as the expected number. Tap an event to see its guest list.</p>
       </section>
 
       <div className="adm-two">

@@ -94,15 +94,6 @@
 .is-leaving .env-card { transform: translateY(-62%) scale(1.25); }
 .is-opening .env-tap, .is-rising .env-tap, .is-leaving .env-tap { opacity: 0; animation: none; transition: opacity .3s; }
 
-/* =============================== Floating UI =============================== */
-.music-btn {
-  position: fixed; left: 14px; bottom: max(14px, env(safe-area-inset-bottom)); z-index: 90;
-  width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--gold);
-  background: rgba(110, 0, 65, .7); color: var(--gold); font-size: 1.3rem;
-}
-.music-btn.on { animation: spin 6s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
 /* =============================== RSVP =============================== */
 .rsvp.sec { background: radial-gradient(ellipse at 50% 100%, var(--blush), var(--ivory) 60%); }
 .rsvp-card {

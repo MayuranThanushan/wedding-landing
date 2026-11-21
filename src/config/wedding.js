@@ -20,6 +20,9 @@ export const venues = {
     mapQuery: 'Ballari, Karnataka, India',
     timeZone: 'Asia/Kolkata',
     notes: '',
+    photo: '/assets/venues/ballari.webp',
+    photoCaption: 'Ballari at dusk, from the fort',
+    photoCredit: 'Photo: Ravibhalli, CC BY-SA 3.0, via Wikimedia Commons',
   },
   colombo: {
     name: 'Ramada Colombo',
@@ -27,6 +30,9 @@ export const venues = {
     mapQuery: 'Ramada by Wyndham Colombo',
     timeZone: 'Asia/Colombo',
     notes: '',
+    photo: '/assets/venues/colombo.webp',
+    photoCaption: 'Ramada Colombo',
+    photoCredit: 'Photo: Rehman Abubakr, CC BY-SA 4.0, via Wikimedia Commons',
   },
 };
 
@@ -116,3 +122,6 @@ export const gallery = [
 export const music = null; // '/assets/music/theme.mp3'
 
 export const eventById = Object.fromEntries(events.map((e) => [e.id, e]));
+
+// Only these events collect RSVPs (the rest are close-family events: invited, no RSVP needed).
+export const rsvpEvents = ['reception-colombo'];

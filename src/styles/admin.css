@@ -47,6 +47,11 @@ body:has(.adm), body:has(.adm-login) { background: #faf6ef; }
 .adm-table td.st-attending { color: #1d7a45; background: #eefaf2; font-weight: 700; }
 .adm-table td.st-declined { color: #a33; background: #fdf0f0; }
 .adm-table td.st-pending { color: #a77a00; background: #fff8e1; }
+.adm-table td.st-family { color: #6b4a8a; font-size: 10px; }
+.adm-table th.ev-rsvp { color: var(--pink); }
+.adm-table th.ev small { display: block; font-size: 9px; letter-spacing: .08em; }
+.adm-table tr.adm-family-row td { background: #faf7fc; }
+.adm-pill.st-family { background: #f1ebf7; color: #6b4a8a; }
 .adm-table td.notes { max-width: 260px; }
 .adm-table.guests td:first-child { min-width: 190px; }
 .adm-table .center { text-align: center; padding: 30px; }

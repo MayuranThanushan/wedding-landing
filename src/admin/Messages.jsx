@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { events, SITE_URL } from '../config/wedding.js';
 import { EMPTY_FILTER, EVENT_NAMES, matches, contactEmail, contactPhone, personalize, waLink } from '../lib/audience.js';
+import { RSVP_IDS, isRsvpEvent } from './scope.js';
 import { saveMessage, deleteMessage, sendEmailNow, DEMO } from '../lib/api.js';
 import FilterBar from './FilterBar.jsx';
 
@@ -30,7 +31,7 @@ const TEMPLATES = {
   },
 };
 
-const BLANK = { title: '', subject: '', body: '', audience: { ...EMPTY_FILTER, status: 'attending' }, send_email: true, send_whatsapp: true, send_at: null, status: 'draft' };
+const BLANK = { title: '', subject: '', body: '', audience: { ...EMPTY_FILTER, event: RSVP_IDS[0], status: 'attending' }, send_email: true, send_whatsapp: true, send_at: null, status: 'draft' };
 
 const toLocalInput = (iso) => {
   if (!iso) return '';
@@ -41,7 +42,7 @@ const toLocalInput = (iso) => {
 function audienceLabel(a = {}) {
   const parts = [];
   if (a.status) parts.push({ attending: 'Attending', declined: 'Declined', pending: 'Not responded' }[a.status]);
-  if (a.event) parts.push(EVENT_NAMES[a.event]);
+  if (a.event) parts.push(`${EVENT_NAMES[a.event]}${isRsvpEvent(a.event) ? '' : ' (close family)'}`);
   if (a.food) parts.push({ veg: 'Veg', nonveg: 'Non-veg', allergies: 'Allergies' }[a.food]);
   if (a.side) parts.push(`${a.side} side`);
   if (a.tag) parts.push(`#${a.tag}`);
@@ -147,14 +148,15 @@ export default function Messages({ rows, messages, reload }) {
         if (at < now) continue;
         await saveMessage({
           ...BLANK, title, status: 'scheduled', send_at: new Date(at).toISOString(),
-          audience: { ...EMPTY_FILTER, event: ev.id, status: 'attending' },
+          // RSVP event → only guests who said yes; close-family events → everyone invited (no RSVP).
+          audience: { ...EMPTY_FILTER, event: ev.id, status: isRsvpEvent(ev.id) ? 'attending' : '' },
           subject: TEMPLATES.reminder.subject, body: TEMPLATES.reminder.body,
         });
         n += 1;
       }
     }
     await reload();
-    setNote(n ? `Created ${n} scheduled reminders (1 week and 1 day before each event, to attending guests).` : 'Reminders already exist.');
+    setNote(n ? `Created ${n} scheduled reminders (1 week and 1 day before each event — to attending guests for the Colombo reception, and to all invited family for the other celebrations).` : 'Reminders already exist.');
   });
 
   const edit = (m) => { setDraft(m); setScheduleAt(toLocalInput(m.send_at)); window.scrollTo({ top: 0, behavior: 'smooth' }); };

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { events, eventById, venues } from '../config/wedding.js';
-import { EVENT_NAMES, statusFor, headcount, contactPhone } from '../lib/audience.js';
+import { EVENT_NAMES, headcount, contactPhone } from '../lib/audience.js';
+import { FAMILY_LABEL, RSVP_IDS, eventStatus, expectedFor, isRsvpEvent, needsRsvp, rsvpAttending, seats } from './scope.js';
 import { saveInvites } from '../lib/api.js';
 import { downloadCsv } from './csv.js';
 
@@ -10,20 +11,26 @@ const tableSort = (a, b) => (a === UNASSIGNED ? 1 : b === UNASSIGNED ? -1 : a.lo
 function Catering({ rows, eventId }) {
   const ev = eventById[eventId];
   const v = venues[ev.venue];
-  const list = rows.filter((r) => statusFor(r, eventId) === 'attending').sort((a, b) => a.family_name.localeCompare(b.family_name));
-  const t = list.reduce((s, r) => ({
-    adults: s.adults + (r.rsvp.adults || 0), children: s.children + (r.rsvp.children || 0),
-    veg: s.veg + (r.rsvp.veg || 0), nonveg: s.nonveg + (r.rsvp.nonveg || 0),
-  }), { adults: 0, children: 0, veg: 0, nonveg: 0 });
-  const pending = rows.filter((r) => statusFor(r, eventId) === 'pending');
-  const maxPending = pending.reduce((n, r) => n + (r.max_adults || 0) + (r.max_children || 0), 0);
-  const allergies = list.filter((r) => r.rsvp.allergies);
+  const family = !isRsvpEvent(eventId);
+  const list = rows.filter((r) => eventStatus(r, eventId) === (family ? 'family' : 'attending'))
+    .sort((a, b) => a.family_name.localeCompare(b.family_name));
+  // Close-family events have no RSVP: use the seats reserved on the invite.
+  const n = (r) => (family
+    ? { adults: r.max_adults || 0, children: r.max_children || 0, veg: null, nonveg: null }
+    : { adults: r.rsvp.adults || 0, children: r.rsvp.children || 0, veg: r.rsvp.veg || 0, nonveg: r.rsvp.nonveg || 0 });
+  const t = list.reduce((s, r) => {
+    const x = n(r);
+    return { adults: s.adults + x.adults, children: s.children + x.children, veg: s.veg + (x.veg || 0), nonveg: s.nonveg + (x.nonveg || 0) };
+  }, { adults: 0, children: 0, veg: 0, nonveg: 0 });
+  const pending = family ? [] : rows.filter((r) => eventStatus(r, eventId) === 'pending');
+  const maxPending = pending.reduce((k, r) => k + seats(r), 0);
+  const allergies = list.filter((r) => r.rsvp?.allergies);
   const date = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: v.timeZone }).format(new Date(ev.start));
 
   return (
     <section className="adm-card rep-sheet">
       <header className="rep-head">
-        <p className="rep-kicker">Catering sheet</p>
+        <p className="rep-kicker">Catering sheet{family ? ` · ${FAMILY_LABEL}` : ' · from RSVPs'}</p>
         <h2>{EVENT_NAMES[eventId]}</h2>
         <p className="adm-muted">{date} · {v.name}, {v.address}</p>
         <p className="adm-muted small">Printed {new Date().toLocaleString('en-GB')}</p>
@@ -32,10 +39,11 @@ function Catering({ rows, eventId }) {
         <div><b>{t.adults + t.children}</b><span>Total guests</span></div>
         <div><b>{t.adults}</b><span>Adults</span></div>
         <div><b>{t.children}</b><span>Children</span></div>
-        <div><b>{t.veg}</b><span>Vegetarian meals</span></div>
-        <div><b>{t.nonveg}</b><span>Non-veg meals</span></div>
+        {!family && <div><b>{t.veg}</b><span>Vegetarian meals</span></div>}
+        {!family && <div><b>{t.nonveg}</b><span>Non-veg meals</span></div>}
         <div><b>{allergies.length}</b><span>Families with allergies</span></div>
       </div>
+      {family && <p className="ci-warn">ℹ Close-family celebration — no RSVP is collected, so these are the seats reserved on each invite (maximum expected). Meal preferences aren’t collected for this event.</p>}
       {pending.length > 0 && <p className="ci-warn">⏳ {pending.length} invited famil{pending.length === 1 ? 'y has' : 'ies have'} not replied yet (up to {maxPending} more guests).</p>}
 
       {allergies.length > 0 && (
@@ -52,18 +60,21 @@ function Catering({ rows, eventId }) {
         <table className="adm-table rep-table">
           <thead><tr><th>Family</th><th>Table</th><th>Adults</th><th>Children</th><th>Veg</th><th>Non-veg</th><th>Allergies</th></tr></thead>
           <tbody>
-            {list.map((r) => (
-              <tr key={r.id}>
-                <td><strong>{r.family_name}</strong>{r.rsvp.name !== r.family_name && <div className="adm-muted small">{r.rsvp.name}</div>}</td>
-                <td>{r.table_label || '—'}</td>
-                <td>{r.rsvp.adults}</td><td>{r.rsvp.children}</td><td>{r.rsvp.veg}</td><td>{r.rsvp.nonveg}</td>
-                <td className="small">{r.rsvp.allergies}</td>
-              </tr>
-            ))}
+            {list.map((r) => {
+              const x = n(r);
+              return (
+                <tr key={r.id}>
+                  <td><strong>{r.family_name}</strong>{r.rsvp?.name && r.rsvp.name !== r.family_name && <div className="adm-muted small">{r.rsvp.name}</div>}</td>
+                  <td>{r.table_label || '—'}</td>
+                  <td>{x.adults}</td><td>{x.children}</td><td>{x.veg ?? '—'}</td><td>{x.nonveg ?? '—'}</td>
+                  <td className="small">{r.rsvp?.allergies}</td>
+                </tr>
+              );
+            })}
             {!list.length && <tr><td colSpan={7} className="center adm-muted">No confirmed guests yet.</td></tr>}
           </tbody>
           {list.length > 0 && (
-            <tfoot><tr><th>Total · {list.length} families</th><th /><th>{t.adults}</th><th>{t.children}</th><th>{t.veg}</th><th>{t.nonveg}</th><th /></tr></tfoot>
+            <tfoot><tr><th>Total · {list.length} families</th><th /><th>{t.adults}</th><th>{t.children}</th><th>{family ? '—' : t.veg}</th><th>{family ? '—' : t.nonveg}</th><th /></tr></tfoot>
           )}
         </table>
       </div>
@@ -76,10 +87,13 @@ function Seating({ rows, eventId, reload }) {
   const [saving, setSaving] = useState('');
   const [error, setError] = useState('');
   const list = useMemo(
-    () => rows.filter((r) => (eventId ? statusFor(r, eventId) === 'attending' : statusFor(r) === 'attending'))
+    () => rows.filter((r) => (eventId ? ['attending', 'family'].includes(eventStatus(r, eventId)) : rsvpAttending(r) || !needsRsvp(r)))
       .sort((a, b) => a.family_name.localeCompare(b.family_name)),
     [rows, eventId],
   );
+  // Guests expected: RSVP head count for the RSVP event, reserved seats for close-family events.
+  const heads = (r) => (eventId ? expectedFor(r, eventId) : rsvpAttending(r) ? headcount(r) : seats(r));
+  const showRsvp = (r) => rsvpAttending(r) && (!eventId || isRsvpEvent(eventId));
   const label = (r) => (r.id in draft ? draft[r.id] : r.table_label || '').trim();
   const groups = {};
   for (const r of list) (groups[label(r) || UNASSIGNED] ||= []).push(r);
@@ -99,7 +113,7 @@ function Seating({ rows, eventId, reload }) {
 
   const exportCsv = () => downloadCsv('seating.csv', [
     ['table', 'family', 'rsvp_name', 'adults', 'children', 'veg', 'nonveg', 'allergies', 'phone'],
-    ...tables.flatMap((tb) => groups[tb].map((r) => [tb === UNASSIGNED ? '' : tb, r.family_name, r.rsvp.name, r.rsvp.adults, r.rsvp.children, r.rsvp.veg, r.rsvp.nonveg, r.rsvp.allergies || '', contactPhone(r)])),
+    ...tables.flatMap((tb) => groups[tb].map((r) => [tb === UNASSIGNED ? '' : tb, r.family_name, r.rsvp?.name || '', showRsvp(r) ? r.rsvp.adults : r.max_adults, showRsvp(r) ? r.rsvp.children : r.max_children, showRsvp(r) ? r.rsvp.veg : '', showRsvp(r) ? r.rsvp.nonveg : '', r.rsvp?.allergies || '', contactPhone(r)])),
   ]);
 
   return (
@@ -119,7 +133,7 @@ function Seating({ rows, eventId, reload }) {
               {list.map((r) => (
                 <tr key={r.id}>
                   <td><strong>{r.family_name}</strong> <span className="adm-muted small">{r.side !== 'both' ? r.side : ''}</span></td>
-                  <td>{headcount(r)}</td>
+                  <td>{heads(r)}{!showRsvp(r) && <span className="adm-muted small"> seats</span>}</td>
                   <td>
                     <input className="adm-input seat-input" list="tables" placeholder="Unassigned"
                       value={r.id in draft ? draft[r.id] : r.table_label || ''}
@@ -129,7 +143,7 @@ function Seating({ rows, eventId, reload }) {
                   </td>
                 </tr>
               ))}
-              {!list.length && <tr><td colSpan={3} className="center adm-muted">No attending families yet.</td></tr>}
+              {!list.length && <tr><td colSpan={3} className="center adm-muted">No expected families yet.</td></tr>}
             </tbody>
           </table>
         </div>
@@ -141,11 +155,11 @@ function Seating({ rows, eventId, reload }) {
         </header>
         <div className="seat-grid">
           {tables.map((tb) => {
-            const heads = groups[tb].reduce((n, r) => n + headcount(r), 0);
+            const total = groups[tb].reduce((k, r) => k + heads(r), 0);
             return (
               <div key={tb} className={`seat-table ${tb === UNASSIGNED ? 'unassigned' : ''}`}>
-                <h3>{tb}<span>{heads} guest{heads === 1 ? '' : 's'}</span></h3>
-                <ul>{groups[tb].map((r) => <li key={r.id}>{r.family_name}<span>{r.rsvp.adults}+{r.rsvp.children}</span></li>)}</ul>
+                <h3>{tb}<span>{total} guest{total === 1 ? '' : 's'}</span></h3>
+                <ul>{groups[tb].map((r) => <li key={r.id}>{r.family_name}<span>{showRsvp(r) ? `${r.rsvp.adults}+${r.rsvp.children}` : `${r.max_adults}+${r.max_children} seats`}</span></li>)}</ul>
               </div>
             );
           })}
@@ -157,7 +171,7 @@ function Seating({ rows, eventId, reload }) {
 
 export default function Reports({ rows, reload }) {
   const [tab, setTab] = useState('catering');
-  const [eventId, setEventId] = useState('wedding' in eventById ? 'wedding' : events[0].id);
+  const [eventId, setEventId] = useState(RSVP_IDS[0] in eventById ? RSVP_IDS[0] : events[0].id);
   return (
     <div className="adm-grid">
       <div className="adm-toolbar no-print">
@@ -167,11 +181,11 @@ export default function Reports({ rows, reload }) {
         </div>
         <select className="adm-input" value={eventId} onChange={(e) => setEventId(e.target.value)} aria-label="Event">
           {tab === 'seating' && <option value="">All celebrations</option>}
-          {events.map((e) => <option key={e.id} value={e.id}>{EVENT_NAMES[e.id]}</option>)}
+          {events.map((e) => <option key={e.id} value={e.id}>{EVENT_NAMES[e.id]}{isRsvpEvent(e.id) ? ' · RSVP' : ' · close family'}</option>)}
         </select>
         <button className="adm-btn primary" onClick={() => window.print()}>🖨 Print</button>
       </div>
-      {tab === 'catering' ? <Catering rows={rows} eventId={eventId || 'wedding'} /> : <Seating rows={rows} eventId={eventId} reload={reload} />}
+      {tab === 'catering' ? <Catering rows={rows} eventId={eventId || RSVP_IDS[0]} /> : <Seating rows={rows} eventId={eventId} reload={reload} />}
     </div>
   );
 }

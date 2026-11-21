@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { NavLink, Route, Routes } from 'react-router-dom';
-import { DEMO, getSession, onAuthChange, signIn, signOut, listRows, listMessages, resetDemo, adminListWishes, adminListPhotos } from '../lib/api.js';
+import { DEMO, getSession, onAuthChange, signIn, signOut, listRows, listMessages, resetDemo, adminListPhotos } from '../lib/api.js';
 import Overview from './Overview.jsx';
 import Guests from './Guests.jsx';
 import Messages from './Messages.jsx';
@@ -53,8 +53,8 @@ export default function Admin() {
     try {
       const [r, m] = await Promise.all([listRows(), listMessages()]);
       setRows(r); setMessages(m);
-      Promise.all([adminListWishes(), adminListPhotos()])
-        .then(([w, p]) => setPending(w.filter((x) => !x.approved).length + p.filter((x) => !x.approved).length))
+      adminListPhotos()
+        .then((p) => setPending(p.filter((x) => !x.approved).length))
         .catch(() => {});
     } catch (e) {
       setError(e.message || String(e));

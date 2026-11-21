@@ -1,64 +1,48 @@
-import { useEffect, useRef } from 'react';
 import { useLang } from '../../i18n/index.jsx';
 import { pick } from '../../i18n/pick.js';
-import { story } from '../../config/content.js';
-import Section from '../ui/Section.jsx';
+import { couple } from '../../config/content.js';
 import Reveal from '../Reveal.jsx';
 import '../../styles/sections.css';
 
-/** Sets --p (0..1) on the element as it scrolls through the viewport, so the gold line "draws". */
-function useScrollProgress(ref) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return undefined;
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      const r = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const p = Math.min(1, Math.max(0, (vh * 0.7 - r.top) / r.height));
-      el.style.setProperty('--p', p.toFixed(3));
-    };
-    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-    update();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(raf); };
-  }, [ref]);
+/** Short "The Couple" intro: two arched portraits (monograms until photos are added) and one warm line. */
+function Person({ p, side }) {
+  const { lang } = useLang();
+  return (
+    <Reveal className={`cp-person ${side}`} variant={side === 'l' ? 'left' : 'right'}>
+      <div className="cp-arch">
+        {p.photo
+          ? <img src={p.photo} alt={p.name} />
+          : <span className="cp-mono" aria-hidden="true">{p.name[0]}</span>}
+        <img className="cp-mandala" src="/assets/art/mandala-gold.webp" alt="" />
+      </div>
+      <p className="cp-role">{pick(p.role, lang)}</p>
+      <h3 className="cp-name">{p.name}</h3>
+      <p className="cp-family">{pick(p.family, lang)}</p>
+    </Reveal>
+  );
 }
 
 export default function Story() {
   const { lang } = useLang();
-  const line = useRef(null);
-  useScrollProgress(line);
-  const [t1, t2] = pick(story.title, lang);
-
   return (
-    <Section
-      id="story" tone="blush" num="01" motif
-      kicker={pick(story.kicker, lang)}
-      title={<>{t1} <em>{t2}</em></>}
-      lead={pick(story.lead, lang)}
-    >
-      <ol className="story-line" ref={line}>
-        <span className="story-track" aria-hidden="true"><span className="story-fill" /></span>
-        {story.milestones.map((m, i) => (
-          <li key={i} className={`story-item ${i % 2 ? 'is-right' : 'is-left'} ${m.final ? 'is-final' : ''}`}>
-            <span className="story-dot" aria-hidden="true">{m.icon}</span>
-            <Reveal variant={i % 2 ? 'right' : 'left'} className="story-card card lift">
-              {m.photo && <img className="story-photo" src={m.photo} alt="" loading="lazy" />}
-              <p className="card-eyebrow">{pick(m.when, lang)}</p>
-              <h3 className="card-title">{pick(m.title, lang)}</h3>
-              <p className="story-text">{pick(m.text, lang)}</p>
-              {m.link && (
-                <a className="story-link" href={m.link}>
-                  {pick(story.engagementLink, lang)} <span aria-hidden="true">→</span>
-                </a>
-              )}
-            </Reveal>
-          </li>
-        ))}
-      </ol>
-    </Section>
+    <section id="story" className="sec tone-blush cp">
+      <div className="wrap">
+        <Reveal className="sec-head center">
+          <p className="sec-kicker"><span className="num">01</span>{pick(couple.kicker, lang)}</p>
+        </Reveal>
+        <div className="cp-row">
+          <Person p={couple.groom} side="l" />
+          <Reveal className="cp-mid" variant="scale" delay={0.2}>
+            <img src="/assets/art/lotus.webp" alt="" className="cp-lotus" />
+            <span className="cp-amp">&amp;</span>
+          </Reveal>
+          <Person p={couple.bride} side="r" />
+        </div>
+        <Reveal className="cp-words" delay={0.15}>
+          <p className="cp-quote">“{pick(couple.quote, lang)}”</p>
+          <p className="cp-line">{pick(couple.line, lang)}</p>
+        </Reveal>
+      </div>
+    </section>
   );
 }

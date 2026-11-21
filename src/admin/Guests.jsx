@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { events, SITE_URL } from '../config/wedding.js';
-import { EMPTY_FILTER, EVENT_NAMES, matches, statusFor, headcount, contactPhone, inviteLink, personalize, waLink } from '../lib/audience.js';
+import { eventStatus, expectedFor, isRsvpEvent, needsRsvp, rsvpAttending, RSVP_IDS } from './scope.js';
+import { EMPTY_FILTER, EVENT_NAMES, matches, headcount, contactPhone, inviteLink, personalize, waLink } from '../lib/audience.js';
 import { saveInvites, deleteInvite, clearRsvp } from '../lib/api.js';
 import FilterBar from './FilterBar.jsx';
 import QrPassModal from './QrPass.jsx';
@@ -15,7 +16,7 @@ const PRESETS = {
   'Colombo only': ['reception-colombo'],
 };
 const INVITE_WA = 'Dear {family},\n\nWith great joy we invite you to celebrate the wedding of Rohit & Gayathiri 💛\n\nPlease open your personal invitation and RSVP here:\n{link}\n\nWith love,\nRohit & Gayathiri';
-const SHORT = { attending: '✓', declined: '✗', pending: '…' };
+const SHORT = { attending: '✓', declined: '✗', pending: '…', family: '●' };
 
 const site = () => (typeof window !== 'undefined' ? window.location.origin : SITE_URL);
 
@@ -160,10 +161,12 @@ export default function Guests({ rows, reload }) {
 
   const list = useMemo(() => rows.filter((r) => matches(r, filter)), [rows, filter]);
   const totals = useMemo(() => list.reduce((t, r) => {
-    const att = statusFor(r, filter.event) === 'attending';
+    if (filter.event && !isRsvpEvent(filter.event)) { t.heads += expectedFor(r, filter.event); return t; }
+    const att = filter.event ? eventStatus(r, filter.event) === 'attending' : rsvpAttending(r);
     if (att) { t.heads += headcount(r); t.veg += r.rsvp.veg || 0; t.nonveg += r.rsvp.nonveg || 0; }
     return t;
   }, { heads: 0, veg: 0, nonveg: 0 }), [list, filter.event]);
+  const familyFilter = filter.event && !isRsvpEvent(filter.event);
 
   const copy = async (r) => {
     await navigator.clipboard.writeText(inviteLink(r, site()));
@@ -184,7 +187,7 @@ export default function Guests({ rows, reload }) {
     const body = list.map((r) => [
       r.code, inviteLink(r, site()), r.family_name, r.side, (r.tags || []).join(';'), (r.events || []).join(';'),
       r.rsvp?.name || '', contactPhone(r), r.rsvp?.email || r.email || '',
-      ...events.map((e) => { const s = statusFor(r, e.id); return s === 'not-invited' ? '' : s; }),
+      ...events.map((e) => { const s = eventStatus(r, e.id); return s === 'not-invited' ? '' : s === 'family' ? 'invited (no RSVP)' : s; }),
       r.rsvp?.adults ?? '', r.rsvp?.children ?? '', r.rsvp?.veg ?? '', r.rsvp?.nonveg ?? '',
       r.rsvp?.allergies || '', r.rsvp?.message || '', r.open_count || 0, r.rsvp?.updated_at || '',
     ]);
@@ -201,8 +204,10 @@ export default function Guests({ rows, reload }) {
       </div>
       <FilterBar value={filter} onChange={setFilter} rows={rows} />
       <p className="adm-muted small">
-        Showing <strong>{list.length}</strong> of {rows.length} invitations · {totals.heads} attending guests
-        {filter.event ? ` for ${EVENT_NAMES[filter.event]}` : ''} · 🥗 {totals.veg} · 🍗 {totals.nonveg}
+        Showing <strong>{list.length}</strong> of {rows.length} invitations ·{' '}
+        {familyFilter
+          ? <>{totals.heads} seats expected for {EVENT_NAMES[filter.event]} (close family · no RSVP)</>
+          : <>{totals.heads} attending guests for {EVENT_NAMES[filter.event || RSVP_IDS[0]]} (RSVP) · 🥗 {totals.veg} · 🍗 {totals.nonveg}</>}
         {Object.values(filter).some(Boolean) && <> · <button className="adm-link" onClick={() => setFilter(EMPTY_FILTER)}>clear filters</button></>}
       </p>
 
@@ -212,8 +217,8 @@ export default function Guests({ rows, reload }) {
             <thead>
               <tr>
                 <th>Guest</th><th>Contact</th>
-                {events.map((e) => <th key={e.id} title={EVENT_NAMES[e.id]} className="ev">{EVENT_NAMES[e.id].replace('Reception', 'Rec.').replace('Ceremony', '')}</th>)}
-                <th>Guests</th><th>🥗/🍗</th><th>Notes</th><th />
+                {events.map((e) => <th key={e.id} title={`${EVENT_NAMES[e.id]}${isRsvpEvent(e.id) ? ' · RSVP' : ' · close family, no RSVP'}`} className={`ev ${isRsvpEvent(e.id) ? 'ev-rsvp' : ''}`}>{EVENT_NAMES[e.id].replace('Reception', 'Rec.').replace('Ceremony', '')}{isRsvpEvent(e.id) && <small> RSVP</small>}</th>)}
+                <th>RSVP guests</th><th>🥗/🍗</th><th>Notes</th><th />
               </tr>
             </thead>
             <tbody>
@@ -234,11 +239,11 @@ export default function Guests({ rows, reload }) {
                     {(r.rsvp?.email || r.email) && <div className="adm-muted">{r.rsvp?.email || r.email}</div>}
                   </td>
                   {events.map((e) => {
-                    const s = statusFor(r, e.id);
+                    const s = eventStatus(r, e.id);
                     return <td key={e.id} className={`ev st-${s}`}>{s === 'not-invited' ? '' : SHORT[s]}</td>;
                   })}
-                  <td>{r.rsvp ? `${r.rsvp.adults}+${r.rsvp.children}` : '—'}</td>
-                  <td>{r.rsvp ? `${r.rsvp.veg}/${r.rsvp.nonveg}` : '—'}</td>
+                  <td>{r.rsvp && needsRsvp(r) ? `${r.rsvp.adults}+${r.rsvp.children}` : needsRsvp(r) ? '—' : <span className="adm-muted small">family · {r.max_adults}+{r.max_children} seats</span>}</td>
+                  <td>{r.rsvp && needsRsvp(r) ? `${r.rsvp.veg}/${r.rsvp.nonveg}` : '—'}</td>
                   <td className="small notes">
                     {r.rsvp?.allergies && <div>⚠ {r.rsvp.allergies}</div>}
                     {r.rsvp?.message && <div className="adm-muted">“{r.rsvp.message}”</div>}
@@ -261,7 +266,7 @@ export default function Guests({ rows, reload }) {
           </table>
         </div>
       </div>
-      <p className="adm-muted small">✓ attending · ✗ declined · … not responded · blank = not invited</p>
+      <p className="adm-muted small">RSVP column (Colombo): ✓ attending · ✗ declined · … not responded. Close-family events: ● invited (no RSVP needed). Blank = not invited.</p>
 
       {editing && <InviteModal initial={editing} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); reload(); }} />}
       {qr && <QrPassModal row={qr} onClose={() => setQr(null)} />}

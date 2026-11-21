@@ -250,50 +250,119 @@ html:lang(ta) .inv *, html:lang(te) .inv * { letter-spacing: 0 !important; }
 .cal-pop a, .cal-pop button { padding: .75em 1em; text-align: left; border: 0; background: none; color: var(--ink); text-decoration: none; font-size: .9rem; }
 .cal-pop a:hover, .cal-pop button:hover { background: var(--blush); }
 
-/* ---------------------------------------------------------------- Invitation card */
-.iv { background: radial-gradient(ellipse at 50% 0%, var(--blush), var(--ivory) 55%); }
-.iv-card {
-  position: relative; max-width: 760px; margin: 0 auto; text-align: center;
-  padding: clamp(40px, 8vw, 80px) clamp(20px, 6vw, 72px);
-  background: #fffdf7; border-radius: 6px;
-  box-shadow: 0 50px 100px -50px rgba(110, 0, 65, .5), 0 0 0 1px var(--hair-soft);
+/* ---------------------------------------------------------------- Invitation card (traditional Telugu–Tamil) */
+.iv { --turmeric: #f9a825; --kumkum: #b71c1c; --mango: #2e7d32;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(249, 168, 37, .12), transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(204, 0, 125, .1), transparent 40%),
+    radial-gradient(ellipse at 50% 0%, var(--blush), var(--ivory) 55%);
 }
-.iv-card::before { content: ''; position: absolute; inset: 14px; border: 1px solid var(--hair); pointer-events: none; }
-.iv-corner { position: absolute; width: 46px; height: 46px; border: 2px solid var(--gold-2); pointer-events: none; }
-.iv-corner.tl { top: 22px; left: 22px; border-right: 0; border-bottom: 0; }
-.iv-corner.tr { top: 22px; right: 22px; border-left: 0; border-bottom: 0; }
-.iv-corner.bl { bottom: 22px; left: 22px; border-right: 0; border-top: 0; }
-.iv-corner.br { bottom: 22px; right: 22px; border-left: 0; border-top: 0; }
-.iv-kicker { justify-content: center; margin-bottom: 18px !important; color: var(--pink); }
+.iv-kicker { justify-content: center; margin: 0 0 26px !important; color: var(--pink); display: flex !important; }
 .iv-kicker::after { display: none; }
-.iv-ganesha { width: 78px; margin: 0 auto 14px; }
-.iv-invocation { font-family: var(--serif); letter-spacing: .12em; margin: 0 0 1.4em; color: var(--pink-deep); }
-.iv-blessing { font-family: var(--display); font-style: italic; font-size: clamp(1.15rem, 3vw, 1.4rem); margin: 0 0 1.4em; color: var(--muted); }
+.iv-card { position: relative; max-width: 780px; margin: 0 auto; padding-top: 34px; }
+.iv-thoranam { position: absolute; z-index: 2; top: 0; left: -3%; width: 106%; height: auto; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .18)); }
+.orn-sway { transform-box: fill-box; }
+.orn-sway > g { transform-origin: 50% 0; animation: leaf-sway 3.6s ease-in-out infinite; animation-delay: calc(var(--i) * -.37s); }
+@keyframes leaf-sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+.iv-frame {
+  position: relative; text-align: center;
+  padding: clamp(64px, 11vw, 96px) clamp(22px, 7vw, 76px) clamp(30px, 6vw, 48px);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 236, 179, .55), transparent 60%),
+    #fffaf0;
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 6px var(--turmeric), 0 0 0 8px #fffaf0, 0 0 0 10px var(--kumkum),
+    0 60px 100px -50px rgba(110, 0, 65, .55);
+}
+.iv-frame::before { /* inner gold + temple-band border */
+  content: ''; position: absolute; inset: 14px; pointer-events: none; border: 1px solid var(--gold-2);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 10px, rgba(183, 28, 28, .55) 10px 12px) top / 100% 3px no-repeat,
+    repeating-linear-gradient(90deg, transparent 0 10px, rgba(183, 28, 28, .55) 10px 12px) bottom / 100% 3px no-repeat;
+}
+.iv-kolam { position: absolute; width: clamp(54px, 10vw, 84px); height: auto; }
+.iv-kolam.tl { top: 20px; left: 20px; }
+.iv-kolam.tr { top: 20px; right: 20px; transform: scaleX(-1); }
+.iv-kolam.bl { bottom: 20px; left: 20px; transform: scaleY(-1); }
+.iv-kolam.br { bottom: 20px; right: 20px; transform: scale(-1, -1); }
+.iv-srirastu { margin: 0 0 10px; font-family: 'Noto Serif Telugu', var(--serif); font-size: clamp(.95rem, 2.6vw, 1.15rem); color: var(--kumkum); letter-spacing: 0 !important; }
+.iv-top { display: flex; justify-content: center; align-items: flex-end; gap: clamp(16px, 5vw, 44px); margin-bottom: 10px; }
+.iv-kalasam { width: clamp(48px, 10vw, 74px); height: auto; filter: drop-shadow(0 6px 8px rgba(122, 75, 12, .3)); }
+.iv-ganesha { width: clamp(70px, 14vw, 96px); }
+.iv-pathirikai { margin: 0 0 18px; font-family: 'Noto Serif Tamil', var(--serif); font-size: clamp(.9rem, 2.5vw, 1.1rem); color: var(--mango); letter-spacing: 0 !important; }
+.iv-invocation { font-family: var(--serif); letter-spacing: .12em; margin: 0 0 1.2em; color: var(--pink-deep); }
+.iv-blessing { font-family: var(--display); font-style: italic; font-size: clamp(1.15rem, 3vw, 1.4rem); margin: 0 0 1.3em; color: var(--muted); }
 .iv-parents { display: flex; flex-wrap: wrap; justify-content: center; column-gap: .45em; margin: .2em 0; font-family: var(--caps); font-size: clamp(.98rem, 2.8vw, 1.25rem); letter-spacing: .06em; color: var(--pink-dark); }
 .iv-parents-amp { font-size: .85em; color: var(--gold-deep); }
 .iv-and { font-family: var(--display); font-style: italic; font-size: 1.6rem; margin: .1em 0; color: var(--gold-deep); }
-.iv-request { font-family: var(--display); font-size: clamp(1.15rem, 3vw, 1.4rem); margin: 1.2em auto; max-width: 28em; color: var(--ink); }
-.iv-couple { display: grid; justify-items: center; margin: .4em 0 1.4em; font-family: var(--display); font-weight: 500; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; color: var(--pink); }
-.iv-weds { font-style: italic; font-weight: 400; color: var(--gold-deep); font-size: .7em; }
-.iv-closing { font-family: var(--display); font-style: italic; font-size: 1.2rem; color: var(--muted); margin: 1.4em 0 0; }
-.iv-lotus { width: 70px; margin: 22px auto 0; }
+.iv-request { font-family: var(--display); font-size: clamp(1.15rem, 3vw, 1.4rem); margin: 1.1em auto; max-width: 28em; color: var(--ink); }
+.iv-couple {
+  position: relative; display: grid; justify-items: center; margin: .3em auto 1.2em; padding: 18px 10px;
+  font-family: var(--display); font-weight: 500; font-size: clamp(2rem, 6vw, 3.3rem); line-height: 1.05; color: var(--kumkum);
+}
+.iv-couple::before, .iv-couple::after { content: ''; width: min(70%, 320px); height: 10px; background: radial-gradient(circle, var(--turmeric) 2px, transparent 2.5px) center / 14px 10px repeat-x; }
+.iv-couple::before { margin-bottom: 12px; } .iv-couple::after { margin-top: 12px; }
+.iv-weds { font-style: italic; font-weight: 400; color: var(--gold-deep); font-size: .55em; margin: .15em 0; }
+.iv-muhurtham {
+  display: inline-grid; grid-auto-flow: column; align-items: center; gap: 14px; padding: 10px 22px; margin: 0 auto 6px;
+  border-radius: 999px; background: linear-gradient(90deg, #fff3cd, #ffe082, #fff3cd); box-shadow: inset 0 0 0 1px var(--gold-2);
+  font-family: var(--caps); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--pink-dark);
+}
+.iv-muhurtham strong { font-family: var(--display); font-size: 1.3rem; letter-spacing: .08em; color: var(--kumkum); }
+.iv-closing { font-family: var(--display); font-style: italic; font-size: 1.2rem; color: var(--muted); margin: 1.2em 0 0; }
+.iv-diyas { display: flex; justify-content: center; gap: clamp(8px, 3vw, 22px); margin-top: 22px; }
+.orn-diya { width: clamp(34px, 7vw, 48px); height: auto; overflow: visible; }
+.orn-flame { transform-origin: 30px 30px; animation: flame 1.4s ease-in-out infinite alternate; animation-delay: var(--fd); }
+.orn-glow { animation: glow 2s ease-in-out infinite alternate; animation-delay: var(--fd); }
+@keyframes flame { 0% { transform: scale(1, 1) skewX(0); } 40% { transform: scale(.92, 1.08) skewX(3deg); } 100% { transform: scale(1.05, .94) skewX(-3deg); } }
+@keyframes glow { from { opacity: .55; } to { opacity: 1; } }
 :lang(ta) .iv-couple, :lang(te) .iv-couple { font-size: clamp(1.5rem, 5vw, 2.4rem); }
+@media (max-width: 480px) {
+  .iv-kolam { width: 46px; }
+  .iv-muhurtham { gap: 8px; padding: 8px 14px; font-size: .62rem; }
+  .iv-muhurtham strong { font-size: 1.05rem; }
+}
+@media (prefers-reduced-motion: reduce) { .orn-sway > g, .orn-flame, .orn-glow { animation: none; } }
 
 /* ---------------------------------------------------------------- Venues */
-.vn-grid { display: grid; gap: clamp(18px, 3vw, 32px); grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
-.vn { display: grid; border-radius: 28px; overflow: hidden; background: #fff; box-shadow: 0 40px 80px -40px rgba(110, 0, 65, .45), 0 0 0 1px var(--hair-soft); transition: transform .6s var(--ease-out); }
-.vn:hover { transform: translateY(-4px); }
-.vn-map { aspect-ratio: 16 / 9; background: var(--plum); position: relative; }
-.vn-map iframe { width: 100%; height: 100%; border: 0; display: block; }
-.vn-map-cover { position: absolute; inset: 0; border: 0; padding: 0; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 120%, var(--pink-deep), var(--plum) 70%); color: var(--gold); overflow: hidden; }
-.vn-map-cover img { position: absolute; bottom: 0; left: 0; width: 100%; opacity: .5; }
-.vn-map-cover span { position: relative; padding: .6em 1.3em; border-radius: 999px; border: 1px solid rgba(255, 222, 89, .6); background: rgba(0, 0, 0, .2); font-family: var(--caps); font-size: .8rem; letter-spacing: .14em; transition: background .2s; }
-.vn-map-cover:hover span { background: rgba(255, 222, 89, .18); }
-.vn-body { padding: clamp(22px, 3vw, 32px); display: grid; gap: 6px; justify-items: start; }
-.vn-name { margin: 0; font-family: var(--display); font-weight: 500; font-size: clamp(1.8rem, 3.4vw, 2.4rem); line-height: 1.05; color: var(--pink-deep); }
-.vn-addr { margin: 0; color: var(--muted); }
-.vn-events { list-style: none; padding: 0; margin: 10px 0 14px; display: flex; flex-wrap: wrap; gap: 6px; }
-.vn-events li { padding: .3em .8em; border-radius: 999px; background: var(--blush); font-size: .8rem; color: var(--pink-deep); }
+.vn-list { display: grid; gap: clamp(32px, 6vw, 64px); }
+.vn {
+  display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; border-radius: 32px; background: #fff;
+  box-shadow: 0 50px 100px -50px rgba(110, 0, 65, .5), 0 0 0 1px var(--hair-soft);
+}
+.vn.is-flip .vn-photo { order: 2; }
+.vn-photo { position: relative; margin: 0; min-height: 420px; overflow: hidden; background: var(--plum); }
+.vn-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.6s var(--ease-out); }
+.vn:hover .vn-photo img { transform: scale(1.05); }
+.vn-photo-art { object-fit: contain !important; object-position: bottom; opacity: .6; }
+.vn-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(74, 0, 41, .88)); }
+.vn-photo figcaption { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; padding: clamp(22px, 4vw, 36px); display: grid; gap: 4px; color: var(--cream); }
+.vn-city { font-family: var(--caps); font-size: .72rem; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); }
+.vn-name { font-family: var(--display); font-weight: 500; font-size: clamp(2rem, 4.4vw, 3rem); line-height: 1; }
+.vn-cap { font-family: var(--display); font-style: italic; opacity: .85; }
+.vn-credit { position: absolute; z-index: 1; top: 12px; right: 14px; font-size: .62rem; color: #fff; opacity: .75; text-shadow: 0 1px 3px rgba(0, 0, 0, .7); max-width: 70%; text-align: right; }
+.vn-side { display: flex; flex-direction: column; min-width: 0; }
+.vn-map { position: relative; aspect-ratio: 16 / 10; background: var(--blush); border-bottom: 1px solid var(--hair-soft); }
+.vn-map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.vn-map-skeleton { position: absolute; inset: 0; background: linear-gradient(100deg, var(--blush) 30%, #fff 50%, var(--blush) 70%) 0 0 / 300% 100%; animation: shimmer 1.6s linear infinite; }
+@keyframes shimmer { to { background-position: -150% 0; } }
+.vn-map-open { position: absolute; right: 12px; bottom: 12px; padding: .5em .9em; border-radius: 999px; background: #fff; color: var(--pink-deep); text-decoration: none; font-size: .78rem; font-weight: 600; box-shadow: 0 6px 16px rgba(0, 0, 0, .2); }
+.vn-info { padding: clamp(20px, 3vw, 30px); display: grid; gap: 14px; }
+.vn-addr { margin: 0; font-size: 1rem; color: var(--ink); }
+.vn-addr span { color: var(--pink); }
+.vn-events { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.vn-events li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border-radius: 12px; background: var(--blush); color: var(--pink-deep); font-size: .9rem; }
+.vn-events small { color: var(--muted); white-space: nowrap; }
+.vn-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.vn-actions .btn { padding: .7em 1.3em; font-size: .8rem; }
+.vn-copy { border: 0; background: none; color: var(--muted); font-size: .82rem; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 860px) {
+  .vn { grid-template-columns: 1fr; border-radius: 26px; }
+  .vn.is-flip .vn-photo { order: 0; }
+  .vn-photo { min-height: 0; aspect-ratio: 4 / 3; }
+  .vn-map { aspect-ratio: 4 / 3; }
+}
 
 /* ---------------------------------------------------------------- RSVP yes/no polish */
 .rsvp-events legend { font-family: var(--display) !important; font-size: 1.4rem !important; letter-spacing: 0 !important; }
@@ -345,5 +414,8 @@ html:lang(ta) .inv *, html:lang(te) .inv * { letter-spacing: 0 !important; }
 .ft-made { margin: 0; padding: 14px var(--gutter) max(18px, env(safe-area-inset-bottom)); text-align: center; font-size: .75rem; letter-spacing: .06em; opacity: .65; background: rgba(0, 0, 0, .25); }
 .ft-made a { color: var(--gold); }
 
-/* music button sits above the live card */
-.music-btn { z-index: 96; }
+
+/* ---------------------------------------------------------------- Petal rain + hero garland */
+.petal-rain { position: fixed; inset: 0; z-index: 102; pointer-events: none; }
+.hero-thoranam { position: absolute; z-index: 1; top: 52px; left: -2%; width: 104%; height: auto; pointer-events: none; filter: drop-shadow(0 6px 8px rgba(40, 0, 20, .35)); }
+@media (max-width: 700px) { .hero-thoranam { top: 58px; width: 130%; left: -15%; } }

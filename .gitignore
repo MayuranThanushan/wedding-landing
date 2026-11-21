@@ -6,3 +6,5 @@ dist
 .vercel
 config.js
 .tools
+.env.*
+!.env.example

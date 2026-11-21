@@ -1,0 +1,11 @@
+{
+  "redirects": [
+    { "source": "/rsvp.html", "destination": "/engagement/rsvp.html", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/((?!api/|engagement/|assets/).*)", "destination": "/index.html" }
+  ],
+  "crons": [
+    { "path": "/api/cron-reminders", "schedule": "30 3 * * *" }
+  ]
+}

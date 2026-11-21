@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;400;600;800&family=Roboto:wght@100;400;600;800&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Mea+Culpa&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="rsvp.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="root.css">
+</head>
+<body>
+    <!-- Advertisement Header -->
+    <!-- <div class="ad-header" id="adHeader">
+        KINDLY SUBMIT YOUR RSVP ON OR BEFORE <span style="white-space: nowrap;">FEBRUARY 03, 2025.</span></b>
+        <button class="close-btn" onclick="closeAd()">✖</button>
+    </div> -->
+
+    <header class="header">
+        <a href="index.html"><h1 class="logo">Rohit & Gayathiri</h1></a>
+        <nav class="nav-links">
+            <a href="index.html#timeline">Timeline</a>
+            <a href="#contact">Contact Us</a>
+            <a href="rsvp.html"><button class="btn">Register</button></a>
+        </nav>
+    </header>
+
+    <!-- Scroll Up Button-->
+    <div id="scrollUpBtn" class="scroll-up-btn">
+        <img src="images/arrow-up.svg" alt="Scroll Up">
+    </div>
+
+    <main class="main-content">
+        <div class="content-grid">
+            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/e18ca59385179a97180452c45de112f89ec44f41dcc4d56f64c7e550907698d3?placeholderIfAbsent=true&apiKey=0a18f12c55274af68e0a3ae651c1ff6d"
+                alt="Decorative floral arrangement" class="left-side-image" />
+            <div class="invitation-text">
+                <p>Together with our families,</p>
+                <h2>Rohit Sreenivas Reddy<br />&<br />Gayathiri Mayuran</h2>
+                <p>Joyfully invite you to celebrate our engagement.</p>
+                <p style="color: #c90;"><strong>March 16, 2025<br />05:30 PM Onwards<br />The Renoir, Conca D'oro, 269 Belmore Rd, <span style="white-space: nowrap;">Riverwood NSW 2210</span></strong></p>
+                <p>Join us for an evening of love, laughter, and joy.<br />We look forward to sharing this special moment with you!</p>
+                <!-- <p>Kindy submit your RSVP on or before February 03, 2025.</p> -->
+            </div>
+            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/98e2227c5d44c66c7337b493d2e009e4a03114e7f93ac7ffaba79eca06e20449?placeholderIfAbsent=true&apiKey=0a18f12c55274af68e0a3ae651c1ff6d"
+                alt="Decorative floral arrangement" class="right-side-image" />
+        </div>
+    </main>
+
+    <form class="block" id="rsvpForm">
+        <div class="rsvp-buttons">
+            <label class="btn">
+                <input type="radio" name="response" id="accept" value="accept"> Joyfully Accept
+            </label>
+            <label class="btn">
+                <input type="radio" name="response" id="decline" value="decline"> Regretfully Decline
+            </label>
+        </div>
+
+        <div id="userInput" class="form-group">
+            <label for="fullname">Name <span class="asterisk">*</span></label>
+            <input type="text" id="fullname" name="fullname" placeholder="Name" value="" required>
+
+            <label for="emailaddress">Email <span class="asterisk">*</span></label>
+            <input type="email" id="emailaddress" name="emailaddress" placeholder="Email" value="" required>
+
+            <label for="contactnumber">Contact Number <span class="asterisk">*</span></label>
+            <input type="text" id="contactnumber" name="contactnumber" placeholder="Contact number" value="" required>
+
+            <label for="guests">Number of Guests <span class="asterisk">*</span></label>
+            <select id="guests" required>
+                <option value="" selected="selected">-- Please select a value --</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+
+            <label for="vegPreference">Vegetarian Preference <span class="asterisk">*</span></label>
+            <select id="vegPreference" required>
+                <option value="" selected="selected">-- Select Preference --</option>
+                <option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+
+            <label for="nonvegPreference">Non Vegetarian Preference <span class="asterisk">*</span></label>
+            <select id="nonvegPreference" required>
+                <option value="" selected="selected">-- Select Preference --</option>
+                <option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+
+            <label for="message">Comment <span class="asterisk"></span></label>
+            <textarea id="message" name="message" rows="5" placeholder="Your comment"></textarea>
+        </div>
+
+        <div class="submit-container">
+            <p class="submit-note"><span class="asterisk">*</span>Only <strong>one member per family</strong> is required to complete this RSVP registration. Others kindly fill it out <strong>individually</strong>.</p>
+            <button id="submitBtn" type="submit" class="btn">Submit Now</button>
+        </div>
+    </form>
+
+    <div id="messageOverlay"></div>
+    <div id="messageDiv" style="display:none;">
+        <span id="closeBtn">&times;</span>
+        <p id="messageContent"></p>
+    </div>
+
+    <aside class="gift-note">
+        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/e7c1b727e640738b9399c99a934e2af31162bce580ea8ca4e990189ea8a88e60?placeholderIfAbsent=true&apiKey=0a18f12c55274af68e0a3ae651c1ff6d"
+            alt="Gift icon" class="gift-icon" />
+        <h3 class="gift-title">A note on gifts</h3>
+        <p class="gift-subtitle">The presence of our family and friends is the greatest gift of all</p>
+        <hr class="gift-divider" />
+        <p class="gift-description">However, If it is your wish to bless us with a gift, we would greatly appreciate a monetary contribution to our future together; or you can surprise us in your own special way.</p>
+    </aside>
+
+    <section class="location-container">
+        <h2 class="location-title">Location</h2>
+        <p class="location-description">Guests driving to Conca D'oro can park for free on nearby streets or use secured
+            parking inside Riverwood Plaza Car Park on Webb Street, with a short walk through the plaza to Belmore Road.
+            There's also a public car park across from Riverwood Plaza, just a 1-minute walk from the venue.</p>
+        <div class="location-map"><iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.5258901882216!2d151.0517701150914!3d-33.952380!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12c6dd6541282d%3A0x500ef7543c9acb5e!2s-33.952380%2C%20151.051770!5e0!3m2!1sen!2sau!4v1630516652395!5m2!1sen!2sau" 
+            width="100%" height="400px" style="border-radius: 1.875em;" allowfullscreen="" loading="lazy">
+        </iframe></div>
+        <p class="location-description">For any further information on parking, please call <strong>(02) 9153 9932</strong> and a Conca D’oro team member will be able to assist
+        you.</p>
+    </section>
+
+    <footer id="contact" class="footer">
+        <div class="footer-left">
+            <h2 class="footer-logo">Rohit & Gayathiri</h2>
+            <p class="footer-tagline">Join us as we celebrate the beginning of our forever</p>
+        </div>
+        <div class="footer-right">
+            <div class="contact-info">
+                <div class="contact-person">
+                    <h3 class="contact-name">Rohit Sreenivas Reddy</h3>
+                    <p class="contact-phone"><a href="tel:+61481975047">+61 481 975 047</a><br /><a
+                    href="mailto:rohitgayathiri1803@gmail.com">rohitgayathiri1803@gmail.com</a></p>
+                </div>
+                <div class="contact-person">
+                    <h3 class="contact-name">Gayathiri Mayuran</h3>
+                    <p class="contact-phone"><a href="tel:+61480459225 ">+61 480 459 225</a><br /><a
+                    href="mailto:rohitgayathiri1803@gmail.com">rohitgayathiri1803@gmail.com</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <p class="copyright">&copy;2025</p>
+    `
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <script src="env-config.js"></script>
+    <script src="webapp.js"></script>
+
+    <script>
+        // Function to close the advertisement
+        function closeAd() {
+            const adHeader = document.getElementById('adHeader');
+            adHeader.style.display = 'none';
+        }
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('rsvpForm');
+        const radioButtons = document.querySelectorAll('.rsvp-buttons input[type="radio"]');
+        const messageOverlay = document.getElementById('messageOverlay');
+        const messageDiv = document.getElementById('messageDiv');
+        const closeBtn = document.getElementById('closeBtn');
+        const messageContent = document.getElementById('messageContent');
+        const guestsSelect = document.getElementById('guests');
+        const vegPreferenceSelect = document.getElementById('vegPreference');
+        const nonvegPreferenceSelect = document.getElementById('nonvegPreference');
+        const contactNumberInput = document.getElementById('contactnumber');
+
+        const userId = "REDACTED";
+        const serviceId = "REDACTED";
+        const templateId = "REDACTED";
+
+        // Initialize EmailJS
+        (function () {
+            emailjs.init(userId);
+        })();
+
+        // Function to show message
+        function showMessage(message, isSuccess) {
+            messageContent.textContent = message;
+            messageContent.style.color = isSuccess ? 'green' : 'red';
+            messageOverlay.style.display = 'block';
+            messageDiv.style.display = 'block';
+        }
+
+        // Function to hide message
+        function hideMessage() {
+            messageOverlay.style.display = 'none';
+            messageDiv.style.display = 'none';
+        }
+
+        // Close button event
+        closeBtn.addEventListener('click', hideMessage);
+
+        // Close on outside click
+        messageOverlay.addEventListener('click', hideMessage);
+
+        // Prevent closing when clicking inside the message div
+        messageDiv.addEventListener('click', function (event) {
+            event.stopPropagation();
+        });
+
+        // Add click event listeners to radio buttons
+        radioButtons.forEach(radio => {
+            radio.addEventListener('click', function () {
+                radioButtons.forEach(rb => rb.parentElement.classList.remove('selected'));
+                this.parentElement.classList.add('selected');
+            });
+        });
+
+        // Function to update preference options
+        function updatePreferenceOptions() {
+            const guestCount = parseInt(guestsSelect.value) || 0;
+            const vegCount = parseInt(vegPreferenceSelect.value) || 0;
+            const nonvegCount = parseInt(nonvegPreferenceSelect.value) || 0;
+
+            [vegPreferenceSelect, nonvegPreferenceSelect].forEach(select => {
+                const options = select.querySelectorAll('option');
+                options.forEach(option => {
+                    if (option.value === "") return; // Skip the placeholder option
+                    const optionValue = parseInt(option.value);
+                    option.disabled = optionValue > guestCount;
+                    option.style.color = option.disabled ? 'grey' : '';
+                });
+            });
+
+            // Adjust the other preference based on the current selection
+            if (vegPreferenceSelect === document.activeElement) {
+                nonvegPreferenceSelect.value = Math.max(0, guestCount - vegCount);
+            } else if (nonvegPreferenceSelect === document.activeElement) {
+                vegPreferenceSelect.value = Math.max(0, guestCount - nonvegCount);
+            }
+        }
+
+        // Add event listeners to guests and preference selects
+        guestsSelect.addEventListener('change', updatePreferenceOptions);
+        vegPreferenceSelect.addEventListener('change', updatePreferenceOptions);
+        nonvegPreferenceSelect.addEventListener('change', updatePreferenceOptions);
+
+        // Contact number validation
+        contactNumberInput.addEventListener('input', function () {
+            this.value = this.value.replace(/[^0-9+\-\s]/g, '');
+        });
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Collect form data
+            const selectedRadio = document.querySelector('.rsvp-buttons input[type="radio"]:checked');
+            const response = selectedRadio ? selectedRadio.id : 'Not specified';
+            const fullname = document.getElementById('fullname').value;
+            const emailaddress = document.getElementById('emailaddress').value;
+            const contactnumber = contactNumberInput.value;
+            const guests = guestsSelect.value;
+            const vegPreference = vegPreferenceSelect.value;
+            const nonvegPreference = nonvegPreferenceSelect.value;
+            const message = document.getElementById('message').value;
+
+            // Validate required fields
+            if (response === 'Not specified' || !fullname || !emailaddress || !contactnumber || !guests || !vegPreference || !nonvegPreference) {
+                showMessage('Please fill in all required fields, including your RSVP response.', false);
+                return;
+            }
+
+            // Validate contact number
+            if (!/^[0-9+\-\s]+$/.test(contactnumber)) {
+                showMessage('Please enter a valid contact number.', false);
+                return;
+            }
+
+            // Validate preferences
+            const totalPreference = parseInt(vegPreference) + parseInt(nonvegPreference);
+            if (totalPreference !== parseInt(guests)) {
+                showMessage('The sum of vegetarian and non-vegetarian preferences must equal the number of guests.', false);
+                return;
+            }
+
+            // Prepare the email parameters
+            const templateParams = {
+                response: response,
+                fullname: fullname,
+                emailaddress: emailaddress,
+                contactnumber: contactnumber,
+                guests: guests,
+                vegPreference: vegPreference,
+                nonvegPreference: nonvegPreference,
+                message: message
+            };
+
+            // Send the email using EmailJS
+            emailjs.send(serviceId, templateId, templateParams)
+                .then(function (response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    showMessage('Your RSVP has been sent successfully!', true);
+                    form.reset(); // Reset the form after successful submission
+                    updatePreferenceOptions(); // Reset preference options
+                }, function (error) {
+                    console.log('FAILED...', error);
+                    showMessage('Failed to send RSVP. Please try again.', false);
+                });
+        });
+
+        // Initial call to set up preference options
+        updatePreferenceOptions();
+    });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+                const radioButtons = document.querySelectorAll('.rsvp-buttons input[type="radio"]');
+                const labels = document.querySelectorAll('.rsvp-buttons label');
+
+                labels.forEach(label => {
+                    label.addEventListener('click', function () {
+                        // Remove 'selected' class from all labels
+                        labels.forEach(l => l.classList.remove('selected'));
+
+                        // Add 'selected' class to clicked label
+                        this.classList.add('selected');
+
+                        // Check the corresponding radio button
+                        document.getElementById(this.getAttribute('for')).checked = true;
+                    });
+                });
+            });
+    </script>
+</body>
+
+</html>

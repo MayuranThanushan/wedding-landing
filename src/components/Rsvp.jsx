@@ -6,9 +6,10 @@ import { fmtDate } from '../lib/format.js';
 import { downloadIcs, googleCalUrl } from '../lib/calendar.js';
 import Reveal from './Reveal.jsx';
 import Section from './ui/Section.jsx';
-import EntryPass from './shell/EntryPass.jsx';
 import { dict } from '../i18n/pick.js';
 import { SHELL } from '../i18n/shell.js';
+
+const MAX_PER_TYPE = 20;
 
 function Stepper({ label, value, min = 0, max, onChange }) {
   return (
@@ -30,15 +31,12 @@ function initialForm(invite) {
     phone: r?.phone || invite?.phone || '',
     email: r?.email || invite?.email || '',
     attending: r?.attending || {},
-    adults: r ? r.adults : Math.min(1, invite?.max_adults ?? 1),
-    children: r?.children || 0,
-    veg: r?.veg || 0,
-    nonveg: r ? r.nonveg : Math.min(1, invite?.max_adults ?? 1),
-    allergies: r?.allergies || '',
-    message: r?.message || '',
+    veg: r ? r.veg || 0 : 0,
+    nonveg: r ? r.nonveg || 0 : 0,
   };
 }
 
+/** RSVP for the reception only. Head count = vegetarian + non-vegetarian meals. */
 export default function Rsvp({ code, invite, status, onSaved }) {
   const { t, lang } = useLang();
   const r = t.rsvp;
@@ -54,37 +52,28 @@ export default function Rsvp({ code, invite, status, onSaved }) {
     setMode(invite.rsvp ? 'thanks' : 'form');
   }, [invite?.code]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const invitedEvents = useMemo(() => ALL_EVENTS.filter((e) => rsvpEvents.includes(e.id) && invite?.events?.includes(e.id)), [invite]);
-  const anyYes = invitedEvents.some((e) => form.attending[e.id] === true);
-  const total = form.adults + form.children;
+  const rsvpEvs = useMemo(() => ALL_EVENTS.filter((e) => rsvpEvents.includes(e.id)), []);
+  const anyYes = rsvpEvs.some((e) => form.attending[e.id] === true);
+  const total = form.veg + form.nonveg;
   const set = (patch) => setForm((f) => ({ ...f, ...patch }));
-
-  // keep veg + nonveg == headcount
-  const setCount = (k, v) => setForm((f) => {
-    const n = { ...f, [k]: v };
-    const tot = n.adults + n.children;
-    if (k === 'veg') n.nonveg = tot - v;
-    else if (k === 'nonveg') n.veg = tot - v;
-    else { n.veg = Math.min(n.veg, tot); n.nonveg = tot - n.veg; }
-    return n;
-  });
 
   const submit = async (e) => {
     e.preventDefault();
     setError('');
     if (!form.name.trim()) return setError(r.errors.name);
     if (!/^\+?[\d\s-]{8,}$/.test(form.phone.trim())) return setError(r.errors.phone);
-    if (invitedEvents.some((ev) => typeof form.attending[ev.id] !== 'boolean')) return setError(r.errors.choose);
-    if (anyYes && total === 0) return setError(r.errors.headcount);
-    if (anyYes && form.veg + form.nonveg !== total) return setError(r.errors.food);
+    if (rsvpEvs.some((ev) => typeof form.attending[ev.id] !== 'boolean')) return setError(r.errors.choose);
+    if (anyYes && total === 0) return setError(s.mealsError);
     setBusy(true);
     try {
-      const payload = anyYes ? form : { ...form, adults: 0, children: 0, veg: 0, nonveg: 0 };
+      const payload = anyYes
+        ? { ...form, adults: total, children: 0 }
+        : { ...form, adults: 0, children: 0, veg: 0, nonveg: 0 };
       await submitRsvp(code, payload);
       onSaved?.({ ...payload, updated_at: new Date().toISOString() });
       setMode('thanks');
     } catch (err) {
-      setError(r.errors[err.message] || r.errors.generic);
+      setError(err.message === 'headcount' ? s.mealsError : r.errors[err.message] || r.errors.generic);
     } finally {
       setBusy(false);
     }
@@ -94,28 +83,23 @@ export default function Rsvp({ code, invite, status, onSaved }) {
   if (!code || status === 'none') body = <p className="rsvp-note">{r.noCode}</p>;
   else if (status === 'loading') body = <p className="rsvp-note">{r.loading}</p>;
   else if (status !== 'ok') body = <p className="rsvp-note">{r.invalid}</p>;
-  else if (!invitedEvents.length) {
-    body = (
-      <div className="rsvp-thanks">
-        <div className="rsvp-thanks-icon" aria-hidden="true">🪔</div>
-        <p className="rsvp-thanks-text">{s.rsvpNone.title}</p>
-        <p className="rsvp-summary">{s.rsvpNone.text}</p>
-      </div>
-    );
-  }
   else if (mode === 'thanks') {
-    const going = invitedEvents.filter((e) => invite.rsvp?.attending?.[e.id]);
+    const going = rsvpEvs.filter((e) => invite.rsvp?.attending?.[e.id]);
+    const n = (invite.rsvp?.veg || 0) + (invite.rsvp?.nonveg || 0);
     body = (
       <div className="rsvp-thanks">
         <div className="rsvp-thanks-icon" aria-hidden="true">{going.length ? '💛' : '🙏'}</div>
         <p className="rsvp-thanks-text">{going.length ? r.thanksYes : r.thanksNo}</p>
         {going.length > 0 && (
           <>
-            <EntryPass code={code} invite={invite} going={going} />
+            <p className="rsvp-summary">
+              {r.guestsTotal(n)} · 🥗 {invite.rsvp.veg || 0} {r.veg} · 🍗 {invite.rsvp.nonveg || 0} {r.nonveg}
+            </p>
+            <p className="rsvp-summary">{s.tableHint}</p>
             <button className="btn btn-gold" onClick={() => downloadIcs(going, t)}>📅 {r.addAll}</button>
             <div className="rsvp-gcal">
               {going.map((e) => (
-                <a key={e.id} className="chip" href={googleCalUrl(e, t)} target="_blank" rel="noreferrer">+ {t.events[e.id]}</a>
+                <a key={e.id} className="chip" href={googleCalUrl(e, t)} target="_blank" rel="noreferrer">+ Google Calendar</a>
               ))}
             </div>
           </>
@@ -127,17 +111,16 @@ export default function Rsvp({ code, invite, status, onSaved }) {
     body = (
       <form className="rsvp-form" onSubmit={submit} noValidate>
         <p className="rsvp-hello">{t.dear} <strong>{invite.family_name}</strong>,</p>
-        <p className="rsvp-reserved">{r.reserved(invite.max_adults, invite.max_children)}</p>
 
         <fieldset className="rsvp-events">
           <legend>{r.willYouAttend}</legend>
-          {invitedEvents.map((ev) => {
+          {rsvpEvs.map((ev) => {
             const v = form.attending[ev.id];
             return (
               <div className="rsvp-event" key={ev.id}>
                 <div className="rsvp-event-name">
                   <span>{ev.icon} {t.events[ev.id]}</span>
-                  <small>{fmtDate(ev.start, t.locale, venues[ev.venue].timeZone, { weekday: 'short', year: undefined })}</small>
+                  <small>{fmtDate(ev.start, t.locale, venues[ev.venue].timeZone, { weekday: 'short' })} · {venues[ev.venue].name}</small>
                 </div>
                 <div className="yesno">
                   <button type="button" className={v === true ? 'on yes' : ''} onClick={() => set({ attending: { ...form.attending, [ev.id]: true } })}>{r.yes}</button>
@@ -147,6 +130,17 @@ export default function Rsvp({ code, invite, status, onSaved }) {
             );
           })}
         </fieldset>
+
+        {anyYes && (
+          <div className="rsvp-counts">
+            <p className="count-label">{s.mealsLabel}</p>
+            <div className="count-row">
+              <Stepper label={`🥗 ${r.veg}`} value={form.veg} max={MAX_PER_TYPE} onChange={(v) => set({ veg: v })} />
+              <Stepper label={`🍗 ${r.nonveg}`} value={form.nonveg} max={MAX_PER_TYPE} onChange={(v) => set({ nonveg: v })} />
+            </div>
+            <p className="rsvp-total">{s.totalGuests}: <strong>{total}</strong></p>
+          </div>
+        )}
 
         <div className="field-grid">
           <label className="field">
@@ -165,31 +159,6 @@ export default function Rsvp({ code, invite, status, onSaved }) {
           </label>
         </div>
 
-        {anyYes && (
-          <div className="rsvp-counts">
-            <div className="count-row">
-              <Stepper label={r.adults} value={form.adults} max={invite.max_adults} onChange={(v) => setCount('adults', v)} />
-              {invite.max_children > 0 && (
-                <Stepper label={r.children} value={form.children} max={invite.max_children} onChange={(v) => setCount('children', v)} />
-              )}
-            </div>
-            <p className="count-label">{r.food}</p>
-            <div className="count-row">
-              <Stepper label={`🥗 ${r.veg}`} value={form.veg} max={total} onChange={(v) => setCount('veg', v)} />
-              <Stepper label={`🍗 ${r.nonveg}`} value={form.nonveg} max={total} onChange={(v) => setCount('nonveg', v)} />
-            </div>
-            <label className="field">
-              <span>{r.allergies}</span>
-              <input value={form.allergies} onChange={(e) => set({ allergies: e.target.value })} />
-            </label>
-          </div>
-        )}
-
-        <label className="field">
-          <span>{r.message}</span>
-          <textarea rows={3} value={form.message} onChange={(e) => set({ message: e.target.value })} />
-        </label>
-
         {error && <p className="form-error" role="alert">{error}</p>}
         <button className="btn btn-pink btn-block" disabled={busy}>
           {busy ? r.sending : invite.rsvp ? r.update : r.submit}
@@ -199,9 +168,9 @@ export default function Rsvp({ code, invite, status, onSaved }) {
   }
 
   return (
-    <Section id="rsvp" tone="cream" num="06" kicker={r.title} center className="rsvp"
+    <Section id="rsvp" tone="cream" num="04" kicker={r.title} center className="rsvp"
       title={<>{s.rsvpTitle[0]} <em>{s.rsvpTitle[1]}</em></>}
-      lead={`${s.rsvpOnly}.${rsvpBy && status === 'ok' && invitedEvents.length ? ` ${r.by} ${fmtDate(`${rsvpBy}T12:00:00+05:30`, t.locale, 'Asia/Colombo')}.` : ''}`}>
+      lead={rsvpBy && status === 'ok' ? `${r.by} ${fmtDate(`${rsvpBy}T12:00:00+05:30`, t.locale, 'Asia/Colombo')}.` : null}>
       <Reveal className="rsvp-card" variant="scale">{body}</Reveal>
     </Section>
   );

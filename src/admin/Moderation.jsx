@@ -14,7 +14,7 @@ const KINDS = {
   wish: { icon: '🙏', label: 'Wishes', legacy: true },
   photo: { icon: '📷', label: 'Photos' },
   song: { icon: '🎵', label: 'Songs', legacy: true },
-  checkin: { icon: '🚪', label: 'Check-ins' },
+  checkin: { icon: '🚪', label: 'Check-ins', legacy: true },
 };
 
 export function describe(a, fam) {
@@ -22,10 +22,11 @@ export function describe(a, fam) {
   switch (a.kind) {
     case 'open': return `${fam} opened their invite${d.count > 1 ? ` (${ordinal(d.count)} time)` : ''}`;
     case 'rsvp': {
-      const yes = Object.values(d.attending || {}).filter(Boolean).length;
+      const yes = Object.values(d.attending || {}).some(Boolean);
       if (!yes) return `${fam} ${d.updated ? 'changed their RSVP to' : 'replied'}: can’t attend`;
-      const who = [plural(d.adults || 0, 'adult'), d.children ? plural(d.children, 'child') : ''].filter(Boolean).join(' + ');
-      return `${fam} ${d.updated ? 'updated their RSVP' : 'RSVP’d'}: ${who} · ${plural(yes, 'event')}`;
+      const n = (d.veg ?? 0) + (d.nonveg ?? 0) || (d.adults || 0) + (d.children || 0);
+      const meals = d.veg != null || d.nonveg != null ? ` (${d.veg || 0} veg · ${d.nonveg || 0} non-veg)` : '';
+      return `${fam} ${d.updated ? 'updated their RSVP' : 'RSVP’d'}: ${plural(n, 'guest')}${meals}`;
     }
     case 'wish': return `${d.name || fam} left a wish${d.name && d.name !== fam ? ` (${fam})` : ''}`;
     case 'photo': return `${d.name || fam} shared a photo`;

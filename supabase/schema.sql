@@ -132,19 +132,20 @@ begin
   if coalesce(trim(p->>'name'), '') = '' then raise exception 'NAME_REQUIRED'; end if;
 
   -- keep only events this family is invited to
-  foreach k in array v_inv.events loop
+  -- Invites are for the reception; accept answers for these event ids only.
+  foreach k in array array['reception-colombo'] loop
     if p->'attending' ? k then
       v_att := v_att || jsonb_build_object(k, coalesce((p->'attending'->>k)::boolean, false));
       if (p->'attending'->>k)::boolean then v_any := true; end if;
     end if;
   end loop;
 
-  v_adults   := case when v_any then greatest(0, least(coalesce((p->>'adults')::int, 0), v_inv.max_adults)) else 0 end;
-  v_children := case when v_any then greatest(0, least(coalesce((p->>'children')::int, 0), v_inv.max_children)) else 0 end;
-  v_veg      := case when v_any then greatest(0, coalesce((p->>'veg')::int, 0)) else 0 end;
-  v_nonveg   := case when v_any then greatest(0, coalesce((p->>'nonveg')::int, 0)) else 0 end;
-  if v_any and v_adults + v_children = 0 then raise exception 'HEADCOUNT_REQUIRED'; end if;
-  if v_any and v_veg + v_nonveg <> v_adults + v_children then raise exception 'FOOD_MISMATCH'; end if;
+  -- Head count = vegetarian + non-vegetarian meals (no adult/child split, no seat limits).
+  v_veg      := case when v_any then greatest(0, least(coalesce((p->>'veg')::int, 0), 30)) else 0 end;
+  v_nonveg   := case when v_any then greatest(0, least(coalesce((p->>'nonveg')::int, 0), 30)) else 0 end;
+  v_adults   := v_veg + v_nonveg;
+  v_children := 0;
+  if v_any and v_adults = 0 then raise exception 'HEADCOUNT_REQUIRED'; end if;
 
   insert into rsvps as r (invite_id, name, phone, email, attending, adults, children, veg, nonveg, allergies, message)
   values (v_inv.id, trim(p->>'name'), nullif(trim(p->>'phone'), ''), nullif(trim(p->>'email'), ''), v_att,
@@ -344,3 +345,30 @@ do $$ declare f text; begin
   grant execute on function public.check_in(text,text,int,int) to authenticated;
   revoke all on function public.invite_id_for(text) from public, anon, authenticated;
 end $$;
+
+-- =====================================================================
+-- v3: reception-only invites, table finder for the common QR at the venue
+-- =====================================================================
+-- Public lookup used by /tables: families attending the reception that match a
+-- family name, RSVP name (3+ letters) or the last digits of a phone number (6+ digits).
+create or replace function public.find_table(p_query text) returns json
+language plpgsql stable security definer set search_path = public as $$
+declare q text := lower(trim(coalesce(p_query, ''))); d text := regexp_replace(coalesce(p_query, ''), '\D', '', 'g');
+begin
+  if length(regexp_replace(q, '[^[:alnum:]]', '', 'g')) < 3 then return '[]'; end if;
+  return coalesce((
+    select json_agg(json_build_object('family_name', x.family_name, 'table_label', x.table_label))
+    from (
+      select i.family_name, i.table_label
+      from invites i join rsvps r on r.invite_id = i.id
+      where (r.attending ->> 'reception-colombo')::boolean
+        and (lower(i.family_name) like '%' || q || '%'
+          or lower(r.name) like '%' || q || '%'
+          or (length(d) >= 6 and (regexp_replace(coalesce(i.phone, ''), '\D', '', 'g') like '%' || right(d, 9)
+                               or regexp_replace(coalesce(r.phone, ''), '\D', '', 'g') like '%' || right(d, 9))))
+      order by i.family_name
+      limit 8
+    ) x), '[]');
+end $$;
+revoke all on function public.find_table(text) from public;
+grant execute on function public.find_table(text) to anon, authenticated;

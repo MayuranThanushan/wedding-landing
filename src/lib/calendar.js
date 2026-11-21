@@ -6,7 +6,7 @@ const esc = (s) => String(s).replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replac
 function eventText(ev, t) {
   const v = venues[ev.venue];
   return {
-    title: `${t.events[ev.id]} · Rohit & Gayathiri`,
+    title: `${t.events[ev.id]} · Rohit Reddy & Gayathiri`,
     location: [v.name, v.address].filter(Boolean).join(', '),
     details: `${t.eventBlurbs[ev.id]}\n\n${SITE_URL}`,
   };
@@ -23,7 +23,7 @@ export function googleCalUrl(ev, t) {
 
 /** iCalendar file with reminders 1 week and 1 day before every event. */
 export function buildIcs(events, t) {
-  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Rohit & Gayathiri//Wedding//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Rohit Reddy & Gayathiri//Wedding//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
   for (const ev of events) {
     const { title, location, details } = eventText(ev, t);
     lines.push(

@@ -56,9 +56,9 @@ export default function NavBar({ sections }) {
   return (
     <>
       <header className={`nav ${solid ? 'is-solid' : ''}`}>
-        <a className="nav-brand" href="#top" aria-label="Rohit & Gayathiri — top">
+        <a className="nav-brand" href="#top" aria-label="Rohit Reddy & Gayathiri — top">
           <span className="nav-mono">R<i>&amp;</i>G</span>
-          <span className="nav-date">14·02·27</span>
+          <span className="nav-date">20·02·27</span>
         </a>
         <nav className="nav-links" aria-label="Sections">
           {links.filter((id) => id !== 'rsvp').map((id) => (

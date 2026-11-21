@@ -278,6 +278,53 @@ body:has(.adm), body:has(.adm-login) { background: #faf6ef; }
 .adm-qr-url { word-break: break-all; }
 
 /* ===================== print ===================== */
+/* ---------- Overview (reception) ---------- */
+.adm-ov-head { display: grid; gap: 2px; }
+.adm-ov-head h1 { margin: 0; font-family: var(--display, var(--serif)); font-weight: 500; font-size: clamp(1.8rem, 4vw, 2.4rem); color: var(--pink); line-height: 1.1; }
+.adm-ov-head .rep-kicker { margin: 0; }
+.adm-stats.big .adm-stat-value { font-size: 2.6rem; }
+a.adm-stat.link { text-decoration: none; color: inherit; transition: border-color .2s, transform .2s; }
+a.adm-stat.link:hover { border-color: var(--pink); transform: translateY(-1px); }
+.adm-check { display: inline-flex; align-items: center; gap: 6px; color: var(--a-muted); }
+
+/* ---------- Table finder QR ---------- */
+.tq { display: grid; grid-template-columns: 180px 1fr; gap: 22px; align-items: center; }
+.tq-qr { padding: 12px; border-radius: 14px; background: #fff; border: 1px solid var(--a-line); box-shadow: 0 0 0 4px #fff8e1 inset; }
+.tq-qr svg { display: block; width: 100%; height: auto; }
+.tq-body h2 { margin-bottom: 6px; }
+.tq-body p { margin: 0 0 8px; }
+.tq-body a { color: var(--pink); word-break: break-all; }
+@media (max-width: 560px) { .tq { grid-template-columns: 1fr; justify-items: center; text-align: center; } .tq-qr { width: 200px; } .tq-body .adm-toolbar { justify-content: center; } }
+
+.poster-sheet { display: none; }
+@media print {
+  html.print-poster body * { visibility: hidden !important; }
+  html.print-poster .poster-sheet, html.print-poster .poster-sheet * { visibility: visible !important; }
+  html.print-poster .poster-sheet {
+    display: flex; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center;
+    background: #fffaf0; -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .poster-frame {
+    box-sizing: border-box; width: calc(100% - 16mm); height: calc(100% - 16mm);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 3mm;
+    border: 1.2mm solid #b8862b; outline: .4mm solid #b8862b; outline-offset: -3.5mm; padding: 10mm;
+    font-family: var(--sans);
+  }
+  .poster-mono { margin: 0; font-family: var(--caps); color: #b8862b; letter-spacing: .3em; font-size: 14pt; }
+  .poster-mono i { font-family: 'Cormorant Garamond', serif; }
+  .poster-title { margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 500; color: #a3005f; font-size: 44pt; line-height: 1; }
+  .poster-couple { margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; color: #4a0029; font-size: 22pt; }
+  .poster-meta { margin: 0 0 4mm; color: #8a5a72; font-size: 12pt; }
+  .poster-qr { width: 62%; max-width: 130mm; padding: 5mm; background: #fff; border: .6mm solid #ebbf38; }
+  .poster-qr svg { display: block; width: 100%; height: auto; }
+  .poster-cta { margin: 4mm 0 0; font-family: var(--caps); color: #a3005f; letter-spacing: .12em; font-size: 20pt; }
+  .poster-url { margin: 0; color: #8a5a72; font-size: 10pt; }
+  html.poster-a5 .poster-title { font-size: 32pt; }
+  html.poster-a5 .poster-couple { font-size: 16pt; }
+  html.poster-a5 .poster-cta { font-size: 14pt; }
+  html.poster-a5 .poster-meta { font-size: 9pt; }
+}
+
 @media print {
   body:has(.adm) { background: #fff; }
   .adm-head, .adm-demo-note, .no-print, .adm-error { display: none !important; }

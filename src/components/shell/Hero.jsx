@@ -3,7 +3,6 @@ import { useLang } from '../../i18n/index.jsx';
 import { dict } from '../../i18n/pick.js';
 import { SHELL } from '../../i18n/shell.js';
 import { eventById, mainEventId } from '../../config/wedding.js';
-import { Thoranam } from '../ui/Ornaments.jsx';
 
 const ART = '/assets/art';
 
@@ -45,7 +44,6 @@ export default function Hero({ familyName, showRsvp }) {
     <section className="hero" id="top" ref={ref}>
       <div className="hero-grain" aria-hidden="true" />
       <div className="hero-glow" aria-hidden="true" />
-      <Thoranam className="hero-thoranam" count={23} />
 
       <div className="hero-inner">
         <div className="hero-copy">
@@ -53,17 +51,18 @@ export default function Hero({ familyName, showRsvp }) {
             <img src={`${ART}/ganesha-gold.webp`} alt="" width="28" height="28" />
             {familyName ? s.heroDear(familyName) : s.heroKicker}
           </p>
-          <h1 className="hero-names" aria-label="Rohit & Gayathiri">
-            <span className="split-line"><span style={{ '--d': '.15s' }}>Rohit</span></span>
+          <h1 className="hero-names" aria-label="Rohit Reddy & Gayathiri">
+            <span className="split-line"><span style={{ '--d': '.15s' }}>Rohit <i className="hero-surname">Reddy</i></span></span>
             <span className="split-line hero-amp"><span style={{ '--d': '.35s' }}>&amp;</span></span>
             <span className="split-line"><span style={{ '--d': '.5s' }}>Gayathiri</span></span>
           </h1>
           <p className="hero-invite">{s.heroInvite}</p>
+          <p className="hero-married">{s.heroMarried}</p>
 
           <div className="hero-date">
-            <span className="hero-date-num">14</span>
+            <span className="hero-date-num">20</span>
             <span className="hero-date-rest">
-              <b>{new Intl.DateTimeFormat(t.locale, { month: 'long', year: 'numeric' }).format(new Date('2027-02-14T12:00:00+05:30'))}</b>
+              <b>{new Intl.DateTimeFormat(t.locale, { month: 'long', year: 'numeric' }).format(new Date(eventById[mainEventId].start))}</b>
               <small>{s.places}</small>
             </span>
           </div>
@@ -90,14 +89,14 @@ export default function Hero({ familyName, showRsvp }) {
             <img className="hero-mandala" src={`${ART}/mandala-gold.webp`} alt="" />
             <img className="hero-ganesha" src={`${ART}/ganesha-gold.webp`} alt="" />
             <img className="hero-elephants" src={`${ART}/elephants-gold.webp`} alt="" />
-            <span className="hero-arch-date">14 · 02 · 2027</span>
+            <span className="hero-arch-date">20 · 02 · 2027</span>
           </div>
           <img className="hero-lotus" src={`${ART}/lotus.webp`} alt="" />
         </div>
       </div>
 
       <img className="hero-temples" src={`${ART}/temples.webp`} alt="" />
-      <a className="hero-scroll" href="#story" aria-label={t.scroll}><span /></a>
+      <a className="hero-scroll" href="#invitation" aria-label={t.scroll}><span /></a>
     </section>
   );
 }

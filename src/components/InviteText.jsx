@@ -26,7 +26,7 @@ export default function InviteText() {
   const i = t.invite;
   return (
     <section className="sec tone-cream iv" id="invitation">
-      <p className="sec-kicker iv-kicker"><span className="num">02</span>{s.nav.invitation}</p>
+      <p className="sec-kicker iv-kicker"><span className="num">01</span>{s.nav.invitation}</p>
       <div className="iv-card">
         <Thoranam className="iv-thoranam" />
         <div className="iv-frame">
@@ -52,9 +52,9 @@ export default function InviteText() {
             <span>{i.bride}</span>
           </Reveal>
           <div className="iv-muhurtham">
-            <span>Muhurtham</span>
-            <strong>14 · 02 · 2027</strong>
-            <span>Ballari</span>
+            <span>{t.events['reception-colombo'].split(/\s+[—-]\s+/)[0]}</span>
+            <strong>20 · 02 · 2027</strong>
+            <span>Ramada Colombo</span>
           </div>
           <Reveal as="p" className="iv-closing" delay={0.1}>{i.closing}</Reveal>
           <div className="iv-diyas">

@@ -1,21 +1,18 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useLang } from '../i18n/index.jsx';
-import { events as ALL_EVENTS, rsvpEvents } from '../config/wedding.js';
+import { events as ALL_EVENTS, mainEventId } from '../config/wedding.js';
 import { getInvite } from '../lib/api.js';
 import Envelope from '../components/Envelope.jsx';
 import NavBar from '../components/shell/NavBar.jsx';
 import Hero from '../components/shell/Hero.jsx';
 import Marquee from '../components/shell/Marquee.jsx';
 import LiveNow from '../components/shell/LiveNow.jsx';
-import Story from '../components/sections/Story.jsx';
 import InviteText from '../components/InviteText.jsx';
 import Events from '../components/Events.jsx';
-import Ceremonies from '../components/sections/Ceremonies.jsx';
 import Venues from '../components/Venues.jsx';
 import Rsvp from '../components/Rsvp.jsx';
 import Photos from '../components/community/Photos.jsx';
-import Faq from '../components/sections/Faq.jsx';
 import Gallery from '../components/Gallery.jsx';
 import Contact from '../components/Contact.jsx';
 import MusicButton from '../components/MusicButton.jsx';
@@ -23,7 +20,7 @@ import PetalRain, { petalShower } from '../components/shell/PetalRain.jsx';
 import '../styles/invitation.css';
 import '../styles/shell.css';
 
-const SECTIONS = ['story', 'invitation', 'events', 'ceremonies', 'venues', 'rsvp', 'photos', 'faq'];
+const SECTIONS = ['invitation', 'events', 'venues', 'rsvp', 'photos'];
 
 export default function Invitation() {
   const params = useParams();
@@ -54,10 +51,8 @@ export default function Invitation() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
-  const visibleEvents = useMemo(
-    () => (invite?.events?.length ? ALL_EVENTS.filter((e) => invite.events.includes(e.id)) : ALL_EVENTS),
-    [invite],
-  );
+  // Invites are for the reception; the family ceremonies are always shown for information.
+  const visibleEvents = ALL_EVENTS;
 
   const handleOpen = () => {
     setPlaying(true);
@@ -79,18 +74,15 @@ export default function Invitation() {
       <PetalRain />
       <NavBar sections={SECTIONS} />
       <MusicButton autoplay={playing} />
-      <LiveNow events={visibleEvents} />
+      <LiveNow events={ALL_EVENTS.filter((e) => e.id === mainEventId)} />
       <main>
-        <Hero familyName={invite?.family_name} showRsvp={!invite || invite.events?.some((id) => rsvpEvents.includes(id))} />
+        <Hero familyName={invite?.family_name} showRsvp />
         <Marquee />
-        <Story />
         <InviteText />
         <Events events={visibleEvents} />
-        <Ceremonies events={visibleEvents} />
         <Venues events={visibleEvents} />
         <Rsvp code={code} invite={invite} status={status} onSaved={(rsvp) => { setInvite((i) => ({ ...i, rsvp })); if (Object.values(rsvp.attending || {}).some(Boolean)) petalShower(); }} />
         <Photos code={guestCode} invite={invite} />
-        <Faq />
         <Gallery />
       </main>
       <Contact sections={SECTIONS} />

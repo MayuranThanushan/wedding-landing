@@ -20,7 +20,7 @@ const en = {
     groomParents: 'Mr. Sreenivas Reddy & Mrs. Varala Reddy',
     and: 'and',
     brideParents: 'Mr. Alagaratnam Mayuran & Mrs. Jayanthi Mayuran',
-    request: 'joyfully request the pleasure of your company at the wedding celebrations of their children',
+    request: 'joyfully request the pleasure of your company at the wedding reception of their children',
     groom: 'Rohit Sreenivas Reddy',
     bride: 'Gayathiri Mayuran',
     closing: 'Your presence and blessings will make our celebration complete.',
@@ -97,7 +97,7 @@ const en = {
     guestsTotal: (n) => `${n} guest${n === 1 ? '' : 's'}`,
   },
   contactTitle: 'Contact us',
-  footer: 'With love, Rohit & Gayathiri',
+  footer: 'With love, Rohit Reddy & Gayathiri',
 };
 
 const ta = {
@@ -113,8 +113,8 @@ const ta = {
     groomParents: 'திரு. ஸ்ரீனிவாஸ் ரெட்டி – திருமதி. வரலா ரெட்டி',
     and: 'மற்றும்',
     brideParents: 'திரு. அழகரத்தினம் மயூரன் – திருமதி. ஜெயந்தி மயூரன்',
-    request: 'ஆகியோர் தங்கள் அன்புச் செல்வங்களின் திருமண விழாவிற்கு உங்களை அன்புடன் அழைக்கின்றனர்',
-    groom: 'ரோஹித் ஸ்ரீனிவாஸ் ரெட்டி',
+    request: 'ஆகியோர் தங்கள் அன்புச் செல்வங்களின் திருமண வரவேற்பு விழாவிற்கு உங்களை அன்புடன் அழைக்கின்றனர்',
+    groom: 'ரோஹித் ரெட்டி ஸ்ரீனிவாஸ் ரெட்டி',
     bride: 'காயத்ரி மயூரன்',
     closing: 'தங்கள் வருகையும் ஆசியும் எங்கள் விழாவை நிறைவு செய்யும்.',
   },
@@ -190,7 +190,7 @@ const ta = {
     guestsTotal: (n) => `${n} விருந்தினர்`,
   },
   contactTitle: 'தொடர்புக்கு',
-  footer: 'அன்புடன், ரோஹித் & காயத்ரி',
+  footer: 'அன்புடன், ரோஹித் ரெட்டி & காயத்ரி',
 };
 
 const te = {
@@ -206,8 +206,8 @@ const te = {
     groomParents: 'శ్రీ శ్రీనివాస్ రెడ్డి – శ్రీమతి వరల రెడ్డి',
     and: 'మరియు',
     brideParents: 'శ్రీ అళగరత్నం మయూరన్ – శ్రీమతి జయంతి మయూరన్',
-    request: 'తమ ప్రియమైన బిడ్డల వివాహ మహోత్సవానికి మిమ్మల్ని సాదరంగా ఆహ్వానిస్తున్నారు',
-    groom: 'రోహిత్ శ్రీనివాస్ రెడ్డి',
+    request: 'తమ ప్రియమైన బిడ్డల వివాహ రిసెప్షన్‌కు మిమ్మల్ని సాదరంగా ఆహ్వానిస్తున్నారు',
+    groom: 'రోహిత్ రెడ్డి శ్రీనివాస్ రెడ్డి',
     bride: 'గాయత్రి మయూరన్',
     closing: 'మీ రాక మరియు ఆశీస్సులే మా వేడుకకు నిండుదనం.',
   },
@@ -283,7 +283,7 @@ const te = {
     guestsTotal: (n) => `${n} అతిథులు`,
   },
   contactTitle: 'సంప్రదించండి',
-  footer: 'ప్రేమతో, రోహిత్ & గాయత్రి',
+  footer: 'ప్రేమతో, రోహిత్ రెడ్డి & గాయత్రి',
 };
 
 export const STRINGS = { en, ta, te };

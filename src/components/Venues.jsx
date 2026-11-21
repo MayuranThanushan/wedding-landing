@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLang } from '../i18n/index.jsx';
 import { dict } from '../i18n/pick.js';
 import { SHELL } from '../i18n/shell.js';
-import { venues } from '../config/wedding.js';
+import { eventById, mainEventId, venues } from '../config/wedding.js';
 import { fmtDate, mapsEmbed, mapsLink } from '../lib/format.js';
 import Reveal from './Reveal.jsx';
 import Section from './ui/Section.jsx';
@@ -34,13 +34,14 @@ export default function Venues({ events }) {
   const { t, lang } = useLang();
   const s = dict(SHELL, lang);
   const [copied, setCopied] = useState('');
-  const ids = [...new Set(events.map((e) => e.venue))];
+  const mainVenue = eventById[mainEventId]?.venue;
+  const ids = [...new Set(events.map((e) => e.venue))].sort((a, b) => (a === mainVenue ? -1 : b === mainVenue ? 1 : 0));
   const copy = async (id, text) => {
     try { await navigator.clipboard.writeText(text); setCopied(id); setTimeout(() => setCopied(''), 1800); } catch { /* ignore */ }
   };
 
   return (
-    <Section id="venues" tone="blush" num="05" kicker={t.venuesTitle}
+    <Section id="venues" tone="blush" num="03" kicker={t.venuesTitle}
       title={<>{s.venuesTitle[0]} <em>{s.venuesTitle[1]}</em></>} lead={s.venuesLead}>
       <div className="vn-list">
         {ids.map((id, i) => {

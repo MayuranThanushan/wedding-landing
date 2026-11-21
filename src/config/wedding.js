@@ -8,7 +8,7 @@
 export const SITE_URL = import.meta.env?.VITE_SITE_URL || 'https://rohit-gayathiri.vercel.app';
 
 export const couple = {
-  groom: { short: 'Rohit', full: 'Rohit Sreenivas Reddy' },
+  groom: { short: 'Rohit Reddy', full: 'Rohit Sreenivas Reddy' },
   bride: { short: 'Gayathiri', full: 'Gayathiri Mayuran' },
   hashtag: '',
 };
@@ -82,7 +82,6 @@ export const events = [
   {
     id: 'wedding',
     icon: '🪔',
-    featured: true,
     start: '2027-02-14T08:00:00+05:30',
     end: '2027-02-14T12:30:00+05:30',
     part: 'morning',
@@ -92,6 +91,7 @@ export const events = [
   },
   {
     id: 'reception-colombo',
+    featured: true,
     icon: '✨',
     start: '2027-02-20T18:30:00+05:30',
     end: '2027-02-20T23:00:00+05:30',
@@ -102,15 +102,16 @@ export const events = [
   },
 ];
 
-// Countdown target.
-export const mainEventId = 'wedding';
+// The event the whole site focuses on (hero date, countdown, RSVP, calendar).
+export const mainEventId = 'reception-colombo';
 
 // Shown on the RSVP form; set to null to hide.
 export const rsvpBy = '2027-01-15';
 
+// Shown in the contact section and on the RSVP. Fill in the real numbers before sending invites.
 export const contacts = [
-  { name: 'Rohit Sreenivas Reddy', phone: '+61 481 975 047', email: 'rohitgayathiri1803@gmail.com' },
-  { name: 'Gayathiri Mayuran', phone: '+61 480 459 225', email: 'rohitgayathiri1803@gmail.com' },
+  { name: 'Mr. Alagaratnam Mayuran', role: { en: 'Father of the bride', ta: 'மணமகளின் தந்தை', te: 'వధువు తండ్రి' }, phone: '+94 77 000 0001' },
+  { name: 'Mrs. Jayanthi Mayuran', role: { en: 'Mother of the bride', ta: 'மணமகளின் தாய்', te: 'వధువు తల్లి' }, phone: '+94 77 000 0002' },
 ];
 
 // Drop photos into /public/assets/gallery and list them here — the section hides while empty.

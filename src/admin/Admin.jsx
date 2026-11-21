@@ -4,7 +4,6 @@ import { DEMO, getSession, onAuthChange, signIn, signOut, listRows, listMessages
 import Overview from './Overview.jsx';
 import Guests from './Guests.jsx';
 import Messages from './Messages.jsx';
-import CheckIn from './CheckIn.jsx';
 import Moderation from './Moderation.jsx';
 import Reports from './Reports.jsx';
 import '../styles/admin.css';
@@ -23,8 +22,8 @@ function Login() {
     <div className="adm-login">
       <form onSubmit={submit} className="adm-card">
         <img src="/assets/art/ganesha-pink.webp" alt="" width="64" />
-        <h1>Rohit &amp; Gayathiri</h1>
-        <p className="adm-muted">Guest dashboard</p>
+        <h1>Rohit Reddy &amp; Gayathiri</h1>
+        <p className="adm-muted">Reception guest dashboard</p>
         <label className="adm-field"><span>Email</span><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" /></label>
         <label className="adm-field"><span>Password</span><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" /></label>
         {error && <p className="adm-error">{error}</p>}
@@ -43,7 +42,7 @@ export default function Admin() {
   const [pending, setPending] = useState(0);
 
   useEffect(() => {
-    document.title = 'Dashboard · Rohit & Gayathiri';
+    document.title = 'Dashboard · Rohit Reddy & Gayathiri';
     getSession().then(setSession);
     return onAuthChange(setSession);
   }, []);
@@ -81,9 +80,8 @@ export default function Admin() {
           <NavLink end to="/admin">Overview</NavLink>
           <NavLink to="/admin/guests">Guests</NavLink>
           <NavLink to="/admin/messages">Messages</NavLink>
-          <NavLink to="/admin/checkin">Check-in</NavLink>
           <NavLink to="/admin/moderation">Moderation{pending > 0 && <span className="adm-count">{pending}</span>}</NavLink>
-          <NavLink to="/admin/reports">Reports</NavLink>
+          <NavLink to="/admin/reports">Catering &amp; seating</NavLink>
         </nav>
         <div className="adm-head-actions">
           <button className="adm-btn ghost small" onClick={reload} disabled={loading}>{loading ? '…' : '↻ Refresh'}</button>
@@ -103,7 +101,6 @@ export default function Admin() {
           <Route index element={<Overview {...ctx} />} />
           <Route path="guests" element={<Guests {...ctx} />} />
           <Route path="messages" element={<Messages {...ctx} />} />
-          <Route path="checkin" element={<CheckIn {...ctx} />} />
           <Route path="moderation" element={<Moderation {...ctx} onPending={setPending} />} />
           <Route path="reports" element={<Reports {...ctx} />} />
         </Routes>

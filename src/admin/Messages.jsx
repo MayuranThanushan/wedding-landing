@@ -1,37 +1,38 @@
 import { useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { events, SITE_URL } from '../config/wedding.js';
-import { EMPTY_FILTER, EVENT_NAMES, matches, contactEmail, contactPhone, personalize, waLink } from '../lib/audience.js';
-import { RSVP_IDS, isRsvpEvent } from './scope.js';
+import { SITE_URL } from '../config/wedding.js';
+import { EMPTY_FILTER, matches, contactEmail, contactPhone, personalize, waLink } from '../lib/audience.js';
+import { COUPLE, REC, REC_EVENT } from './reception.js';
 import { saveMessage, deleteMessage, sendEmailNow, DEMO } from '../lib/api.js';
 import FilterBar from './FilterBar.jsx';
 
 const site = () => (typeof window !== 'undefined' ? window.location.origin : SITE_URL);
 
+const C = COUPLE;
 const TEMPLATES = {
   reminder: {
     title: 'Reminder',
-    subject: 'Reminder: {event} — Rohit & Gayathiri',
-    body: 'Dear {name},\n\nA gentle reminder of the celebration you’re joining us for:\n{events}\n\nYour invitation, map and details: {link}\n\nWe can’t wait to see you!\nRohit & Gayathiri',
+    subject: `Reminder: our wedding reception — ${C}`,
+    body: `Dear {name},\n\nA gentle reminder that we’re looking forward to celebrating with you:\n{events}\n\nYour invitation, map and details: {link}\n\nWe can’t wait to see you!\n${C}`,
   },
   update: {
     title: 'Update',
-    subject: 'An update about our wedding celebrations',
-    body: 'Dear {name},\n\nWe have an update to share: \n\n…\n\nAll details are always on your invitation: {link}\n\nWith love,\nRohit & Gayathiri',
+    subject: 'An update about our wedding reception',
+    body: `Dear {name},\n\nWe have an update to share: \n\n…\n\nAll details are always on your invitation: {link}\n\nWith love,\n${C}`,
   },
   rsvpNudge: {
     title: 'RSVP nudge',
     subject: 'Will you join us? Please RSVP',
-    body: 'Dear {family},\n\nWe’d love to know if you can join us for our wedding celebrations. Please RSVP on your personal invitation:\n{link}\n\nThank you!\nRohit & Gayathiri',
+    body: `Dear {family},\n\nWe’d love to know if you can join us for our wedding reception in Colombo. Please RSVP (with the number of vegetarian and non-vegetarian meals) on your personal invitation:\n{link}\n\nThank you!\n${C}`,
   },
   thanks: {
     title: 'Thank you',
     subject: 'Thank you for celebrating with us 💛',
-    body: 'Dear {name},\n\nThank you for being part of our special day. Your love and blessings mean the world to us.\n\nWith love,\nRohit & Gayathiri',
+    body: `Dear {name},\n\nThank you for being part of our special day. Your love and blessings mean the world to us.\n\nWith love,\n${C}`,
   },
 };
 
-const BLANK = { title: '', subject: '', body: '', audience: { ...EMPTY_FILTER, event: RSVP_IDS[0], status: 'attending' }, send_email: true, send_whatsapp: true, send_at: null, status: 'draft' };
+const BLANK = { title: '', subject: '', body: '', audience: { ...EMPTY_FILTER, status: 'attending' }, send_email: true, send_whatsapp: true, send_at: null, status: 'draft' };
 
 const toLocalInput = (iso) => {
   if (!iso) return '';
@@ -41,13 +42,11 @@ const toLocalInput = (iso) => {
 
 function audienceLabel(a = {}) {
   const parts = [];
-  if (a.status) parts.push({ attending: 'Attending', declined: 'Declined', pending: 'Not responded' }[a.status]);
-  if (a.event) parts.push(`${EVENT_NAMES[a.event]}${isRsvpEvent(a.event) ? '' : ' (close family)'}`);
-  if (a.food) parts.push({ veg: 'Veg', nonveg: 'Non-veg', allergies: 'Allergies' }[a.food]);
-  if (a.side) parts.push(`${a.side} side`);
+  if (a.status) parts.push({ attending: 'Attending', declined: 'Declined', pending: 'No reply yet' }[a.status]);
+  if (a.food) parts.push({ veg: 'Has vegetarian', nonveg: 'Has non-veg' }[a.food] || a.food);
   if (a.tag) parts.push(`#${a.tag}`);
   if (a.q) parts.push(`“${a.q}”`);
-  return parts.join(' · ') || 'Everyone';
+  return parts.join(' · ') || 'All invited families';
 }
 
 function WaQueue({ message, rows, onClose, onDone }) {
@@ -88,7 +87,7 @@ function WaQueue({ message, rows, onClose, onDone }) {
 
 export default function Messages({ rows, messages, reload }) {
   const location = useLocation();
-  const [draft, setDraft] = useState(() => ({ ...BLANK, audience: location.state?.audience || BLANK.audience }));
+  const [draft, setDraft] = useState(() => ({ ...BLANK, audience: location.state?.audience ? { ...EMPTY_FILTER, ...location.state.audience } : BLANK.audience }));
   const [scheduleAt, setScheduleAt] = useState('');
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState('');
@@ -136,27 +135,24 @@ export default function Messages({ rows, messages, reload }) {
 
   const saveDraft = () => run(async () => { await persist({ status: 'draft' }); setNote('Saved as draft.'); });
 
+  // Reception only: 1 week and 1 day before, 9:00 AM Sri Lanka time, to families who said yes.
   const createDefaults = () => run(async () => {
     const now = Date.now();
     let n = 0;
-    for (const ev of events) {
-      for (const days of [7, 1]) {
-        const title = `${EVENT_NAMES[ev.id]} — ${days === 7 ? '1 week' : '1 day'} reminder`;
-        if (messages.some((m) => m.title === title)) continue;
-        const local = ev.start.slice(0, 10);
-        const at = new Date(`${local}T09:00:00+05:30`).getTime() - days * 86400000;
-        if (at < now) continue;
-        await saveMessage({
-          ...BLANK, title, status: 'scheduled', send_at: new Date(at).toISOString(),
-          // RSVP event → only guests who said yes; close-family events → everyone invited (no RSVP).
-          audience: { ...EMPTY_FILTER, event: ev.id, status: isRsvpEvent(ev.id) ? 'attending' : '' },
-          subject: TEMPLATES.reminder.subject, body: TEMPLATES.reminder.body,
-        });
-        n += 1;
-      }
+    for (const days of [7, 1]) {
+      const title = `Reception — ${days === 7 ? '1 week' : '1 day'} reminder`;
+      if (messages.some((m) => m.title === title)) continue;
+      const at = new Date(`${REC_EVENT.start.slice(0, 10)}T09:00:00+05:30`).getTime() - days * 86400000;
+      if (at < now) continue;
+      await saveMessage({
+        ...BLANK, title, status: 'scheduled', send_at: new Date(at).toISOString(),
+        audience: { ...EMPTY_FILTER, event: REC, status: 'attending' },
+        subject: TEMPLATES.reminder.subject, body: TEMPLATES.reminder.body,
+      });
+      n += 1;
     }
     await reload();
-    setNote(n ? `Created ${n} scheduled reminders (1 week and 1 day before each event — to attending guests for the Colombo reception, and to all invited family for the other celebrations).` : 'Reminders already exist.');
+    setNote(n ? `Created ${n} scheduled reminder${n === 1 ? '' : 's'} (1 week and 1 day before the reception, to attending families).` : 'Reception reminders already exist (or the dates have passed).');
   });
 
   const edit = (m) => { setDraft(m); setScheduleAt(toLocalInput(m.send_at)); window.scrollTo({ top: 0, behavior: 'smooth' }); };
@@ -204,7 +200,7 @@ export default function Messages({ rows, messages, reload }) {
         </label>
         <div className="adm-presets">
           <span className="adm-muted small">Insert:</span>
-          {['{name}', '{family}', '{link}', '{events}', '{event}'].map((t) => <button key={t} className="adm-btn ghost small" onClick={() => insert(t)}>{t}</button>)}
+          {['{name}', '{family}', '{link}', '{events}'].map((t) => <button key={t} className="adm-btn ghost small" onClick={() => insert(t)}>{t}</button>)}
         </div>
 
         {sample && draft.body && (
@@ -229,7 +225,7 @@ export default function Messages({ rows, messages, reload }) {
       <section className="adm-card">
         <div className="adm-card-head">
           <h2>Scheduled &amp; sent</h2>
-          <button className="adm-btn ghost small" disabled={busy} onClick={createDefaults}>+ Auto reminders for every event</button>
+          <button className="adm-btn ghost small" disabled={busy} onClick={createDefaults}>+ Auto reception reminders</button>
         </div>
         <div className="adm-table-wrap">
           <table className="adm-table">

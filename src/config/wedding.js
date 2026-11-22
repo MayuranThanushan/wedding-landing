@@ -110,8 +110,8 @@ export const rsvpBy = '2027-01-15';
 
 // Shown in the contact section and on the RSVP. Fill in the real numbers before sending invites.
 export const contacts = [
-  { name: 'Mr. Alagaratnam Mayuran', role: { en: 'Father of the bride', ta: 'மணமகளின் தந்தை', te: 'వధువు తండ్రి' }, phone: '+94 77 000 0001' },
-  { name: 'Mrs. Jayanthi Mayuran', role: { en: 'Mother of the bride', ta: 'மணமகளின் தாய்', te: 'వధువు తల్లి' }, phone: '+94 77 000 0002' },
+  { name: 'Mr. Alagaratnam Mayuran', role: { en: 'Father of the bride', ta: 'மணமகளின் தந்தை', te: 'వధువు తండ్రి' }, phone: '+94 77 758 3206' },
+  { name: 'Mrs. Jayanthi Mayuran', role: { en: 'Mother of the bride', ta: 'மணமகளின் தாய்', te: 'వధువు తల్లి' }, phone: '+94 77 365 2081' },
 ];
 
 // Drop photos into /public/assets/gallery and list them here — the section hides while empty.
@@ -120,7 +120,7 @@ export const gallery = [
 ];
 
 // Drop a licensed track into /public/assets/music and set the path — the button hides while null.
-export const music = null; // '/assets/music/theme.mp3'
+export const music = '/assets/music/the-rose.mp3'; // drop your licensed MP3 here; until then the built-in veena melody plays
 
 export const eventById = Object.fromEntries(events.map((e) => [e.id, e]));
 

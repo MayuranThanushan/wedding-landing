@@ -112,21 +112,63 @@ export async function submitRsvp(code, payload) {
 }
 
 // ---------------------------------------------------------------- admin auth
+// Supabase Auth in production. In demo mode a local sign-in (password: VITE_DEMO_ADMIN_PASSWORD or "demo")
+// keeps the same login flow so the dashboard is never open without signing in.
+const DEMO_SESSION = 'rg-demo-admin';
+const DEMO_PASSWORD = import.meta.env.VITE_DEMO_ADMIN_PASSWORD || 'demo';
+const demoAuthListeners = new Set();
+const demoSession = () => { try { const e = sessionStorage.getItem(DEMO_SESSION); return e ? { user: { email: e } } : null; } catch { return null; } };
+
 export async function getSession() {
-  if (DEMO) return { user: { email: 'demo@admin' } };
+  if (DEMO) return demoSession();
   const { data } = await supabase.auth.getSession();
   return data.session;
 }
+/** cb(session, event) — event is e.g. 'SIGNED_IN', 'SIGNED_OUT', 'PASSWORD_RECOVERY'. */
 export function onAuthChange(cb) {
-  if (DEMO) return () => {};
-  const { data } = supabase.auth.onAuthStateChange((_e, s) => cb(s));
+  if (DEMO) { demoAuthListeners.add(cb); return () => demoAuthListeners.delete(cb); }
+  const { data } = supabase.auth.onAuthStateChange((event, s) => cb(s, event));
   return () => data.subscription.unsubscribe();
 }
 export async function signIn(email, password) {
+  if (DEMO) {
+    await delay();
+    if (password !== DEMO_PASSWORD) throw new Error('Incorrect email or password.');
+    try { sessionStorage.setItem(DEMO_SESSION, email); } catch { /* ignore */ }
+    demoAuthListeners.forEach((cb) => cb(demoSession(), 'SIGNED_IN'));
+    return;
+  }
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
+  if (error) throw new Error(error.message === 'Invalid login credentials' ? 'Incorrect email or password.' : error.message);
 }
-export async function signOut() { if (!DEMO) await supabase.auth.signOut(); }
+export async function signOut() {
+  if (DEMO) {
+    try { sessionStorage.removeItem(DEMO_SESSION); } catch { /* ignore */ }
+    demoAuthListeners.forEach((cb) => cb(null, 'SIGNED_OUT'));
+    return;
+  }
+  await supabase.auth.signOut();
+}
+/** True when the signed-in account is listed in public.admins. */
+export async function isAdmin() {
+  if (DEMO) return true;
+  const { data, error } = await supabase.rpc('is_admin');
+  if (error) return false;
+  return !!data;
+}
+/** Emails a reset link that opens /admin and asks for a new password. */
+export async function sendPasswordReset(email) {
+  if (DEMO) return delay(true);
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/admin` });
+  if (error) throw error;
+  return true;
+}
+export async function updatePassword(password) {
+  if (DEMO) return delay(true);
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) throw error;
+  return true;
+}
 
 // ---------------------------------------------------------------- admin data
 export async function listRows() {

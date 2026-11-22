@@ -112,9 +112,35 @@ body:has(.adm), body:has(.adm-login) { background: #faf6ef; }
 .adm-wa-list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--a-line); border-radius: 10px; }
 .adm-wa-list li.done { background: #f1faf4; }
 
-.adm-login { display: grid; place-items: center; padding: 16px; background: var(--pink); }
-.adm-login .adm-card { width: min(100%, 360px); text-align: center; display: grid; gap: 4px; }
-.adm-login h1 { font-family: var(--caps); color: var(--pink); margin: 6px 0 0; font-weight: 400; }
+.adm-login {
+  min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; padding: 0;
+  background: #fffaf3;
+}
+.lg-art {
+  position: relative; overflow: hidden; display: grid; place-content: center; justify-items: center; gap: 10px; padding: 40px 24px; text-align: center;
+  background: radial-gradient(ellipse at 50% 30%, #d10a84, #8f0056 55%, #4a0029); color: var(--cream);
+}
+.lg-mandala { position: absolute; width: 140%; max-width: none; left: -20%; top: -20%; opacity: .14; animation: spin 160s linear infinite; }
+.lg-ganesha { position: relative; width: 84px; }
+.lg-names { position: relative; margin: 8px 0 0; font-family: var(--display); font-size: clamp(2rem, 4vw, 3rem); line-height: 1.05; }
+.lg-names i { color: var(--gold); }
+.lg-sub { position: relative; margin: 0; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--pink-soft); }
+.lg-card { align-self: center; justify-self: center; width: min(100% - 32px, 380px); display: grid; gap: 14px; padding: 32px 0; }
+.lg-kicker { margin: 0; font-size: .72rem; letter-spacing: .24em; text-transform: uppercase; color: var(--pink); font-weight: 600; }
+.lg-card h1 { margin: -6px 0 6px; font-family: var(--display); font-weight: 500; font-size: 2.2rem; color: var(--a-text); }
+.lg-pw { position: relative; display: block; }
+.lg-pw input { width: 100%; padding-right: 64px; }
+.lg-pw button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: none; color: var(--pink); font-size: 12px; font-weight: 600; padding: 6px 8px; }
+.lg-submit { width: 100%; padding: 12px; font-size: 15px; justify-content: center; text-align: center; }
+.lg-link { justify-self: center; border: 0; background: none; color: var(--pink); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+.lg-demo { margin: 4px 0 0; padding: 10px 12px; border-radius: 10px; background: #fff4cc; color: #6b5200; font-size: 12.5px; }
+.adm-user { align-self: center; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; opacity: .85; }
+@media (max-width: 760px) {
+  .adm-login { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .lg-art { padding: 28px 16px; }
+  .lg-ganesha { width: 54px; }
+  .adm-user { display: none; }
+}
 .adm-login img { margin: 0 auto; }
 .adm-login .adm-field { text-align: left; }
 
@@ -335,3 +361,5 @@ a.adm-stat.link:hover { border-color: var(--pink); transform: translateY(-1px); 
   .adm-table-wrap { overflow: visible; }
   .rep-totals div, .seat-table { border-color: #999; }
 }
+
+@keyframes spin { to { transform: rotate(360deg); } }

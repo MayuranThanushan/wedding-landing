@@ -11,10 +11,11 @@ import { SHELL } from '../i18n/shell.js';
 
 const MAX_PER_TYPE = 20;
 
-function Stepper({ label, value, min = 0, max, onChange }) {
+function Stepper({ label, icon, value, min = 0, max, onChange }) {
   return (
-    <div className="stepper">
-      <span className="stepper-label">{label}</span>
+    <div className={`meal ${value > 0 ? 'has' : ''}`}>
+      <span className="meal-icon" aria-hidden="true">{icon}</span>
+      <span className="meal-label">{label}</span>
       <div className="stepper-ctl">
         <button type="button" onClick={() => onChange(Math.max(min, value - 1))} disabled={value <= min} aria-label={`${label} −`}>−</button>
         <output aria-live="polite">{value}</output>
@@ -110,38 +111,46 @@ export default function Rsvp({ code, invite, status, onSaved }) {
   } else {
     body = (
       <form className="rsvp-form" onSubmit={submit} noValidate>
-        <p className="rsvp-hello">{t.dear} <strong>{invite.family_name}</strong>,</p>
+        <header className="rsvp-head">
+          <p className="rsvp-hello">{t.dear} {invite.family_name},</p>
+          {rsvpEvs.map((ev) => (
+            <p className="rsvp-ev" key={ev.id}>
+              {t.events[ev.id]} · {fmtDate(ev.start, t.locale, venues[ev.venue].timeZone, { weekday: 'short' })} · {venues[ev.venue].name}
+            </p>
+          ))}
+        </header>
 
-        <fieldset className="rsvp-events">
-          <legend>{r.willYouAttend}</legend>
-          {rsvpEvs.map((ev) => {
-            const v = form.attending[ev.id];
-            return (
-              <div className="rsvp-event" key={ev.id}>
-                <div className="rsvp-event-name">
-                  <span>{ev.icon} {t.events[ev.id]}</span>
-                  <small>{fmtDate(ev.start, t.locale, venues[ev.venue].timeZone, { weekday: 'short' })} · {venues[ev.venue].name}</small>
-                </div>
-                <div className="yesno">
-                  <button type="button" className={v === true ? 'on yes' : ''} onClick={() => set({ attending: { ...form.attending, [ev.id]: true } })}>{r.yes}</button>
-                  <button type="button" className={v === false ? 'on no' : ''} onClick={() => set({ attending: { ...form.attending, [ev.id]: false } })}>{r.no}</button>
-                </div>
+        {rsvpEvs.map((ev) => {
+          const v = form.attending[ev.id];
+          const pickAns = (val) => set({ attending: { ...form.attending, [ev.id]: val } });
+          return (
+            <fieldset className="rsvp-step" key={ev.id}>
+              <legend><span className="rsvp-n">1</span>{r.willYouAttend}</legend>
+              <div className="choice" role="radiogroup">
+                <button type="button" role="radio" aria-checked={v === true} className={`choice-tile yes ${v === true ? 'on' : ''}`} onClick={() => pickAns(true)}>
+                  <span className="choice-icon" aria-hidden="true">💛</span>{r.yes}
+                </button>
+                <button type="button" role="radio" aria-checked={v === false} className={`choice-tile no ${v === false ? 'on' : ''}`} onClick={() => pickAns(false)}>
+                  <span className="choice-icon" aria-hidden="true">🙏</span>{r.no}
+                </button>
               </div>
-            );
-          })}
-        </fieldset>
+            </fieldset>
+          );
+        })}
 
         {anyYes && (
-          <div className="rsvp-counts">
-            <p className="count-label">{s.mealsLabel}</p>
-            <div className="count-row">
-              <Stepper label={`🥗 ${r.veg}`} value={form.veg} max={MAX_PER_TYPE} onChange={(v) => set({ veg: v })} />
-              <Stepper label={`🍗 ${r.nonveg}`} value={form.nonveg} max={MAX_PER_TYPE} onChange={(v) => set({ nonveg: v })} />
+          <fieldset className="rsvp-step">
+            <legend><span className="rsvp-n">2</span>{s.mealsLabel}</legend>
+            <div className="meals">
+              <Stepper icon="🥗" label={r.veg} value={form.veg} max={MAX_PER_TYPE} onChange={(v) => set({ veg: v })} />
+              <Stepper icon="🍗" label={r.nonveg} value={form.nonveg} max={MAX_PER_TYPE} onChange={(v) => set({ nonveg: v })} />
             </div>
-            <p className="rsvp-total">{s.totalGuests}: <strong>{total}</strong></p>
-          </div>
+            <p className="rsvp-total"><span>{s.totalGuests}</span><strong>{total}</strong></p>
+          </fieldset>
         )}
 
+        <fieldset className="rsvp-step">
+          <legend><span className="rsvp-n">{anyYes ? 3 : 2}</span>{s.yourDetails}</legend>
         <div className="field-grid">
           <label className="field">
             <span>{r.name} *</span>
@@ -158,6 +167,7 @@ export default function Rsvp({ code, invite, status, onSaved }) {
             <small>{r.emailHint}</small>
           </label>
         </div>
+        </fieldset>
 
         {error && <p className="form-error" role="alert">{error}</p>}
         <button className="btn btn-pink btn-block" disabled={busy}>

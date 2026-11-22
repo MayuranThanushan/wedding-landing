@@ -99,10 +99,11 @@ html.menu-open .nav-cta { display: none; }
 .hero-kicker img { width: 28px; height: 28px; object-fit: contain; }
 .hero-names {
   margin: 0; font-family: var(--display); font-weight: 500; line-height: .86; letter-spacing: -.02em;
-  font-size: clamp(4rem, 7.6vw, 8.4rem); color: var(--cream);
+  font-size: clamp(3.4rem, 6.4vw, 7rem); color: var(--cream);
   display: grid;
 }
-@media (max-width: 820px) { .hero-names { font-size: clamp(3.6rem, 17vw, 7rem); } }
+@media (max-width: 820px) { .hero-names { font-size: clamp(2.8rem, 13.5vw, 6rem); } }
+.hero-names .split-line > span { white-space: nowrap; }
 .hero-names .split-line:last-child { padding-left: clamp(24px, 5vw, 80px); }
 /* Letter-spacing splits Tamil/Telugu letter clusters apart — keep their text untracked. */
 html:lang(ta) .inv *, html:lang(te) .inv * { letter-spacing: 0 !important; }
@@ -361,11 +362,6 @@ html:lang(ta) .inv *, html:lang(te) .inv * { letter-spacing: 0 !important; }
   .vn-map { aspect-ratio: 4 / 3; }
 }
 
-/* ---------------------------------------------------------------- RSVP yes/no polish */
-.rsvp-events legend { font-family: var(--display) !important; font-size: 1.4rem !important; letter-spacing: 0 !important; }
-.yesno { border-color: var(--hair) !important; }
-.yesno button.on.yes { background: var(--pink) !important; color: #fff !important; }
-
 /* ---------------------------------------------------------------- Footer */
 .ft { position: relative; overflow: hidden; background: radial-gradient(ellipse at 50% 0%, var(--pink-deep), var(--plum) 70%); color: var(--cream); padding: var(--sec-pad) var(--gutter) 0; }
 .ft-inner { max-width: var(--wrap); margin: 0 auto; }
@@ -385,12 +381,11 @@ html:lang(ta) .inv *, html:lang(te) .inv * { letter-spacing: 0 !important; }
 .ft-sign p { margin: 0; }
 .ft-script { font-family: var(--script); font-size: clamp(2.4rem, 7vw, 3.6rem); color: var(--gold); line-height: 1.3; }
 .ft-top { margin-top: 10px; font-size: .78rem; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; opacity: .7; }
-.ft-temples { display: block; width: 100%; max-width: none; margin-top: 24px; opacity: .5; }
-.ft-made { margin: 0; padding: 14px var(--gutter) max(18px, env(safe-area-inset-bottom)); text-align: center; font-size: .75rem; letter-spacing: .06em; opacity: .65; background: rgba(0, 0, 0, .25); }
+.ft-temples { display: block; width: calc(100% + 2 * var(--gutter)); max-width: none; margin: 24px calc(var(--gutter) * -1) 0; opacity: .5; }
+.ft-made { margin: 0 calc(var(--gutter) * -1); padding: 14px var(--gutter) max(18px, env(safe-area-inset-bottom)); text-align: center; font-size: .75rem; letter-spacing: .06em; opacity: .65; background: rgba(0, 0, 0, .25); }
 .ft-made a { color: var(--gold); }
 
 
 /* ---------------------------------------------------------------- Petal rain */
 .petal-rain { position: fixed; inset: 0; z-index: 102; pointer-events: none; }
-.hero-surname { font-style: italic; font-weight: 400; color: var(--gold); font-size: .62em; margin-left: .08em; }
 .hero-married { margin: -4px 0 0; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--pink-soft); opacity: .9; max-width: 34em; }

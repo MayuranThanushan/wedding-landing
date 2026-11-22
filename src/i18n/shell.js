@@ -32,6 +32,7 @@ export const SHELL = {
     mealsLabel: 'How many meals should we prepare for your family?',
     mealsError: 'Please add at least one vegetarian or non-vegetarian meal.',
     totalGuests: 'Total guests',
+    yourDetails: 'Your details',
     tableHint: 'At the venue, scan the QR code at the entrance to find your table.',
     rsvpNone: { title: 'No RSVP needed', text: 'Your invitation is for our close-family celebrations. We will be in touch personally and can’t wait to see you there.' },
     pass: {
@@ -75,6 +76,7 @@ export const SHELL = {
     mealsLabel: 'உங்கள் குடும்பத்திற்கு எத்தனை உணவுகள் தயாரிக்க வேண்டும்?',
     mealsError: 'குறைந்தது ஒரு சைவ அல்லது அசைவ உணவைச் சேர்க்கவும்.',
     totalGuests: 'மொத்த விருந்தினர்',
+    yourDetails: 'உங்கள் விவரங்கள்',
     tableHint: 'நிகழ்விடத்தில் நுழைவாயிலில் உள்ள QR குறியீட்டை ஸ்கேன் செய்து உங்கள் மேசையைக் கண்டறியுங்கள்.',
     rsvpNone: { title: 'பதில் தேவையில்லை', text: 'உங்கள் அழைப்பு எங்கள் நெருங்கிய குடும்பக் கொண்டாட்டங்களுக்கானது. நாங்கள் நேரில் தொடர்பு கொள்வோம்; உங்களைக் காண ஆவலுடன் காத்திருக்கிறோம்.' },
     pass: {
@@ -118,6 +120,7 @@ export const SHELL = {
     mealsLabel: 'మీ కుటుంబానికి ఎన్ని భోజనాలు సిద్ధం చేయాలి?',
     mealsError: 'కనీసం ఒక శాఖాహార లేదా మాంసాహార భోజనం జోడించండి.',
     totalGuests: 'మొత్తం అతిథులు',
+    yourDetails: 'మీ వివరాలు',
     tableHint: 'వేదిక వద్ద ప్రవేశ ద్వారం దగ్గర ఉన్న QR కోడ్‌ను స్కాన్ చేసి మీ టేబుల్‌ను కనుగొనండి.',
     rsvpNone: { title: 'RSVP అవసరం లేదు', text: 'మీ ఆహ్వానం మా దగ్గరి కుటుంబ వేడుకల కోసం. మేము వ్యక్తిగతంగా సంప్రదిస్తాము; మిమ్మల్ని చూడాలని ఎదురుచూస్తున్నాము.' },
     pass: {

@@ -52,7 +52,7 @@ export default function Hero({ familyName, showRsvp }) {
             {familyName ? s.heroDear(familyName) : s.heroKicker}
           </p>
           <h1 className="hero-names" aria-label="Rohit Reddy & Gayathiri">
-            <span className="split-line"><span style={{ '--d': '.15s' }}>Rohit <i className="hero-surname">Reddy</i></span></span>
+            <span className="split-line"><span style={{ '--d': '.15s' }}>Rohit Reddy</span></span>
             <span className="split-line hero-amp"><span style={{ '--d': '.35s' }}>&amp;</span></span>
             <span className="split-line"><span style={{ '--d': '.5s' }}>Gayathiri</span></span>
           </h1>

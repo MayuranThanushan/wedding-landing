@@ -1,4 +1,6 @@
-# Rohit & Gayathiri — Wedding site
+# Rohit Reddy & Gayathiri — Wedding site
+
+> **Going live? Follow [SETUP.md](SETUP.md) step by step.**
 
 React + Vite site hosted on Vercel at https://rohit-gayathiri.vercel.app
 

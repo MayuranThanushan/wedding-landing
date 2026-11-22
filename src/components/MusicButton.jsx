@@ -20,8 +20,17 @@ export default function MusicButton({ autoplay }) {
   const [tip, setTip] = useState(false);
   const shownTip = useRef(false);
 
+  // Use the configured MP3 only if the file is actually there; otherwise fall back to the built-in melody.
+  const trackOk = useRef(false);
+  useEffect(() => {
+    if (!music) return;
+    fetch(music, { method: 'HEAD' })
+      .then((r) => { trackOk.current = r.ok && /audio|mpeg|octet/.test(r.headers.get('content-type') || ''); })
+      .catch(() => { trackOk.current = false; });
+  }, []);
+
   const get = () => {
-    if (!engine.current) engine.current = music ? createTrack(music) : createMelody();
+    if (!engine.current) engine.current = music && trackOk.current ? createTrack(music) : createMelody();
     return engine.current;
   };
 

@@ -16,9 +16,9 @@ export const COMMUNITY = {
     wishesTitle: ['Words of ', 'love'],
     wishesLead: 'Leave a blessing, a memory or a little advice for the newlyweds. Every note is read and treasured.',
     wishLabel: 'Your wish',
-    wishPlaceholder: 'Dear Rohit & Gayathiri…',
+    wishPlaceholder: 'Dear Rohit Reddy & Gayathiri…',
     wishSend: 'Post my wish',
-    wishThanks: 'Thank you! Your wish will appear once Rohit & Gayathiri see it.',
+    wishThanks: 'Thank you! Your wish will appear once Rohit Reddy & Gayathiri see it.',
     wishAnother: 'Write another',
     wishesEmpty: 'The wall is waiting for its very first wish. Will it be yours?',
     // photos

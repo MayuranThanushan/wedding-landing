@@ -1,21 +1,26 @@
-# Rohit & Gayathiri — Wedding site
+# Rohit Reddy & Gayathiri — Wedding site
+
+> **Going live? Follow [SETUP.md](SETUP.md) step by step.**
 
 React + Vite site hosted on Vercel at https://rohit-gayathiri.vercel.app
 
 | URL | What it is |
 | --- | --- |
-| `/i/<code>` | A guest's personal invitation: envelope → story → invitation → events → rituals → venues → travel → RSVP + QR pass → wishes → photo album → song requests → FAQ |
+| `/i/<code>` | A guest's personal invitation to the **Colombo reception**: envelope (petal shower + veena/tabla music) → traditional invitation card → reception spotlight (family ceremonies shown for information) → venues → RSVP (veg / non-veg meal counts) → photo album |
 | `/` | The same invitation without RSVP, for sharing publicly |
-| `/admin` | The couple's dashboard: charts, guest list, messages, door check-in scanner, moderation + activity feed, catering & seating reports |
+| `/admin` | The couple's dashboard: reception stats and charts, guest list, messages, photo moderation, catering sheet, table seating and the table-finder QR poster |
+| `/tables` | Public "Find your table" page, opened from the one common QR code printed at the venue |
 | `/engagement/` | The engagement site, kept as a keepsake (no form; `/rsvp.html` redirects there) |
 
 ## Editing content
 
 - **Dates, times, venues, dress codes, contacts:** [src/config/wedding.js](src/config/wedding.js). Set `timeTbc: false` once a time is confirmed. Don't rename an event `id` after invites have gone out.
-- **Story, rituals guide, travel & hotels, FAQ:** [src/config/content.js](src/config/content.js). Add story photos by setting `photo` on a milestone.
+- **RSVP:** invitations are for the Colombo reception only (`rsvpEvents` / `mainEventId` in the config). The Ballari ceremonies are shown for information and handled personally. Guests give vegetarian and non-vegetarian meal counts; their total is the head count.
+- **Contact numbers:** the bride's parents in `contacts` in the config. **Replace the placeholder numbers before sending invites.**
+- **Venue photos:** `photo`, `photoCaption` and `photoCredit` on each venue (current photos are from Wikimedia Commons under CC BY-SA; keep the credit).
 - **Text in English, Tamil and Telugu:** [src/i18n/strings.js](src/i18n/strings.js), [shell.js](src/i18n/shell.js), [community.js](src/i18n/community.js). The Tamil and Telugu text needs a native speaker to proof-read it.
 - **Photos:** add them to `public/assets/gallery/` and list them in `gallery` in the config. The gallery section stays hidden while that list is empty.
-- **Music:** add a licensed track to `public/assets/music/` and set `music` in the config. It starts playing when the envelope is opened.
+- **Music:** an original festive Carnatic instrumental (veena + tabla, raga Hamsadhwani) is generated in the browser and starts when the envelope is opened; guests can mute it. To use your own track, add a licensed MP3 to `public/assets/music/` and set `music` in the config.
 - **Artwork:** the motifs in `public/assets/art/` were cropped from the PDF card. To use the designer's original files, replace them using the same file names.
 
 ## Run locally
@@ -69,9 +74,9 @@ Vercel detects Vite automatically (build command `npm run build`, output folder 
    - **+ Auto reminders for every event** creates reminders 1 week and 1 day before each event, sent to guests who are attending it.
 5. **Calendar:** after RSVPing "yes", guests can add their events to Google, Apple or Outlook calendars, with alerts set 1 week and 1 day before each event.
 
-6. **Wishes & photos** appear on the site only after you approve them in **Moderation**. Song requests are listed there too (CSV for the DJ).
-7. **At the door:** open **Check-in** on a phone, pick the event and scan each family's QR pass (or search by name). Arrived vs expected counts update live.
-8. **Caterer & seating:** **Reports** prints a per-event catering sheet and lets you assign tables; guests then see their table on their pass.
+6. **Guest photos** appear on the site only after you approve them in **Moderation**.
+7. **At the venue:** in **Catering & seating**, assign each attending family a table, then print the **Table finder QR** poster. Guests scan it, type their family name or phone number and see their table.
+8. **Caterer:** **Catering & seating** prints the reception catering sheet (veg / non-veg / total per family).
 
 Gmail sends up to about 500 emails a day. Message placeholders: `{name}`, `{family}`, `{link}` (personal link), `{events}` (their events with date and venue), `{event}`.
 

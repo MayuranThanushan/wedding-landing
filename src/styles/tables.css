@@ -1,0 +1,40 @@
+/* Table finder page (/tables) — opened from the common QR at the venue */
+.tf {
+  position: relative; min-height: 100svh; overflow: hidden; isolation: isolate;
+  display: flex; flex-direction: column; align-items: center;
+  background: radial-gradient(ellipse at 50% 0%, #d10a84, var(--pink-deep) 45%, var(--plum) 100%);
+  color: var(--cream); text-align: center;
+}
+.tf::before { content: ''; position: absolute; inset: 0; z-index: -1; background: url(/assets/art/mandala-gold.webp) center / 300px repeat; opacity: .06; }
+.tf-thoranam { position: absolute; top: 0; left: -4%; width: 108%; height: auto; z-index: 1; }
+.tf-langs { position: absolute; z-index: 3; top: 56px; right: 14px; display: flex; gap: 2px; padding: 3px; border-radius: 999px; border: 1px solid rgba(255, 222, 89, .5); }
+.tf-langs button { border: 0; background: none; color: var(--gold); padding: .25em .7em; border-radius: 999px; font-size: .75rem; }
+.tf-langs button.on { background: var(--gold); color: var(--pink-dark); }
+.tf-main { position: relative; z-index: 2; width: min(100% - 32px, 520px); padding: 92px 0 40px; display: grid; justify-items: center; gap: 8px; }
+.tf-ganesha { width: 64px; }
+.tf-welcome { margin: 6px 0 0; font-family: var(--caps); font-size: .72rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); }
+.tf-names { margin: 0; font-family: var(--display); font-weight: 500; font-size: clamp(2.2rem, 9vw, 3.4rem); line-height: 1.05; }
+.tf-names i { color: var(--gold); font-weight: 400; }
+.tf-date { margin: 0 0 18px; font-size: .82rem; letter-spacing: .14em; color: var(--pink-soft); }
+.tf-card { width: 100%; padding: clamp(22px, 6vw, 34px); border-radius: 28px; background: #fffaf0; color: var(--ink); text-align: left; box-shadow: 0 0 0 1px var(--gold-2), 0 0 0 7px rgba(255, 250, 240, .15), 0 40px 80px -30px rgba(0, 0, 0, .6); }
+.tf-card h2 { margin: 0 0 4px; font-family: var(--display); font-weight: 500; font-size: 2rem; color: var(--pink-deep); text-align: center; }
+.tf-label { display: block; margin-bottom: 12px; text-align: center; color: var(--muted); font-size: .9rem; }
+.tf-row { display: flex; gap: 8px; }
+.tf-row input { flex: 1; min-width: 0; border: 1px solid var(--hair); border-radius: 999px; padding: .85em 1.1em; font-size: 16px; background: #fff; }
+.tf-row input:focus { outline: none; border-color: var(--pink); box-shadow: 0 0 0 4px rgba(204, 0, 125, .12); }
+.tf-row .btn { padding: .8em 1.3em; }
+.tf-results { display: grid; gap: 10px; margin-top: 16px; }
+.tf-msg { margin: 0; padding: 12px 14px; border-radius: 14px; background: var(--blush); color: var(--pink-deep); font-size: .92rem; text-align: center; }
+.tf-hit {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 18px;
+  background: linear-gradient(120deg, #fff6d8, #fde9a8); box-shadow: inset 0 0 0 1px var(--gold-2);
+  animation: tf-in .6s var(--ease-out) both; animation-delay: calc(var(--i) * .08s);
+}
+@keyframes tf-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+.tf-family { font-family: var(--display); font-size: 1.35rem; font-weight: 500; color: var(--pink-dark); }
+.tf-table { display: grid; justify-items: center; min-width: 74px; padding: 6px 12px; border-radius: 14px; background: var(--plum); color: var(--gold); }
+.tf-table small { font-size: .62rem; letter-spacing: .22em; text-transform: uppercase; }
+.tf-table b { font-family: var(--display); font-size: 2rem; line-height: 1; }
+.tf-pending { font-size: .82rem; color: var(--muted); max-width: 14em; text-align: right; }
+.tf-enjoy { margin: 4px 0 0; text-align: center; font-family: var(--display); font-style: italic; font-size: 1.2rem; color: var(--pink); }
+.tf-temples { position: relative; z-index: 0; width: 100%; max-width: none; margin-top: auto; opacity: .5; }

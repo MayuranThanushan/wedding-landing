@@ -1,25 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLang } from '../i18n/index.jsx';
 import { dict } from '../i18n/pick.js';
 import { SHELL } from '../i18n/shell.js';
-import { venues } from '../config/wedding.js';
-import { mapsEmbed, mapsLink } from '../lib/format.js';
+import { eventById, mainEventId, venues } from '../config/wedding.js';
+import { fmtDate, mapsEmbed, mapsLink } from '../lib/format.js';
 import Reveal from './Reveal.jsx';
 import Section from './ui/Section.jsx';
 
-/** Map loads only on tap — keeps the page fast and avoids Google cookies until needed. */
-function LazyMap({ v }) {
+const directionsLink = (v) => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(v.mapQuery)}`;
+
+/** Live Google map that loads as soon as it scrolls near the screen. */
+function VenueMap({ v }) {
+  const ref = useRef(null);
   const [on, setOn] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !('IntersectionObserver' in window)) { setOn(true); return undefined; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setOn(true); io.disconnect(); } }, { rootMargin: '300px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   return (
-    <div className="vn-map">
+    <div className="vn-map" ref={ref}>
       {on
-        ? <iframe title={v.name} src={mapsEmbed(v)} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
-        : (
-          <button className="vn-map-cover" onClick={() => setOn(true)}>
-            <img src="/assets/art/temples.webp" alt="" />
-            <span>⌖ Show map</span>
-          </button>
-        )}
+        ? <iframe title={`Map · ${v.name}`} src={mapsEmbed(v)} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+        : <div className="vn-map-skeleton" aria-hidden="true" />}
+      <a className="vn-map-open" href={mapsLink(v)} target="_blank" rel="noreferrer">⤢ Google Maps</a>
     </div>
   );
 }
@@ -27,26 +33,53 @@ function LazyMap({ v }) {
 export default function Venues({ events }) {
   const { t, lang } = useLang();
   const s = dict(SHELL, lang);
-  const ids = [...new Set(events.map((e) => e.venue))];
+  const [copied, setCopied] = useState('');
+  const mainVenue = eventById[mainEventId]?.venue;
+  const ids = [...new Set(events.map((e) => e.venue))].sort((a, b) => (a === mainVenue ? -1 : b === mainVenue ? 1 : 0));
+  const copy = async (id, text) => {
+    try { await navigator.clipboard.writeText(text); setCopied(id); setTimeout(() => setCopied(''), 1800); } catch { /* ignore */ }
+  };
+
   return (
-    <Section id="venues" tone="blush" num="05" kicker={t.venuesTitle}
+    <Section id="venues" tone="blush" num="03" kicker={t.venuesTitle}
       title={<>{s.venuesTitle[0]} <em>{s.venuesTitle[1]}</em></>} lead={s.venuesLead}>
-      <div className="vn-grid">
+      <div className="vn-list">
         {ids.map((id, i) => {
           const v = venues[id];
           const evs = events.filter((e) => e.venue === id);
           return (
-            <Reveal className="vn" key={id} delay={i * 0.1}>
-              <LazyMap v={v} />
-              <div className="vn-body">
-                <p className="card-eyebrow">{v.address.split(',').slice(-1)[0].trim()}</p>
-                <h3 className="vn-name">{v.name}</h3>
-                <p className="vn-addr">{v.address}</p>
-                <ul className="vn-events">
-                  {evs.map((e) => <li key={e.id}>{e.icon} {t.events[e.id]}</li>)}
-                </ul>
-                {v.notes && <p className="vn-notes">{v.notes}</p>}
-                <a className="btn btn-pink" href={mapsLink(v)} target="_blank" rel="noreferrer">{t.openInMaps} ↗</a>
+            <Reveal className={`vn ${i % 2 ? 'is-flip' : ''}`} key={id} delay={0.05}>
+              <figure className="vn-photo">
+                {v.photo
+                  ? <img src={v.photo} alt={v.photoCaption || v.name} loading="lazy" />
+                  : <img className="vn-photo-art" src="/assets/art/temples.webp" alt="" />}
+                <figcaption>
+                  <span className="vn-city">{v.address.split(',').slice(-2).join(',').trim()}</span>
+                  <strong className="vn-name">{v.name}</strong>
+                  {v.photoCaption && v.photo && <span className="vn-cap">{v.photoCaption}</span>}
+                </figcaption>
+                {v.photoCredit && <small className="vn-credit">{v.photoCredit}</small>}
+              </figure>
+
+              <div className="vn-side">
+                <VenueMap v={v} />
+                <div className="vn-info">
+                  <p className="vn-addr"><span aria-hidden="true">⌖</span> {v.address}</p>
+                  <ul className="vn-events">
+                    {evs.map((e) => (
+                      <li key={e.id}>
+                        <span>{e.icon} {t.events[e.id]}</span>
+                        <small>{fmtDate(e.start, t.locale, v.timeZone, { weekday: 'short', year: undefined, month: 'short' })}</small>
+                      </li>
+                    ))}
+                  </ul>
+                  {v.notes && <p className="vn-notes">{v.notes}</p>}
+                  <div className="vn-actions">
+                    <a className="btn btn-pink" href={directionsLink(v)} target="_blank" rel="noreferrer">➤ {t.directions}</a>
+                    <a className="btn btn-ghost" href={mapsLink(v)} target="_blank" rel="noreferrer">{t.openInMaps} ↗</a>
+                    <button className="vn-copy" onClick={() => copy(id, `${v.name}, ${v.address}`)}>{copied === id ? '✓ Copied' : '⧉ Copy address'}</button>
+                  </div>
+                </div>
               </div>
             </Reveal>
           );

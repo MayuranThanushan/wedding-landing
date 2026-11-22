@@ -19,51 +19,40 @@ function mapError(e) {
 }
 
 // ---------------------------------------------------------------- demo store
-const DEMO_KEY = 'rg-demo-db-v2';
-const ALL = events.map((e) => e.id);
-const INDIA = ALL.filter((id) => id !== 'reception-colombo');
+const DEMO_KEY = 'rg-demo-db-v3';
+const RECEPTION = ['reception-colombo'];
 function seed() {
   const now = new Date().toISOString();
-  const inv = (code, family_name, side, max_adults, max_children, evs, phone, email, lang = 'en', tags = []) => ({
-    id: crypto.randomUUID(), code, family_name, side, max_adults, max_children, events: evs, phone, email, lang, tags,
-    notes: '', open_count: 0, opened_at: null, created_at: now,
+  const inv = (code, family_name, phone, email, lang = 'en', tags = []) => ({
+    id: crypto.randomUUID(), code, family_name, events: RECEPTION, phone, email, lang, tags,
+    notes: '', open_count: 0, opened_at: null, created_at: now, table_label: null,
   });
   const invites = [
-    inv('demo', 'Demo Family', 'both', 3, 1, ALL, '+94 77 000 0000', 'demo@example.com'),
-    inv('kumar01', 'Kumar Family', 'bride', 4, 2, ['wedding', 'reception-colombo'], '+94 77 123 4567', 'kumar@example.com', 'ta', ['colombo']),
-    inv('reddy01', 'Reddy Family', 'groom', 2, 0, INDIA, '+91 98450 00001', 'reddy@example.com', 'te', ['ballari']),
-    inv('perera1', 'Nimal & Anu', 'bride', 2, 0, ['reception-colombo'], '+94 71 222 3333', '', 'en', ['friends']),
-    inv('sharma1', 'Sharma Family', 'groom', 3, 1, ['mehendi', 'wedding', 'reception-india'], '+91 99000 11111', 'sharma@example.com', 'en', ['work']),
-    inv('raj0001', 'Raj Uncle', 'bride', 2, 0, ALL, '+94 76 555 1212', '', 'ta'),
+    inv('demo', 'Demo Family', '+94 77 000 0000', 'demo@example.com'),
+    inv('kumar01', 'Kumar Family', '+94 77 123 4567', 'kumar@example.com', 'ta', ['colombo']),
+    inv('perera1', 'Nimal & Anu', '+94 71 222 3333', '', 'en', ['friends']),
+    inv('silva01', 'Silva Family', '+94 76 333 4444', 'silva@example.com', 'en', ['work']),
+    inv('raj0001', 'Raj Uncle', '+94 76 555 1212', '', 'ta'),
+    inv('nadar01', 'Nadarajah Family', '+94 77 888 9999', '', 'ta', ['family']),
   ];
+  const yes = (name, phone, veg, nonveg) => ({ name, phone, email: '', attending: { 'reception-colombo': true }, adults: veg + nonveg, children: 0, veg, nonveg });
   const rsvps = {
-    [invites[1].id]: { name: 'S. Kumar', phone: '+94 77 123 4567', email: 'kumar@example.com', attending: { wedding: true, 'reception-colombo': true }, adults: 3, children: 2, veg: 2, nonveg: 3, allergies: 'Peanuts (child)', message: 'So happy for you both!', updated_at: now },
-    [invites[2].id]: { name: 'V. Reddy', phone: '+91 98450 00001', email: 'reddy@example.com', attending: Object.fromEntries(INDIA.map((id) => [id, true])), adults: 2, children: 0, veg: 2, nonveg: 0, allergies: '', message: '', updated_at: now },
-    [invites[3].id]: { name: 'Nimal Perera', phone: '+94 71 222 3333', email: '', attending: { 'reception-colombo': false }, adults: 0, children: 0, veg: 0, nonveg: 0, allergies: '', message: 'Sorry we will be abroad — congratulations!', updated_at: now },
-    [invites[4].id]: { name: 'Anil Sharma', phone: '+91 99000 11111', email: 'sharma@example.com', attending: { mehendi: false, wedding: true, 'reception-india': true }, adults: 3, children: 1, veg: 4, nonveg: 0, allergies: '', message: '', updated_at: now },
+    [invites[1].id]: yes('S. Kumar', '+94 77 123 4567', 2, 3),
+    [invites[2].id]: { name: 'Nimal Perera', phone: '+94 71 222 3333', email: '', attending: { 'reception-colombo': false }, adults: 0, children: 0, veg: 0, nonveg: 0 },
+    [invites[3].id]: yes('R. Silva', '+94 76 333 4444', 0, 2),
+    [invites[5].id]: yes('K. Nadarajah', '+94 77 888 9999', 4, 0),
   };
   const ago = (n) => new Date(Date.now() - n * 864e5).toISOString();
   Object.values(rsvps).forEach((r, i) => { r.submitted_at = ago(12 - i * 3); r.updated_at = r.submitted_at; });
   invites.forEach((v, i) => { if (i < 5) { v.open_count = 1 + (i % 3); v.opened_at = ago(14 - i * 2); } });
   invites[1].table_label = 'Table 3';
-  invites[2].table_label = 'Table 1';
+  invites[3].table_label = 'Table 5';
   const id = () => crypto.randomUUID();
-  const wishes = [
-    { id: id(), invite_id: invites[1].id, name: 'Kumar Family', message: 'Wishing you a lifetime of love, laughter and adventures together. See you in Colombo!', approved: true, created_at: ago(9) },
-    { id: id(), invite_id: invites[3].id, name: 'Nimal & Anu', message: 'From a Pizza Hut table to the mandap — what a story! Congratulations, you two.', approved: true, created_at: ago(6) },
-    { id: id(), invite_id: invites[4].id, name: 'Sharma Family', message: 'Can’t wait to dance at the Mehendi. Lots of love!', approved: false, created_at: ago(1) },
-  ];
-  const songs = [
-    { id: id(), invite_id: invites[4].id, name: 'Anil', title: 'London Thumakda', artist: 'Labh Janjua, Sonu Kakkar', note: 'For the Mehendi!', created_at: ago(4) },
-    { id: id(), invite_id: invites[1].id, name: 'S. Kumar', title: 'Enjoy Enjaami', artist: 'Dhee ft. Arivu', note: '', created_at: ago(3) },
-  ];
   const activity = [
     ...invites.slice(0, 5).map((v) => ({ id: id(), invite_id: v.id, kind: 'open', detail: { count: v.open_count }, created_at: v.opened_at })),
-    ...Object.entries(rsvps).map(([iid, r]) => ({ id: id(), invite_id: iid, kind: 'rsvp', detail: { attending: r.attending, adults: r.adults, children: r.children }, created_at: r.submitted_at })),
-    ...wishes.map((w) => ({ id: id(), invite_id: w.invite_id, kind: 'wish', detail: { name: w.name }, created_at: w.created_at })),
-    ...songs.map((w) => ({ id: id(), invite_id: w.invite_id, kind: 'song', detail: { title: w.title }, created_at: w.created_at })),
+    ...Object.entries(rsvps).map(([iid, r]) => ({ id: id(), invite_id: iid, kind: 'rsvp', detail: { attending: r.attending, veg: r.veg, nonveg: r.nonveg }, created_at: r.submitted_at })),
   ];
-  return { invites, rsvps, messages: [], wishes, photos: [], songs, checkins: [], activity };
+  return { invites, rsvps, messages: [], wishes: [], photos: [], songs: [], checkins: [], activity };
 }
 function logDemo(d, invite_id, kind, detail = {}) {
   d.activity.push({ id: crypto.randomUUID(), invite_id, kind, detail, created_at: new Date().toISOString() });
@@ -82,21 +71,19 @@ function demoSubmit(code, p) {
   if (!inv) throw new Error('INVALID_CODE');
   if (!p.name?.trim()) throw new Error('NAME_REQUIRED');
   const attending = {};
-  inv.events.forEach((id) => { if (id in (p.attending || {})) attending[id] = !!p.attending[id]; });
+  RECEPTION.forEach((id) => { if (id in (p.attending || {})) attending[id] = !!p.attending[id]; });
   const any = Object.values(attending).some(Boolean);
+  const veg = any ? Math.max(0, Math.min(30, +p.veg || 0)) : 0;
+  const nonveg = any ? Math.max(0, Math.min(30, +p.nonveg || 0)) : 0;
   const r = {
     name: p.name.trim(), phone: p.phone || '', email: p.email || '', attending,
-    adults: any ? Math.min(+p.adults || 0, inv.max_adults) : 0,
-    children: any ? Math.min(+p.children || 0, inv.max_children) : 0,
-    veg: any ? +p.veg || 0 : 0, nonveg: any ? +p.nonveg || 0 : 0,
-    allergies: p.allergies || '', message: p.message || '', updated_at: new Date().toISOString(),
+    adults: veg + nonveg, children: 0, veg, nonveg, updated_at: new Date().toISOString(),
   };
-  if (any && r.adults + r.children === 0) throw new Error('HEADCOUNT_REQUIRED');
-  if (any && r.veg + r.nonveg !== r.adults + r.children) throw new Error('FOOD_MISMATCH');
+  if (any && veg + nonveg === 0) throw new Error('HEADCOUNT_REQUIRED');
   const prev = d.rsvps[inv.id];
   r.submitted_at = prev?.submitted_at || r.updated_at;
   d.rsvps[inv.id] = r;
-  logDemo(d, inv.id, 'rsvp', { attending, adults: r.adults, children: r.children, updated: !!prev });
+  logDemo(d, inv.id, 'rsvp', { attending, veg: r.veg, nonveg: r.nonveg, updated: !!prev });
   save(d);
 }
 
@@ -125,21 +112,63 @@ export async function submitRsvp(code, payload) {
 }
 
 // ---------------------------------------------------------------- admin auth
+// Supabase Auth in production. In demo mode a local sign-in (password: VITE_DEMO_ADMIN_PASSWORD or "demo")
+// keeps the same login flow so the dashboard is never open without signing in.
+const DEMO_SESSION = 'rg-demo-admin';
+const DEMO_PASSWORD = import.meta.env.VITE_DEMO_ADMIN_PASSWORD || 'demo';
+const demoAuthListeners = new Set();
+const demoSession = () => { try { const e = sessionStorage.getItem(DEMO_SESSION); return e ? { user: { email: e } } : null; } catch { return null; } };
+
 export async function getSession() {
-  if (DEMO) return { user: { email: 'demo@admin' } };
+  if (DEMO) return demoSession();
   const { data } = await supabase.auth.getSession();
   return data.session;
 }
+/** cb(session, event) — event is e.g. 'SIGNED_IN', 'SIGNED_OUT', 'PASSWORD_RECOVERY'. */
 export function onAuthChange(cb) {
-  if (DEMO) return () => {};
-  const { data } = supabase.auth.onAuthStateChange((_e, s) => cb(s));
+  if (DEMO) { demoAuthListeners.add(cb); return () => demoAuthListeners.delete(cb); }
+  const { data } = supabase.auth.onAuthStateChange((event, s) => cb(s, event));
   return () => data.subscription.unsubscribe();
 }
 export async function signIn(email, password) {
+  if (DEMO) {
+    await delay();
+    if (password !== DEMO_PASSWORD) throw new Error('Incorrect email or password.');
+    try { sessionStorage.setItem(DEMO_SESSION, email); } catch { /* ignore */ }
+    demoAuthListeners.forEach((cb) => cb(demoSession(), 'SIGNED_IN'));
+    return;
+  }
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
+  if (error) throw new Error(error.message === 'Invalid login credentials' ? 'Incorrect email or password.' : error.message);
 }
-export async function signOut() { if (!DEMO) await supabase.auth.signOut(); }
+export async function signOut() {
+  if (DEMO) {
+    try { sessionStorage.removeItem(DEMO_SESSION); } catch { /* ignore */ }
+    demoAuthListeners.forEach((cb) => cb(null, 'SIGNED_OUT'));
+    return;
+  }
+  await supabase.auth.signOut();
+}
+/** True when the signed-in account is listed in public.admins. */
+export async function isAdmin() {
+  if (DEMO) return true;
+  const { data, error } = await supabase.rpc('is_admin');
+  if (error) return false;
+  return !!data;
+}
+/** Emails a reset link that opens /admin and asks for a new password. */
+export async function sendPasswordReset(email) {
+  if (DEMO) return delay(true);
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/admin` });
+  if (error) throw error;
+  return true;
+}
+export async function updatePassword(password) {
+  if (DEMO) return delay(true);
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) throw error;
+  return true;
+}
 
 // ---------------------------------------------------------------- admin data
 export async function listRows() {
@@ -149,7 +178,7 @@ export async function listRows() {
   return data.map((r) => ({ ...r, rsvp: Array.isArray(r.rsvp) ? r.rsvp[0] || null : r.rsvp }));
 }
 
-const INVITE_FIELDS = ['family_name', 'side', 'max_adults', 'max_children', 'events', 'phone', 'email', 'lang', 'tags', 'notes', 'code', 'table_label'];
+const INVITE_FIELDS = ['family_name', 'events', 'phone', 'email', 'lang', 'tags', 'notes', 'code', 'table_label'];
 const pick = (o) => Object.fromEntries(INVITE_FIELDS.filter((k) => o[k] !== undefined).map((k) => [k, o[k]]));
 const randomCode = () => Math.random().toString(36).slice(2, 10);
 
@@ -381,4 +410,23 @@ export function codeFromScan(text) {
   const s = String(text || '').trim();
   const m = s.match(/\/i\/([a-z0-9-]{3,40})/i);
   return (m ? m[1] : s).toLowerCase();
+}
+
+
+// ---------------------------------------------------------------- table finder (public, common QR at the venue)
+/** Matches families attending the reception by family name, RSVP name or phone digits: [{ family_name, table_label }] */
+export async function findTable(query) {
+  const q = String(query || '').trim();
+  if (DEMO) {
+    const d = db(); const low = q.toLowerCase(); const digits = q.replace(/\D/g, '');
+    const hits = d.invites.filter((i) => {
+      const r = d.rsvps[i.id];
+      if (!r || !Object.values(r.attending || {}).some(Boolean)) return false;
+      const phones = [i.phone, r.phone].map((x) => String(x || '').replace(/\D/g, ''));
+      return i.family_name.toLowerCase().includes(low) || (r.name || '').toLowerCase().includes(low)
+        || (digits.length >= 6 && phones.some((ph) => ph.endsWith(digits.slice(-9))));
+    });
+    return delay(hits.slice(0, 8).map((i) => ({ family_name: i.family_name, table_label: i.table_label || null })));
+  }
+  return rpc('find_table', { p_query: q });
 }

@@ -43,7 +43,7 @@ export default function Envelope({ familyName, onOpenStart, onDone }) {
         <span className="env-card">
           <img src={`${ART}/ganesha-gold.webp`} alt="" className="env-card-ganesha" />
           <span className="env-card-title">{t.weddingInvitation}</span>
-          <span className="env-card-names">Rohit &amp; Gayathiri</span>
+          <span className="env-card-names">Rohit Reddy &amp; Gayathiri</span>
           <span className="env-card-date">14 . 02 . 2027</span>
         </span>
         <svg className="env-pocket" viewBox="0 0 400 280" preserveAspectRatio="none" aria-hidden="true">

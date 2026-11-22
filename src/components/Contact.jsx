@@ -1,5 +1,5 @@
 import { useLang } from '../i18n/index.jsx';
-import { dict } from '../i18n/pick.js';
+import { dict, pick } from '../i18n/pick.js';
 import { SHELL } from '../i18n/shell.js';
 import { contacts } from '../config/wedding.js';
 import Reveal from './Reveal.jsx';
@@ -18,10 +18,11 @@ export default function Contact({ sections = [] }) {
         <div className="ft-grid">
           {contacts.map((c, i) => (
             <Reveal className="ft-card" key={c.name} delay={i * 0.1}>
+              {c.role && <p className="ft-role">{pick(c.role, lang)}</p>}
               <h3>{c.name}</h3>
               <a href={`tel:${c.phone.replace(/\s/g, '')}`}>☏ {c.phone}</a>
               <a href={`https://wa.me/${c.phone.replace(/[^\d]/g, '')}`} target="_blank" rel="noreferrer">✆ WhatsApp</a>
-              <a href={`mailto:${c.email}`}>✉ {c.email}</a>
+              {c.email && <a href={`mailto:${c.email}`}>✉ {c.email}</a>}
             </Reveal>
           ))}
           {sections.length > 0 && (
@@ -34,7 +35,7 @@ export default function Contact({ sections = [] }) {
 
         <div className="ft-sign">
           <p>{s.footerLine}</p>
-          <p className="ft-script">Rohit &amp; Gayathiri</p>
+          <p className="ft-script">Rohit Reddy &amp; Gayathiri</p>
           <a className="ft-top" href="#top">↑ {s.backTop}</a>
         </div>
       </div>

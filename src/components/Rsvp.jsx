@@ -178,9 +178,9 @@ export default function Rsvp({ code, invite, status, onSaved }) {
   }
 
   return (
-    <Section id="rsvp" tone="cream" num="04" kicker={r.title} center className="rsvp"
+    <Section id="rsvp" tone="cream" num="03" kicker={r.title} center className="rsvp"
       title={<>{s.rsvpTitle[0]} <em>{s.rsvpTitle[1]}</em></>}
-      lead={rsvpBy && status === 'ok' ? `${r.by} ${fmtDate(`${rsvpBy}T12:00:00+05:30`, t.locale, 'Asia/Colombo')}.` : null}>
+      lead={`${s.rsvpLead}${rsvpBy ? ` ${r.by} ${fmtDate(`${rsvpBy}T12:00:00+05:30`, t.locale, 'Asia/Colombo')}.` : ''}`}>
       <Reveal className="rsvp-card" variant="scale">{body}</Reveal>
     </Section>
   );

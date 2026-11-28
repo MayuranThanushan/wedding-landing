@@ -41,10 +41,10 @@ export default function Envelope({ familyName, onOpenStart, onDone }) {
       <button className="env" onClick={open} aria-label={t.tapToOpen}>
         <span className="env-back" />
         <span className="env-card">
-          <img src={`${ART}/ganesha-gold.webp`} alt="" className="env-card-ganesha" />
+          <img src={`${ART}/ganesha-pink.webp`} alt="" className="env-card-ganesha" />
           <span className="env-card-title">{t.weddingInvitation}</span>
           <span className="env-card-names">Rohit Reddy &amp; Gayathiri</span>
-          <span className="env-card-date">14 . 02 . 2027</span>
+          <span className="env-card-date">20 . 02 . 2027</span>
         </span>
         <svg className="env-pocket" viewBox="0 0 400 280" preserveAspectRatio="none" aria-hidden="true">
           <defs>
@@ -54,13 +54,13 @@ export default function Envelope({ familyName, onOpenStart, onDone }) {
               <stop offset="1" stopColor="#b8862b" />
             </linearGradient>
           </defs>
-          <path d="M0 0 L200 150 L400 0 V280 H0 Z" fill="#b8006f" />
+          <path d="M0 0 L200 150 L400 0 V280 H0 Z" fill="#eaa3bd" />
           <path d="M0 280 L178 128 M400 280 L222 128" stroke="url(#gold-line)" strokeWidth="1.6" fill="none" />
           <path d="M0 0 L200 150 L400 0" stroke="url(#gold-line)" strokeWidth="2" fill="none" />
         </svg>
         <span className="env-flap">
           <svg viewBox="0 0 400 175" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0 0 H400 L200 175 Z" fill="#c4007a" />
+            <path d="M0 0 H400 L200 175 Z" fill="#f2b8cb" />
             <path d="M0 1 L200 174 L400 1" stroke="url(#gold-line)" strokeWidth="2.4" fill="none" />
           </svg>
         </span>

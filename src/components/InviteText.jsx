@@ -1,65 +1,105 @@
+import { useEffect, useRef, useState } from 'react';
 import { useLang } from '../i18n/index.jsx';
 import { dict } from '../i18n/pick.js';
 import { SHELL } from '../i18n/shell.js';
-import Reveal from './Reveal.jsx';
-import { Diya, Kalasam, KolamCorner, Thoranam } from './ui/Ornaments.jsx';
+import { eventById, mainEventId, venues } from '../config/wedding.js';
+import { eventWhen, fmtDate } from '../lib/format.js';
+import { downloadIcs, googleCalUrl } from '../lib/calendar.js';
+import { Bell, LotusRule, PaisleyCorner } from './ui/Ornaments.jsx';
+
+const directionsLink = (v) => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(v.mapQuery)}`;
 
 /** "Mr. A & Mrs. B" → two lines so names never break mid-way on phones. */
-function Parents({ text, delay }) {
+function Parents({ text }) {
   const [a, b] = text.split(/\s+[&–]\s+/);
   return (
-    <Reveal as="p" className="iv-parents" delay={delay}>
+    <p className="iv-parents">
       <span>{a}</span>
       {b && <><span className="iv-parents-amp">&amp;</span><span>{b}</span></>}
-    </Reveal>
+    </p>
+  );
+}
+
+function CalendarMenu({ ev }) {
+  const { t } = useLang();
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    const close = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
+    document.addEventListener('pointerdown', close);
+    return () => document.removeEventListener('pointerdown', close);
+  }, [open]);
+  return (
+    <div className="cal-menu" ref={ref}>
+      <button className="iv-link" onClick={() => setOpen((o) => !o)} aria-expanded={open}>📅 {t.addToCalendar}</button>
+      {open && (
+        <div className="cal-pop">
+          <a href={googleCalUrl(ev, t)} target="_blank" rel="noreferrer">{t.googleCalendar}</a>
+          <button onClick={() => { downloadIcs([ev], t, `${ev.id}.ics`); setOpen(false); }}>{t.appleCalendar}</button>
+        </div>
+      )}
+    </div>
   );
 }
 
 /**
- * The formal invitation, styled like a traditional Telugu–Tamil wedding card:
- * mango-leaf thoranam, purna kumbham kalasams, kolam corners, diyas and the classic
- * "Srirastu · Shubhamastu · Avighnamastu" / "Subha Muhurtha Pathirikai" headers.
+ * The invitation card, with the reception details printed on it like a real card:
+ * temple-arch shape, hanging bells, Ganesha medallion, paisley corners, lotus dividers.
  */
 export default function InviteText() {
   const { t, lang } = useLang();
   const s = dict(SHELL, lang);
   const i = t.invite;
-  return (
-    <section className="sec tone-cream iv" id="invitation">
-      <p className="sec-kicker iv-kicker"><span className="num">01</span>{s.nav.invitation}</p>
-      <div className="iv-card">
-        <Thoranam className="iv-thoranam" />
-        <div className="iv-frame">
-          <KolamCorner className="iv-kolam tl" /><KolamCorner className="iv-kolam tr" />
-          <KolamCorner className="iv-kolam bl" /><KolamCorner className="iv-kolam br" />
+  const ev = eventById[mainEventId];
+  const v = venues[ev.venue];
+  const d = (o) => fmtDate(ev.start, t.locale, v.timeZone, { weekday: undefined, day: undefined, month: undefined, year: undefined, ...o });
 
+  return (
+    <section className="sec iv" id="invitation">
+      <div className="iv-card">
+        <Bell className="iv-bell l" /><Bell className="iv-bell r" delay={0.6} />
+        <div className="iv-paper">
+          <PaisleyCorner className="iv-corner bl" /><PaisleyCorner className="iv-corner br" />
+          <div className="iv-medallion"><img src="/assets/art/ganesha-pink.webp" alt="Lord Ganesha" /></div>
           <p className="iv-srirastu" lang="te">శ్రీరస్తు · శుభమస్తు · అవిఘ్నమస్తు</p>
-          <div className="iv-top">
-            <Kalasam className="iv-kalasam" />
-            <img className="iv-ganesha" src="/assets/art/ganesha-pink.webp" alt="Lord Ganesha" />
-            <Kalasam className="iv-kalasam flip" />
-          </div>
-          <p className="iv-pathirikai" lang="ta">சுப முகூர்த்தப் பத்திரிகை</p>
-          <Reveal as="p" className="iv-invocation">{t.invocation}</Reveal>
-          <Reveal as="p" className="iv-blessing" delay={0.1}>{i.blessing}</Reveal>
-          <Parents text={i.groomParents} delay={0.15} />
-          <Reveal as="p" className="iv-and" delay={0.2}>{i.and}</Reveal>
-          <Parents text={i.brideParents} delay={0.25} />
-          <Reveal as="p" className="iv-request" delay={0.3}>{i.request}</Reveal>
-          <Reveal className="iv-couple" variant="scale" delay={0.35}>
+          <p className="iv-invocation">{t.invocation}</p>
+
+          <p className="iv-blessing">{i.blessing}</p>
+          <Parents text={i.groomParents} />
+          <p className="iv-and">{i.and}</p>
+          <Parents text={i.brideParents} />
+          <p className="iv-request">{i.request}</p>
+
+          <h2 className="iv-couple">
             <span>{i.groom}</span>
-            <span className="iv-weds">{lang === 'en' ? 'weds' : '&'}</span>
+            <span className="iv-weds">{lang === 'en' ? 'with' : '&'}</span>
             <span>{i.bride}</span>
-          </Reveal>
-          <div className="iv-muhurtham">
-            <span>{t.events['reception-colombo'].split(/\s+[—-]\s+/)[0]}</span>
-            <strong>20 · 02 · 2027</strong>
-            <span>Ramada Colombo</span>
+          </h2>
+
+          <LotusRule className="iv-rule" />
+
+          <p className="iv-occasion">{s.reception}</p>
+          <div className="iv-date">
+            <span className="iv-date-side">{d({ weekday: 'long' })}</span>
+            <span className="iv-date-mid">
+              <b>{d({ day: 'numeric' })}</b>
+              <span className="nowrap">{d({ month: 'long', year: 'numeric' })}</span>
+            </span>
+            <span className="iv-date-side">{eventWhen(ev, t).time}</span>
           </div>
-          <Reveal as="p" className="iv-closing" delay={0.1}>{i.closing}</Reveal>
-          <div className="iv-diyas">
-            {[0, 0.4, 0.8, 0.2, 0.6].map((d, k) => <Diya key={k} delay={d} />)}
+          <p className="iv-hall">{v.hall}</p>
+          <p className="iv-venue">{v.name} · Colombo 03</p>
+
+          <div className="iv-actions">
+            <a className="btn btn-pink" href="#rsvp">{s.rsvpCta}</a>
+            <CalendarMenu ev={ev} />
+            <a className="iv-link" href={directionsLink(v)} target="_blank" rel="noreferrer">➤ {t.directions}</a>
           </div>
+
+          <LotusRule className="iv-rule small" />
+          <p className="iv-closing">{i.closing}</p>
+          <p className="iv-note">{s.weddingNote}</p>
         </div>
       </div>
     </section>

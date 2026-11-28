@@ -35,14 +35,14 @@ export default function Venues({ events }) {
   const s = dict(SHELL, lang);
   const [copied, setCopied] = useState('');
   const mainVenue = eventById[mainEventId]?.venue;
-  const ids = [...new Set(events.map((e) => e.venue))].sort((a, b) => (a === mainVenue ? -1 : b === mainVenue ? 1 : 0));
+  const ids = [mainVenue]; // only the reception venue is shown
   const copy = async (id, text) => {
     try { await navigator.clipboard.writeText(text); setCopied(id); setTimeout(() => setCopied(''), 1800); } catch { /* ignore */ }
   };
 
   return (
-    <Section id="venues" tone="blush" num="03" kicker={t.venuesTitle}
-      title={<>{s.venuesTitle[0]} <em>{s.venuesTitle[1]}</em></>} lead={s.venuesLead}>
+    <Section id="venues" tone="blush" num="02" kicker={s.nav.venues}
+      title={<>{s.venuesTitle[0]} <em>{s.venuesTitle[1]}</em></>}>
       <div className="vn-list">
         {ids.map((id, i) => {
           const v = venues[id];
@@ -55,8 +55,9 @@ export default function Venues({ events }) {
                   : <img className="vn-photo-art" src="/assets/art/temples.webp" alt="" />}
                 <figcaption>
                   <span className="vn-city">{v.address.split(',').slice(-2).join(',').trim()}</span>
-                  <strong className="vn-name">{v.name}</strong>
-                  {v.photoCaption && v.photo && <span className="vn-cap">{v.photoCaption}</span>}
+                  <strong className="vn-name">{v.hall || v.name}</strong>
+                  {v.hall && <span className="vn-cap">{v.name}</span>}
+                  
                 </figcaption>
                 {v.photoCredit && <small className="vn-credit">{v.photoCredit}</small>}
               </figure>

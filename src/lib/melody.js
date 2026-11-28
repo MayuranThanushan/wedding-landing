@@ -366,8 +366,8 @@ export function createMelody({ volume = 0.35 } = {}) {
       const now = ctx.currentTime;
       master.gain.cancelScheduledValues(now);
       master.gain.setValueAtTime(master.gain.value, now);
-      master.gain.linearRampToValueAtTime(vol, now + 2.5);
-      nextLoop = now + 0.15;
+      master.gain.linearRampToValueAtTime(vol, now + 0.35);
+      nextLoop = now + 0.03;
       tick();
       timer = setInterval(tick, 500);
     },
@@ -410,7 +410,7 @@ export function createTrack(src, { volume = 0.5 } = {}) {
     start() {
       if (playing) return;
       playing = true; audio.volume = 0;
-      audio.play().then(() => fadeTo(vol, 2500)).catch(() => { playing = false; });
+      audio.play().then(() => fadeTo(vol, 400)).catch(() => { playing = false; });
     },
     stop() {
       if (!playing) return;

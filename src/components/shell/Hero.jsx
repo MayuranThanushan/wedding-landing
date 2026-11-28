@@ -1,102 +1,61 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLang } from '../../i18n/index.jsx';
 import { dict } from '../../i18n/pick.js';
 import { SHELL } from '../../i18n/shell.js';
-import { eventById, mainEventId } from '../../config/wedding.js';
-
-const ART = '/assets/art';
+import { eventById, mainEventId, venues } from '../../config/wedding.js';
+import { eventWhen, fmtDate } from '../../lib/format.js';
 
 function useCountdown(target) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id); }, []);
   const s = Math.max(0, Math.floor((target - now) / 1000));
-  return { left: s, d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), sec: s % 60 };
+  return { left: s, d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60) };
 }
 
-/** Writes scroll progress through the hero into --p (0→1) for parallax. */
-function useHeroScroll(ref) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
-    let raf = 0;
-    const on = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const p = Math.min(1, Math.max(0, window.scrollY / (el.offsetHeight || 1)));
-        el.style.setProperty('--p', p.toFixed(3));
-      });
-    };
-    on();
-    window.addEventListener('scroll', on, { passive: true });
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('scroll', on); };
-  }, [ref]);
-}
-
+/** Full-bleed engagement photo with the invitation words laid over it. */
 export default function Hero({ familyName, showRsvp }) {
   const { t, lang } = useLang();
   const s = dict(SHELL, lang);
-  const ref = useRef(null);
-  useHeroScroll(ref);
-  const c = useCountdown(new Date(eventById[mainEventId].start).getTime());
-  const pad = (n) => String(n).padStart(2, '0');
+  const ev = eventById[mainEventId];
+  const v = venues[ev.venue];
+  const c = useCountdown(new Date(ev.start).getTime());
+  const day = (o) => fmtDate(ev.start, t.locale, v.timeZone, { weekday: undefined, day: undefined, month: undefined, year: undefined, ...o });
 
   return (
-    <section className="hero" id="top" ref={ref}>
-      <div className="hero-grain" aria-hidden="true" />
-      <div className="hero-glow" aria-hidden="true" />
+    <section className="hero" id="top">
+      <picture className="hero-photo">
+        <source media="(max-width: 700px)" srcSet="/assets/photos/hero-sm.webp" />
+        <img src="/assets/photos/hero.webp" alt="Rohit Reddy and Gayathiri" fetchpriority="high" />
+      </picture>
+      <div className="hero-veil" aria-hidden="true" />
 
-      <div className="hero-inner">
-        <div className="hero-copy">
-          <p className="hero-kicker">
-            <img src={`${ART}/ganesha-gold.webp`} alt="" width="28" height="28" />
-            {familyName ? s.heroDear(familyName) : s.heroKicker}
-          </p>
-          <h1 className="hero-names" aria-label="Rohit Reddy & Gayathiri">
-            <span className="split-line"><span style={{ '--d': '.15s' }}>Rohit Reddy</span></span>
-            <span className="split-line hero-amp"><span style={{ '--d': '.35s' }}>&amp;</span></span>
-            <span className="split-line"><span style={{ '--d': '.5s' }}>Gayathiri</span></span>
-          </h1>
-          <p className="hero-invite">{s.heroInvite}</p>
-          <p className="hero-married">{s.heroMarried}</p>
-
-          <div className="hero-date">
-            <span className="hero-date-num">20</span>
-            <span className="hero-date-rest">
-              <b>{new Intl.DateTimeFormat(t.locale, { month: 'long', year: 'numeric' }).format(new Date(eventById[mainEventId].start))}</b>
-              <small>{s.places}</small>
-            </span>
-          </div>
-
-          <div className="hero-actions">
-            {showRsvp && <a className="btn btn-gold" href="#rsvp">{s.rsvpCta}</a>}
-            <a className="btn hero-ghost" href="#events">{s.seeEvents} ↓</a>
-          </div>
-
-          {c.left > 0 && (
-            <div className="hero-count" role="timer" aria-label={s.countdownTo}>
-              <span className="hero-count-label">{s.countdownTo}</span>
-              <div className="hero-count-cells">
-                {[[c.d, t.units.days], [pad(c.h), t.units.hours], [pad(c.m), t.units.minutes], [pad(c.sec), t.units.seconds]].map(([v, l]) => (
-                  <span key={l}><b>{v}</b><small>{l}</small></span>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="hero-art" aria-hidden="true">
-          <div className="hero-arch">
-            <img className="hero-mandala" src={`${ART}/mandala-gold.webp`} alt="" />
-            <img className="hero-ganesha" src={`${ART}/ganesha-gold.webp`} alt="" />
-            <img className="hero-elephants" src={`${ART}/elephants-gold.webp`} alt="" />
-            <span className="hero-arch-date">20 · 02 · 2027</span>
-          </div>
-          <img className="hero-lotus" src={`${ART}/lotus.webp`} alt="" />
-        </div>
+      <div className="hero-top">
+        <p className="hero-kicker">{familyName ? s.heroDear(familyName) : s.heroKicker}</p>
       </div>
 
-      <img className="hero-temples" src={`${ART}/temples.webp`} alt="" />
-      <a className="hero-scroll" href="#invitation" aria-label={t.scroll}><span /></a>
+      <div className="hero-bottom">
+        <h1 className="hero-names">
+          <span>Rohit Reddy</span>
+          <span className="hero-amp">&amp;</span>
+          <span>Gayathiri</span>
+        </h1>
+        <p className="hero-invite">{s.heroInvite}</p>
+        <p className="hero-when">
+          <span className="nowrap">{day({ weekday: 'long' })}, {day({ day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          <span className="hero-dot" aria-hidden="true">·</span>
+          <span className="nowrap">{eventWhen(ev, t).time}</span>
+        </p>
+        <p className="hero-where">{v.hall} · {v.name}</p>
+        <div className="hero-actions">
+          {showRsvp && <a className="btn btn-pink" href="#rsvp">{s.rsvpCta}</a>}
+          <a className="btn btn-ghost" href="#invitation">{s.seeInvite}</a>
+        </div>
+        {c.left > 0 && (
+          <p className="hero-count" role="timer">
+            <b>{c.d}</b> {t.units.days} · <b>{c.h}</b> {t.units.hours} · <b>{c.m}</b> {t.units.minutes}
+          </p>
+        )}
+      </div>
     </section>
   );
 }

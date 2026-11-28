@@ -6,10 +6,8 @@ import { getInvite } from '../lib/api.js';
 import Envelope from '../components/Envelope.jsx';
 import NavBar from '../components/shell/NavBar.jsx';
 import Hero from '../components/shell/Hero.jsx';
-import Marquee from '../components/shell/Marquee.jsx';
 import LiveNow from '../components/shell/LiveNow.jsx';
 import InviteText from '../components/InviteText.jsx';
-import Events from '../components/Events.jsx';
 import Venues from '../components/Venues.jsx';
 import Rsvp from '../components/Rsvp.jsx';
 import Photos from '../components/community/Photos.jsx';
@@ -20,7 +18,7 @@ import PetalRain, { petalShower } from '../components/shell/PetalRain.jsx';
 import '../styles/invitation.css';
 import '../styles/shell.css';
 
-const SECTIONS = ['invitation', 'events', 'venues', 'rsvp', 'photos'];
+const SECTIONS = ['invitation', 'venues', 'rsvp', 'photos'];
 
 export default function Invitation() {
   const params = useParams();
@@ -72,20 +70,18 @@ export default function Invitation() {
         <Envelope familyName={invite?.family_name} onOpenStart={handleOpen} onDone={() => setOpened(true)} />
       )}
       <PetalRain />
-      <NavBar sections={SECTIONS} />
+      {opened && <NavBar sections={SECTIONS} />}
       <MusicButton autoplay={playing} />
       <LiveNow events={ALL_EVENTS.filter((e) => e.id === mainEventId)} />
       <main>
         <Hero familyName={invite?.family_name} showRsvp />
-        <Marquee />
         <InviteText />
-        <Events events={visibleEvents} />
         <Venues events={visibleEvents} />
         <Rsvp code={code} invite={invite} status={status} onSaved={(rsvp) => { setInvite((i) => ({ ...i, rsvp })); if (Object.values(rsvp.attending || {}).some(Boolean)) petalShower(); }} />
         <Photos code={guestCode} invite={invite} />
         <Gallery />
       </main>
-      <Contact sections={SECTIONS} />
+      <Contact />
     </div>
   );
 }

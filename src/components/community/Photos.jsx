@@ -131,7 +131,7 @@ export default function Photos({ code, invite }) {
 
   return (
     <Section
-      id="photos" tone="cream" num="05"
+      id="photos" tone="cream" num="04"
       kicker={s.photosKicker}
       title={<>{s.photosTitle[0]}<em>{s.photosTitle[1]}</em></>}
       lead={s.photosLead}

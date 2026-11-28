@@ -14,7 +14,9 @@ export function fmtTime(iso, locale, timeZone) {
 export function eventWhen(ev, t) {
   const v = venues[ev.venue];
   const date = fmtDate(ev.start, t.locale, v.timeZone);
-  const time = ev.timeTbc
+  const time = ev.timeLabel
+    ? ev.timeLabel[t.locale?.slice(0, 2)] || ev.timeLabel.en
+    : ev.timeTbc
     ? `${t.parts[ev.part]} · ${t.timeTbc}`
     : `${fmtTime(ev.start, t.locale, v.timeZone)} – ${fmtTime(ev.end, t.locale, v.timeZone)}`;
   return { date, time };

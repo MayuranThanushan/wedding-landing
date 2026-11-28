@@ -52,7 +52,7 @@ export default function TableFinder() {
         ))}
       </div>
       <main className="tf-main">
-        <img className="tf-ganesha" src="/assets/art/ganesha-gold.webp" alt="" />
+        <img className="tf-ganesha" src="/assets/art/ganesha-pink.webp" alt="" />
         <p className="tf-welcome">{s.welcome}</p>
         <h1 className="tf-names">Rohit Reddy <i>&amp;</i> Gayathiri</h1>
         <p className="tf-date">20 · 02 · 2027 · Ramada Colombo</p>

@@ -26,6 +26,7 @@ export const venues = {
   },
   colombo: {
     name: 'Ramada Colombo',
+    hall: 'The Liberty Ballroom',
     address: '30 Sir Mohamed Macan Markar Mawatha, Colombo 03, Sri Lanka',
     mapQuery: 'Ramada by Wyndham Colombo',
     timeZone: 'Asia/Colombo',
@@ -93,10 +94,12 @@ export const events = [
     id: 'reception-colombo',
     featured: true,
     icon: '✨',
-    start: '2027-02-20T18:30:00+05:30',
+    start: '2027-02-20T17:00:00+05:30',
     end: '2027-02-20T23:00:00+05:30',
     part: 'evening',
-    timeTbc: true,
+    timeTbc: false,
+    // Shown instead of a start–end range.
+    timeLabel: { en: '5.00 PM onwards', ta: 'மாலை 5.00 மணி முதல்', te: 'సాయంత్రం 5.00 నుండి' },
     venue: 'colombo',
     dressCode: null,
   },
